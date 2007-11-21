@@ -1,26 +1,20 @@
 package com.redspr.redrobot;
 
+public interface Robot {
 
-import java.io.IOException;
+    void back();
 
-public abstract class Robot {
+    void click(String... x);
 
-abstract public void open(String path);
+    int findText(String x);
 
-abstract public String getConfirmation();
-    abstract public void back() throws IOException;
-    
-    abstract public void click(String... x) throws IOException;
+    String get(String... x);
 
-    abstract public int findText(String x);
+    String getConfirmation();
 
-    abstract public String get(String... x);
+    boolean isChecked(String... x);
 
-   // abstract protected DomNode getEntry(String[] x);
+    void open(String path);
 
-    abstract public boolean isChecked(String... x);
-
-    abstract public void selenium(String x);
-
-    abstract public void set(String... x);
+    void set(String... x);
 }

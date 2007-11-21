@@ -7,7 +7,7 @@ import java.util.Stack;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
 
-public class SeleniumRobot extends Robot {
+public class SeleniumRobot implements Robot {
     private Stack<String> history = new Stack<String>();
 
     private Selenium sel;
