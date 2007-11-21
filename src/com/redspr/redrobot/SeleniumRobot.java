@@ -19,13 +19,13 @@ public class SeleniumRobot implements Robot {
         sel.start();
     }
 
-    public void back() throws IOException {
+    public void back() {
         history.pop();
         sel.open(history.pop());
         // sel.waitForPageToLoad("10000");
     }
 
-    public void click(String... x) throws IOException {
+    public void click(String... x) {
         sel.click(loc(x));
         try {
             sel.waitForPageToLoad("10000");
