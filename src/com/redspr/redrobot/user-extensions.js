@@ -59,7 +59,6 @@ function anyk(text, docm, n, flag) {
 				var c = r[j];
 				if (c.isDesc(match)) {
 					c.score=c.score+s;
-					c.node.title="SCORE "+c.score;
 				}
 			}
 
