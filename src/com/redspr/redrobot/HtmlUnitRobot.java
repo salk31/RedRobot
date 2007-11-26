@@ -17,6 +17,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.redspr.redrobot.HtmlUnitScorer.Bingo;
 
@@ -48,7 +49,9 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
 
     private Bingo VALUE = new Bingo() {
         public boolean match(Object node) {
-            return (node instanceof HtmlTextInput);
+            if (node instanceof HtmlTextInput) return true;
+            if (node instanceof HtmlTextArea) return true;
+            return false;
         }
     };
 
@@ -86,9 +89,11 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
     public String get(String... x) {
         HtmlUnitScorer scorer = new HtmlUnitScorer(VALUE, page
                 .getDocumentHtmlElement(), x);
-        Object v = scorer.getBest();
-        if (v instanceof HtmlTextInput) {
-            return ((HtmlTextInput) v).getValueAttribute();
+        Object o = scorer.getBest();
+        if (o instanceof HtmlTextInput) {
+            return ((HtmlTextInput) o).getValueAttribute();
+        }else if (o instanceof HtmlTextArea) {
+            return ((HtmlTextArea) o).getText();
         }
         // TODO 00 blowup
         return null;
@@ -131,8 +136,10 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
         Object o = scorer.getBest();
         if (o instanceof HtmlTextInput) {
             ((HtmlTextInput) o).setValueAttribute(v);
+        } else if (o instanceof HtmlTextArea) {
+            ((HtmlTextArea) o).setText(v);
         }
-        // TODO 00 textarea
+
 
         // TODO 00 blowup
     }
