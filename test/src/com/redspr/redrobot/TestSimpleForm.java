@@ -23,6 +23,7 @@ public class TestSimpleForm extends TestCase {
         assertEquals("textareaByTitle", robot.get("Text 2"));
         assertTrue(robot.isChecked("Checkbox 3"));
         assertFalse(robot.isChecked("Checkbox 4"));
-        assertEquals("Two", robot.get("Select 5"));
+        assertTrue(robot.isChecked("Radio 5"));
+        assertEquals("Two", robot.get("Select 7"));
     }
 }
