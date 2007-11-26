@@ -41,6 +41,7 @@ public class SeleniumRobot implements Robot {
     }
 
     public String get(String... x) {
+        // TODO 00 how to tell if select?
         return sel.getValue(loc(x)).replaceAll("\\r", "");
     }
 

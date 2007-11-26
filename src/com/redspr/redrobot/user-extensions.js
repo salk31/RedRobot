@@ -16,7 +16,7 @@ Cand.fn = function(a, b) {
 	return 0;
 }
 PageBot.prototype.locateElementByFuzzy = function(text, docm) {
-	return anyk(text, docm, ["a", "button", "input", "textarea", "td"], false);
+	return anyk(text, docm, ["a", "button", "input", "select", "textarea", "td"], false);
 }
 PageBot.prototype.locateElementByFuzzyKey = function(text, docm) {
 	return anyk(text, docm, ["input", "textarea"], true);

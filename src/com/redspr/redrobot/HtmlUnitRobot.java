@@ -14,8 +14,14 @@ import com.gargoylesoftware.htmlunit.html.ClickableElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
+import com.gargoylesoftware.htmlunit.html.HtmlImageInput;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
+import com.gargoylesoftware.htmlunit.html.HtmlLabel;
+import com.gargoylesoftware.htmlunit.html.HtmlOption;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
+import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
@@ -23,38 +29,6 @@ import com.redspr.redrobot.HtmlUnitScorer.Bingo;
 
 // TODO select
 public class HtmlUnitRobot implements Robot, ConfirmHandler {
-    final WebClient webClient = new WebClient();
-
-    private Stack<URL> history = new Stack<URL>();
-
-    HtmlPage page;
-
-    public void back() {
-        try {
-            page = (HtmlPage) webClient.getPage(history.pop());
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    private Bingo CLICKABLE = new Bingo() {
-        public boolean match(Object node) {
-            if (node instanceof HtmlAnchor)
-                return true;
-            if (node instanceof HtmlSubmitInput)
-                return true;
-            return false;
-        }
-    };
-
-    private Bingo VALUE = new Bingo() {
-        public boolean match(Object node) {
-            if (node instanceof HtmlTextInput) return true;
-            if (node instanceof HtmlTextArea) return true;
-            return false;
-        }
-    };
-
     private Bingo CHECKABLE = new Bingo() {
         public boolean match(Object node) {
             if (node instanceof HtmlCheckBoxInput)
@@ -64,6 +38,54 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
             return false;
         }
     };
+
+    private Bingo CLICKABLE = new Bingo() {
+        public boolean match(Object node) {
+            if (node instanceof HtmlAnchor)
+                return true;
+            if (node instanceof HtmlSubmitInput)
+                return true;
+            if (node instanceof HtmlImageInput)
+                return true;
+            if (node instanceof HtmlLabel)
+                return true;
+            if (node instanceof HtmlOption)
+                return true;
+
+            return false;
+        }
+    };
+
+    private Stack<URL> history = new Stack<URL>();
+
+    private String lastConfirm;
+
+    HtmlPage page;
+
+    private Bingo VALUE = new Bingo() {
+        public boolean match(Object node) {
+            if (node instanceof HtmlTextInput)
+                return true;
+            if (node instanceof HtmlTextArea)
+                return true;
+            if (node instanceof HtmlPasswordInput)
+                return true;
+            if (node instanceof HtmlSelect)
+                return true;
+
+            return false;
+        }
+    };
+
+    final WebClient webClient = new WebClient();
+
+    public void back() {
+        try {
+            page = (HtmlPage) webClient.getPage(history.pop());
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
     public void click(String... x) {
         try {
@@ -89,12 +111,28 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
     public String get(String... x) {
         HtmlUnitScorer scorer = new HtmlUnitScorer(VALUE, page
                 .getDocumentHtmlElement(), x);
-        Object o = scorer.getBest();
-        if (o instanceof HtmlTextInput) {
-            return ((HtmlTextInput) o).getValueAttribute();
-        }else if (o instanceof HtmlTextArea) {
-            return ((HtmlTextArea) o).getText();
+        Object n = scorer.getBest();
+
+        if (n instanceof HtmlInput) {
+            HtmlInput i = (HtmlInput) n;
+            return i.getValueAttribute();
         }
+
+        if (n instanceof HtmlTextArea) {
+            HtmlTextArea ta = (HtmlTextArea) n;
+            return ta.getText();
+        }
+
+        if (n instanceof HtmlSelect) {
+            HtmlSelect s = (HtmlSelect) n;
+            List<HtmlOption> options = s.getSelectedOptions();
+            StringBuilder sb = new StringBuilder();
+            for (HtmlOption option : options) {
+                sb.append(option.asText());
+            }
+            return sb.toString();
+        }
+
         // TODO 00 blowup
         return null;
     }
@@ -103,15 +141,20 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
         return lastConfirm; // TODO 00 clear on transition (make part of page)
     }
 
+    public boolean handleConfirm(Page page, String msg) {
+        lastConfirm = msg;
+        return true;
+    }
+
     public boolean isChecked(String... x) {
         HtmlUnitScorer scorer = new HtmlUnitScorer(CHECKABLE, page
                 .getDocumentHtmlElement(), x);
-        Object v = scorer.getBest();
-        if (v instanceof HtmlCheckBoxInput) {
-            return ((HtmlCheckBoxInput) v).isChecked();
+        Object elmt = scorer.getBest();
+        if (elmt instanceof HtmlCheckBoxInput) {
+            return ((HtmlCheckBoxInput) elmt).isChecked();
         }
-        if (v instanceof HtmlRadioButtonInput) {
-            return ((HtmlRadioButtonInput) v).isChecked();
+        if (elmt instanceof HtmlRadioButtonInput) {
+            return ((HtmlRadioButtonInput) elmt).isChecked();
         }
         // TODO 00 blowup
         return false;
@@ -119,7 +162,7 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
 
     public void open(String path) {
         try {
-            page = (HtmlPage) webClient.getPage(path);
+            page = (HtmlPage) webClient.getPage("http://localhost" + path);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -134,20 +177,12 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
         HtmlUnitScorer scorer = new HtmlUnitScorer(VALUE, page
                 .getDocumentHtmlElement(), n);
         Object o = scorer.getBest();
-        if (o instanceof HtmlTextInput) {
-            ((HtmlTextInput) o).setValueAttribute(v);
+        if (o instanceof HtmlInput) {
+            ((HtmlInput) o).setValueAttribute(v);
         } else if (o instanceof HtmlTextArea) {
             ((HtmlTextArea) o).setText(v);
         }
 
-
         // TODO 00 blowup
-    }
-
-    private String lastConfirm;
-
-    public boolean handleConfirm(Page arg0, String arg1) {
-        lastConfirm = arg1;
-        return true;
     }
 }
