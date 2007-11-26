@@ -4,6 +4,7 @@ import java.util.Stack;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
+import com.thoughtworks.selenium.SeleniumException;
 
 public class SeleniumRobot implements Robot {
     private Stack<String> history = new Stack<String>();
@@ -41,7 +42,12 @@ public class SeleniumRobot implements Robot {
     }
 
     public String get(String... x) {
-        // TODO 00 how to tell if select?
+        try {
+        return sel.getSelectedLabel(loc(x));
+        } catch (SeleniumException ex) {
+            // not a select thing 
+            // XXX want nicer way
+        }
         return sel.getValue(loc(x)).replaceAll("\\r", "");
     }
 
