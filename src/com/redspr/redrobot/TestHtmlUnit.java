@@ -1,7 +1,6 @@
+package com.redspr.redrobot;
 import junit.framework.TestCase;
 
-import com.redspr.redrobot.HtmlUnitRobot;
-import com.redspr.redrobot.Robot;
 
 
 public class TestHtmlUnit extends TestCase {
