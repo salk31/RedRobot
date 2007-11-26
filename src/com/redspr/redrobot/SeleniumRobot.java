@@ -1,7 +1,5 @@
 package com.redspr.redrobot;
 
-
-import java.io.IOException;
 import java.util.Stack;
 
 import com.thoughtworks.selenium.DefaultSelenium;
@@ -13,6 +11,7 @@ public class SeleniumRobot implements Robot {
     private Selenium sel;
 
     public SeleniumRobot() {
+        // TODO 00 need to be able to configure this from outside (bean style)
         sel = new DefaultSelenium("localhost", 8080, "*iexplore",
                 "http://localhost");
 
@@ -20,16 +19,15 @@ public class SeleniumRobot implements Robot {
     }
 
     public void back() {
-        history.pop();
         sel.open(history.pop());
         // sel.waitForPageToLoad("10000");
     }
 
     public void click(String... x) {
+        history.push(sel.getLocation());
         sel.click(loc(x));
         try {
             sel.waitForPageToLoad("10000");
-            history.push(sel.getLocation());
         } catch (Throwable t) {
         };
     }
@@ -65,7 +63,6 @@ public class SeleniumRobot implements Robot {
     public void open(String path) {
         sel.open(path);
         sel.waitForPageToLoad("10000");
-        history.push(sel.getLocation());
     }
 
     public void selenium(String x) {

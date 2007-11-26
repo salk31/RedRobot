@@ -92,7 +92,7 @@ public class HtmlUnitScorer {
          }
     }
 
-    private void getCont(List<DomNode> result2, DomNode n, String x) {
+    static void getCont(List<DomNode> result2, DomNode n, String x) {
         Iterator it = n.getChildIterator();
         while (it.hasNext()) {
             DomNode c = (DomNode) it.next();
@@ -103,7 +103,6 @@ public class HtmlUnitScorer {
                     result2.add(c);
             } else if (c instanceof HtmlSubmitInput) {
                 HtmlSubmitInput s = (HtmlSubmitInput) c;
-                System.out.println("VALUE="+ s.getValueAttribute());
                 if (x.equalsIgnoreCase(s.getValueAttribute())) {
                     result2.add(s);
                 }
