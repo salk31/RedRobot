@@ -19,11 +19,12 @@ public class TestSimpleForm extends TestCase {
 
         robot.open("/TestSimpleForm.html");
 
-        assertEquals("textBoxByTitle", robot.get("Text 1"));
-        assertEquals("textareaByTitle", robot.get("Text 2"));
-        assertTrue(robot.isChecked("Checkbox 3"));
-        assertFalse(robot.isChecked("Checkbox 4"));
-        assertTrue(robot.isChecked("Radio 5"));
-        assertEquals("Two", robot.get("Select 7"));
+        assertEquals("textBoxByTitle", robot.get("text 1"));
+        assertEquals("textareaByTitle", robot.get("text 2"));
+        assertTrue(robot.isChecked("checkbox 3"));
+        assertFalse(robot.isChecked("checkbox 4"));
+        assertTrue(robot.isChecked("radio 5"));
+        assertEquals("Two", robot.get("select 7"));
+        assertEquals("pass", robot.get("password 8"));
     }
 }
