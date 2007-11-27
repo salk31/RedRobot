@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+
+<!-- GWTS -->
+
+<project name="all" default="start" basedir=".">
+
+   	<property name="tomcat.home" value="${basedir}/tomcat"/>
+   	
+   	<property file="${basedir}/../version.properties"/>
+   	
+	<!-- read properties from the build.properties, if any -->
+
+	<property name="build.dir" value="build"/>
+
+	<property name="build.compiler" value="javac1.4" />
+
+	<property name="test.build.home" value="build/test"/>
+
+	<property name="dist.dir" value="build"/>
+	<property name="src.dir" value="src"/>
+
+
+	<property name="compile.debug" value="true"/>
+	<property name="compile.deprecation" value="true"/>
+	<property name="compile.optimize" value="true"/>
+
+	<property file="${basedir}/ant.properties"/>
+
+	<path id="compile.classpath">
+  		<fileset dir=".">
+    		<include name="lib/*.jar"/>
+    	</fileset>
+	</path>
+
+	<target name="deploy" depends="jar">
+		<copy todir="${basedir}/ROOT/WEB-INF/lib">
+			<fileset dir="lib">
+				<include name="*.jar" />
+				<exclude name="servlet-api.jar" />
+			</fileset>
+			<fileset dir="build">
+				<include name="gwts.jar"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${basedir}/ROOT/WEB-INF/classes">
+			<fileset file="../version.properties"/>
+		</copy>
+	</target>
+	
+	
+  	<target name="stop">
+  		<java classname="org.apache.catalina.startup.Bootstrap" fork="yes" failonerror="false" >
+			<jvmarg value="-Dcatalina.home=${tomcat.home}"/>
+			<arg value="stop"/>
+			<classpath>
+				<fileset dir="${tomcat.home}">
+					<include name="bin/bootstrap.jar"/>
+					<include name="bin/commons-logging.jar"/>
+				</fileset>
+			</classpath>
+		</java>
+		<sleep seconds="2"/> <!-- Bit ugly need to wait for tomcat to shutdown -->
+	</target>
+
+
+  	<target name="start" depends="stop" >
+  		
+		<java classname="org.apache.catalina.startup.Bootstrap" fork="true" >
+		<jvmarg value="-Dcatalina.home=${tomcat.home}"/>
+			<jvmarg value="-server"/>
+			<jvmarg value="-ea"/>
+			<arg value="start"/>
+			<classpath>
+				<fileset dir="${tomcat.home}">
+					<include name="bin/bootstrap.jar"/>
+					<include name="bin/tomcat-juli.jar"/>
+				</fileset>
+			</classpath>
+		</java>
+	</target>
+
+
+    <target name="clean" depends="stop">
+    	<delete dir="${deploy.dir}"/>
+    	<delete dir="${tomcat.home}/work"/>
+    	<delete dir="${tomcat.home}/temp"/>
+    	<delete dir="${tomcat.home}/logs"/>
+    	<delete dir="${tomcat.home}/var"/>
+
+       	<delete dir="${basedir}/root/WEB-INF/classes"/>
+      
+      	<delete>
+    		<fileset dir="${basedir}/root/WEB-INF/lib/" includes="*.jar"/>
+  		</delete>
+	</target>
+
+
+
+  	<target description="Project-level prepare phase" name="project_prepare" />
+
+  	<target name="prepare" depends="project_prepare" description="Prepare build directory" >
+    	<mkdir dir="${build.dir}"/>
+    	<mkdir dir="${build.dir}/classes"/>
+  	</target>
+
+  	<target name="compile" depends="prepare" description="Compile source">
+    	<javac debug="${compile.debug}" deprecation="${compile.deprecation}"
+              destdir="${build.dir}/classes" target="1.5" source="1.5"
+              optimize="${compile.optimize}" srcdir="${src.dir}">
+      		<classpath refid="compile.classpath"/>
+    	</javac>
+  	</target>
+
+
+
+
+  	<target name="all" depends="clean,compile"/>
+
+
+
+  	<target name="jar" depends="compile" >
+    	<mkdir dir="${dist.dir}"/>
+
+    	<jar jarfile="${dist.dir}/gwts.jar" >
+      		<fileset dir="${build.dir}/classes"/>
+         	<fileset dir="${src.dir}">
+         		<include name="**/*.properties"/>
+         		<include name="**/*.txt"/>
+				<include name="**/*.xml"/>
+				<include name="**/*.xsl"/>
+         		<include name="**/*.dtd"/>
+         	</fileset>
+    	</jar>
+  	</target>
+  
+  	<target name="test" depends="jar">
+  		<ant dir="test" target="test" />  
+  	</target>
+
+	<target name="dist" depends="deploy">
+  		<zip destfile="${dist.dir}/gwts.zip">
+    		<fileset dir=".">
+				<include name="src/**"/>
+				<include name="lib/**"/>
+				<include name="ROOT/**"/>
+				<include name="tomcat/**"/>
+				<exclude name="**/.svn/**"/>
+				<include name="build.xml"/>
+			</fileset>
+  		</zip>
+	</target>
+
+</project>
