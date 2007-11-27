@@ -27,8 +27,11 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.redspr.redrobot.HtmlUnitScorer.Bingo;
 
-// TODO select
 public class HtmlUnitRobot implements Robot, ConfirmHandler {
+    public HtmlUnitRobot() {
+        webClient.setJavaScriptEnabled(false);
+    }
+    
     private Bingo CHECKABLE = new Bingo() {
         public boolean match(Object node) {
             if (node instanceof HtmlCheckBoxInput)
@@ -60,7 +63,7 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
 
     private String lastConfirm;
 
-    HtmlPage page;
+    private HtmlPage page;
 
     private Bingo VALUE = new Bingo() {
         public boolean match(Object node) {
@@ -96,7 +99,7 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
         HtmlUnitScorer scorer = new HtmlUnitScorer(CLICKABLE, page
                 .getDocumentHtmlElement(), x);
         try {
-            ((ClickableElement) scorer.getBest()).click();
+            page = (HtmlPage) ((ClickableElement) scorer.getBest()).click();
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -162,7 +165,8 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
 
     public void open(String path) {
         try {
-            page = (HtmlPage) webClient.getPage("http://localhost" + path);
+            // TODO 00 config base?
+            page = (HtmlPage) webClient.getPage("http://localhost:8080" + path);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

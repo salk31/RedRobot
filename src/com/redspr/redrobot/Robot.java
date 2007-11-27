@@ -17,4 +17,6 @@ public interface Robot {
     void open(String path);
 
     void set(String... x);
+    
+    // TODO 04 a dump/debug method?
 }

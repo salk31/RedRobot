@@ -10,11 +10,11 @@ public class SeleniumRobot implements Robot {
     private Stack<String> history = new Stack<String>();
 
     private Selenium sel;
-
+   
     public SeleniumRobot() {
         // TODO 00 need to be able to configure this from outside (bean style)
-        sel = new DefaultSelenium("localhost", 8080, "*iexplore",
-                "http://localhost");
+        sel = new DefaultSelenium("localhost", 4444, "*firefox",
+                "http://localhost:8080");
 
         sel.start();
     }

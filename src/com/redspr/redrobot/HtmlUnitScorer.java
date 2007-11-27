@@ -20,6 +20,12 @@ public class HtmlUnitScorer {
         boolean match(Object node);
     }
 
+    static private String digest(String p) {
+        return p.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+    }
+    
+
+    
     public class Candidate implements Comparable<Candidate> {
         private double score;
 
@@ -92,25 +98,26 @@ public class HtmlUnitScorer {
          }
     }
 
-    static void getCont(List<DomNode> result2, DomNode n, String x) {
+    static void getCont(List<DomNode> result2, DomNode n, String x2) {
+        String x = digest(x2);
         Iterator it = n.getChildIterator();
         while (it.hasNext()) {
             DomNode c = (DomNode) it.next();
             if (c instanceof DomText) {
                 DomText t = (DomText) c;
                 // System.out.println("X '" + t.getData() + "'");
-                if (x.equals(t.getData()))
+                if (x.equals(digest(t.getData())))
                     result2.add(c);
             } else if (c instanceof HtmlSubmitInput) {
                 HtmlSubmitInput s = (HtmlSubmitInput) c;
-                if (x.equalsIgnoreCase(s.getValueAttribute())) {
+                if (x.equals( digest(s.getValueAttribute()))) {
                     result2.add(s);
                 }
             }
             if (c instanceof HtmlElement) {
                 HtmlElement e = (HtmlElement) c;
-                if (x.equalsIgnoreCase(e.getAttributeValue("title"))) {
-             
+
+                if (x.equals( digest(e.getAttributeValue("title")))) {             
                     result2.add(c);
                 }
             }
