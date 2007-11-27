@@ -8,15 +8,20 @@ import junit.framework.TestCase;
 public class TestSimpleForm extends TestCase {
 
     public void testSelenium() throws Exception {
+        testNiceForm(new SeleniumRobot());
         testBasic(new SeleniumRobot());
     }
     
-    public void testSeleniumIE() throws Exception {
-        testBasic(new SeleniumRobot("*iexplore"));
+    public void testHtmlUnit() throws Exception {
+        testNiceForm(new HtmlUnitRobot());
+        testBasic(new HtmlUnitRobot());
     }
     
-    public void testHtmlUnit() throws Exception {
-        testBasic(new HtmlUnitRobot());
+    private void testNiceForm(Robot robot) throws Exception {
+        robot.open(new URL("http://localhost:8080"));
+        robot.click("Test Nice Form");
+        assertFalse(robot.isChecked("Checkbox 1"));
+        assertTrue(robot.isChecked("Checkbox 2"));
     }
     
     private void testBasic(Robot robot) throws Exception {
@@ -30,4 +35,6 @@ public class TestSimpleForm extends TestCase {
         assertEquals("Two", robot.get("select 7"));
         assertEquals("pass", robot.get("password 8"));
     }
+    
+
 }

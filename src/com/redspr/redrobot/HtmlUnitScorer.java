@@ -8,6 +8,7 @@ import java.util.List;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.DomText;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlLabel;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 
 public class HtmlUnitScorer {
@@ -23,9 +24,7 @@ public class HtmlUnitScorer {
     static private String digest(String p) {
         return p.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
     }
-    
 
-    
     public class Candidate implements Comparable<Candidate> {
         private double score;
 
@@ -82,7 +81,6 @@ public class HtmlUnitScorer {
                     for (Candidate c : result) {
                         if (c.path.contains(match)) {
                             c.score += s;
-
                         }
                     }
                     s = 0.9 * s;
@@ -93,36 +91,46 @@ public class HtmlUnitScorer {
 
         Collections.sort(result);
         // TODO 00 debugging
-         for (Candidate c : result) {
-         System.out.println("Score=" + c.score + " " + c.getNode());
-         }
+        for (Candidate c : result) {
+            System.out.println("Score=" + c.score + " " + c.getNode());
+        }
     }
 
     static void getCont(List<DomNode> result2, DomNode n, String x2) {
-        String x = digest(x2);
+        String x = digest(x2); // XXX doing every time!
         Iterator it = n.getChildIterator();
         while (it.hasNext()) {
             DomNode c = (DomNode) it.next();
+            if (c instanceof HtmlLabel) {
+                HtmlLabel l = (HtmlLabel) c;
+                if (x.equals(digest(l.asText()))) {
+                    DomNode tar = l.getReferencedElement();
+                    if (tar != null) result2.add(tar);
+                }
+            } else 
             if (c instanceof DomText) {
                 DomText t = (DomText) c;
                 // System.out.println("X '" + t.getData() + "'");
-                if (x.equals(digest(t.getData())))
-                    result2.add(c);
+                if (x.equals(digest(t.getData()))) {
+                    
+                        result2.add(c);
+                       
+                  
+                    
+                }
             } else if (c instanceof HtmlSubmitInput) {
                 HtmlSubmitInput s = (HtmlSubmitInput) c;
-                if (x.equals( digest(s.getValueAttribute()))) {
+                if (x.equals(digest(s.getValueAttribute()))) {
                     result2.add(s);
                 }
             }
             if (c instanceof HtmlElement) {
                 HtmlElement e = (HtmlElement) c;
-
-                if (x.equals( digest(e.getAttributeValue("title")))) {             
-                    result2.add(c);
+                if (x.equals(digest(e.getAttributeValue("title")))) {
+                    result2.add(e);
                 }
-            }
-
-            getCont(result2, c, x);
+                getCont(result2, c, x);
+            }   
         }
     }
 

@@ -50,7 +50,7 @@ function anyk(text, docm, n, flag) {
 
     	var matches = new Array();
     	
-	getMatch(matches, docm, text);
+	getMatch(digest(text), docm, matches, docm);
     	for (var i = 0; i < matches.length; i++) {
 		var match = matches[i];
 		var s = 1.0;
@@ -74,17 +74,26 @@ function anyk(text, docm, n, flag) {
 	}
 };
 
-function getMatch(matches, node, text2) {
-	var text = digest(text2);
+function getMatch(text, docm, matches, node) {
 	var kids = node.childNodes;
 
 	for (var i = 0; i < kids.length; i++) {
 		var e = kids[i];
-		if (digest(e.nodeValue) == text || digest(e.title) == text || digest(e.value) == text) {
-			matches.push(e);
-			e.parentNode.style.color='yellow';
+		var match = null;
+		if (digest(e.nodeValue) == text) {
+			match = e;
+			if (e.parentNode.nodeName == 'LABEL') {
+				var id = e.parentNode.getAttribute('for');
+				if (id) {
+					match = docm.getElementById(id);
+				}
+			} 
+		} else if (digest(e.title) == text || digest(e.value) == text) {
+			match = e;
+			//e.parentNode.style.color='yellow';
 		}
-		getMatch(matches, e, text);
+		if (match) matches.push(match);
+		getMatch(text, docm, matches, e);
 	}
 }
 function digest(x) {
