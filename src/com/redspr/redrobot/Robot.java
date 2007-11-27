@@ -1,5 +1,7 @@
 package com.redspr.redrobot;
 
+import java.net.URL;
+
 public interface Robot {
 
     void back();
@@ -14,7 +16,7 @@ public interface Robot {
 
     boolean isChecked(String... x);
 
-    void open(String path);
+    void open(URL url);
 
     void set(String... x);
     

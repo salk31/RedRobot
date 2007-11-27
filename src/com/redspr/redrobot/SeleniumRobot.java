@@ -1,5 +1,6 @@
 package com.redspr.redrobot;
 
+import java.net.URL;
 import java.util.Stack;
 
 import com.thoughtworks.selenium.DefaultSelenium;
@@ -10,13 +11,31 @@ public class SeleniumRobot implements Robot {
     private Stack<String> history = new Stack<String>();
 
     private Selenium sel;
-   
-    public SeleniumRobot() {
-        // TODO 00 need to be able to configure this from outside (bean style)
-        sel = new DefaultSelenium("localhost", 4444, "*firefox",
-                "http://localhost:8080");
 
-        sel.start();
+    private String browserString;
+
+    // private String base = "http://localhost:8080";
+
+    public SeleniumRobot() {
+        this("*firefox");
+    }
+
+    private Selenium getSelenium(URL url) {
+        // TODO 00 only do this if proto/domain/port changed
+        if (sel == null) {
+            String x = url.getProtocol() + "://" + url.getHost() + ":"
+                    + url.getPort();
+
+            sel = new DefaultSelenium("localhost", 4444, browserString, x);
+            sel.start();
+        }
+        return sel;
+    }
+
+    public SeleniumRobot(String browserString2) {
+        this.browserString = browserString2;
+        // TODO 00 need to be able to configure this from outside (bean style)
+
     }
 
     public void back() {
@@ -30,7 +49,8 @@ public class SeleniumRobot implements Robot {
         try {
             sel.waitForPageToLoad("10000");
         } catch (Throwable t) {
-        };
+        }
+        ;
     }
 
     public int findText(String x) {
@@ -43,9 +63,9 @@ public class SeleniumRobot implements Robot {
 
     public String get(String... x) {
         try {
-        return sel.getSelectedLabel(loc(x));
+            return sel.getSelectedLabel(loc(x));
         } catch (SeleniumException ex) {
-            // not a select thing 
+            // not a select thing
             // XXX want nicer way
         }
         return sel.getValue(loc(x)).replaceAll("\\r", "");
@@ -67,8 +87,9 @@ public class SeleniumRobot implements Robot {
         return "fuzzyKey=" + x[0];
     }
 
-    public void open(String path) {
-        sel.open(path);
+    public void open(URL url) {
+        getSelenium(url);
+        sel.open(url.getPath());
         sel.waitForPageToLoad("10000");
     }
 

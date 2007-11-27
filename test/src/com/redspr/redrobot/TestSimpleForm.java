@@ -7,18 +7,21 @@ import junit.framework.TestCase;
 
 public class TestSimpleForm extends TestCase {
 
-    public void testSelenium() {
+    public void testSelenium() throws Exception {
         testBasic(new SeleniumRobot());
     }
     
-    public void testHtmlUnit() {
+    public void testSeleniumIE() throws Exception {
+        testBasic(new SeleniumRobot("*iexplore"));
+    }
+    
+    public void testHtmlUnit() throws Exception {
         testBasic(new HtmlUnitRobot());
     }
     
-    private void testBasic(Robot robot) {
-
-        robot.open("/TestSimpleForm.html");
-
+    private void testBasic(Robot robot) throws Exception {
+        robot.open(new URL("http://localhost:8080"));
+        robot.click("Test Simple Form");
         assertEquals("textBoxByTitle", robot.get("text 1"));
         assertEquals("textareaByTitle", robot.get("text 2"));
         assertTrue(robot.isChecked("checkbox 3"));

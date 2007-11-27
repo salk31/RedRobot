@@ -31,7 +31,9 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
     public HtmlUnitRobot() {
         webClient.setJavaScriptEnabled(false);
     }
-    
+    public Object getImpl() {
+        return webClient;
+    }
     private Bingo CHECKABLE = new Bingo() {
         public boolean match(Object node) {
             if (node instanceof HtmlCheckBoxInput)
@@ -163,10 +165,10 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
         return false;
     }
 
-    public void open(String path) {
+    public void open(URL url) {
         try {
             // TODO 00 config base?
-            page = (HtmlPage) webClient.getPage("http://localhost:8080" + path);
+            page = (HtmlPage) webClient.getPage(url);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
