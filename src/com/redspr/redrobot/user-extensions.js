@@ -74,17 +74,21 @@ function anyk(text, docm, n, flag) {
 	}
 };
 
-function getMatch(matches, node, text) {
+function getMatch(matches, node, text2) {
+	var text = digest(text2);
 	var kids = node.childNodes;
 
 	for (var i = 0; i < kids.length; i++) {
 		var e = kids[i];
-		if (e.nodeValue == text || e.title == text || e.value == text) {
+		if (digest(e.nodeValue) == text || digest(e.title) == text || digest(e.value) == text) {
 			matches.push(e);
 			e.parentNode.style.color='yellow';
 		}
 		getMatch(matches, e, text);
 	}
+}
+function digest(x) {
+	return String(x).replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 }
 
 
