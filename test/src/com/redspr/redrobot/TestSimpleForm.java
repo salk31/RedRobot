@@ -17,7 +17,7 @@ public class TestSimpleForm extends TestCase {
     
     private void testBasic(Robot robot) {
 
-        robot.open("/b/0/TestSimpleForm.html");
+        robot.open("/TestSimpleForm.html");
 
         assertEquals("textBoxByTitle", robot.get("Text 1"));
         assertEquals("textareaByTitle", robot.get("Text 2"));
