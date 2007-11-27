@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="imode2" basedir=".">
+
+	<target name="start" depends="" >
+		<java jar="lib/selenium/selenium-server.jar" fork="true" >
+			<arg value="-userExtensions"/>
+			<arg value="src/com/redspr/redrobot/user-extensions.js"/>
+		</java>
+	</target>
+
+
+
+</project>
