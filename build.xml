@@ -2,6 +2,7 @@
 
 <project name="imode2" basedir=".">
 
+	<!-- NEED firefox-bin in path on linux! -->
 	<target name="start" depends="" >
 		<java jar="lib/selenium/selenium-server.jar" fork="true" >
 			<arg value="-userExtensions"/>
