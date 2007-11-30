@@ -62,7 +62,8 @@ public class SeleniumRobot implements Robot {
     }
 
     public void click(String... x) {
-        history.push(sel.getLocation());
+        history.push(sel.getLocation()); // TODO 00 may not be a page
+                                            // transition!? (not if same URL?)
         sel.click(loc(x));
         try {
             sel.waitForPageToLoad("10000");
@@ -86,7 +87,7 @@ public class SeleniumRobot implements Robot {
             // not a select thing
             // XXX want nicer way
         }
-        return sel.getValue(loc(x)).replaceAll("\\r", "");
+        return sel.getValue(locKey(x)).replaceAll("\\r", "");
     }
 
     public String getConfirmation() {
@@ -94,7 +95,7 @@ public class SeleniumRobot implements Robot {
     }
 
     public boolean isChecked(String... x) {
-        return sel.isChecked(loc(x));
+        return sel.isChecked(locCheckable(x));
     }
 
     private String loc(String... x) {
@@ -103,6 +104,10 @@ public class SeleniumRobot implements Robot {
 
     private String locKey(String... x) {
         return "fuzzyKey=" + x[0];
+    }
+
+    private String locCheckable(String... x) {
+        return "fuzzyCheckable=" + x[0];
     }
 
     public void open(URL url) {
@@ -122,6 +127,12 @@ public class SeleniumRobot implements Robot {
             n[i] = x[i];
         }
         String v = x[x.length - 1];
+        try {
+            sel.select(locKey(n), v);
+            return;
+        } catch (SeleniumException ex) {
+            // XXX log?!?
+        }
         sel.type(locKey(n), v);
     }
 }

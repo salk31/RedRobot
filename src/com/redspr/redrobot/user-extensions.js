@@ -34,10 +34,13 @@ Cand.fn = function(a, b) {
 	return 0;
 }
 PageBot.prototype.locateElementByFuzzy = function(text, docm) {
-	return anyk(text, docm, ["a", "button", "input", "select", "textarea", "td"], false);
+	return anyk(text, docm, ["a", "button", "input", "option", "textarea", "td"], false);
 }
 PageBot.prototype.locateElementByFuzzyKey = function(text, docm) {
-	return anyk(text, docm, ["input", "textarea"], true);
+	return anyk(text, docm, ["input", "textarea", "select"], true);
+}
+PageBot.prototype.locateElementByFuzzyCheckable = function(text, docm) {
+	return anyk(text, docm, ["input"], true); // XXX further narrow to radio and checkbox?
 }
 
 		function xxfart() {
@@ -99,6 +102,7 @@ function getMatch(text, docm, matches, node) {
 		var e = kids[i];
 		var match = null;
 		if (digest(e.nodeValue) == text) {
+		e.parentNode.style.color='yellow';
 			match = e;
 			if (e.parentNode.nodeName == 'LABEL') {
 				var id = e.parentNode.getAttribute('for');
@@ -108,7 +112,7 @@ function getMatch(text, docm, matches, node) {
 			} 
 		} else if (digest(e.title) == text || digest(e.value) == text) {
 			match = e;
-			//e.parentNode.style.color='yellow';
+			
 		}
 		if (match) matches.push(match);
 		getMatch(text, docm, matches, e);
