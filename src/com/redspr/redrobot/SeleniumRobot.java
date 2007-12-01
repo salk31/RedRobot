@@ -63,13 +63,18 @@ public class SeleniumRobot implements Robot {
 
     public void click(String... x) {
         history.push(sel.getLocation()); // TODO 00 may not be a page
-                                            // transition!? (not if same URL?)
-        sel.click(loc(x));
+        try { 
+            sel.select(locClickable(x), x[x.length - 1]);
+            return;
+        } catch (Throwable t) {
+         // TODO 00?
+        }
+        sel.click(locClickable(x));
+
         try {
             sel.waitForPageToLoad("10000");
         } catch (Throwable t) {
         }
-        ;
     }
 
     public int findText(String x) {
@@ -82,11 +87,14 @@ public class SeleniumRobot implements Robot {
 
     public String get(String... x) {
         try {
-            return sel.getSelectedLabel(loc(x));
+            return sel.getSelectedLabel(locKey(x));
         } catch (SeleniumException ex) {
+            ex.printStackTrace();
             // not a select thing
             // XXX want nicer way
+            
         }
+        System.out.println("NOT SELECT " + x[0]);
         return sel.getValue(locKey(x)).replaceAll("\\r", "");
     }
 
@@ -98,8 +106,8 @@ public class SeleniumRobot implements Robot {
         return sel.isChecked(locCheckable(x));
     }
 
-    private String loc(String... x) {
-        return "fuzzy=" + x[0];
+    private String locClickable(String... x) {
+        return "fuzzyClickable=" + x[0];
     }
 
     private String locKey(String... x) {
@@ -108,6 +116,10 @@ public class SeleniumRobot implements Robot {
 
     private String locCheckable(String... x) {
         return "fuzzyCheckable=" + x[0];
+    }
+    
+    private String locOption(String... x) {
+        return "fuzzyOption=" + x[0];
     }
 
     public void open(URL url) {

@@ -33,14 +33,14 @@ Cand.fn = function(a, b) {
 	if (a.score > b.score) return -1;
 	return 0;
 }
-PageBot.prototype.locateElementByFuzzy = function(text, docm) {
-	return anyk(text, docm, ["a", "button", "input", "option", "textarea", "td"], false);
+PageBot.prototype.locateElementByFuzzyClickable = function(text, docm) {
+	return anyk(text, docm, ["a", "button", "input", "select", "textarea", "td"], false);
 }
 PageBot.prototype.locateElementByFuzzyKey = function(text, docm) {
 	return anyk(text, docm, ["input", "textarea", "select"], true);
 }
 PageBot.prototype.locateElementByFuzzyCheckable = function(text, docm) {
-	return anyk(text, docm, ["input"], true); // XXX further narrow to radio and checkbox?
+	return anyk(text, docm, ["input"], false); // XXX further narrow to radio and checkbox?
 }
 
 		function xxfart() {
@@ -102,7 +102,7 @@ function getMatch(text, docm, matches, node) {
 		var e = kids[i];
 		var match = null;
 		if (digest(e.nodeValue) == text) {
-		e.parentNode.style.color='yellow';
+		//e.parentNode.style.color='yellow';
 			match = e;
 			if (e.parentNode.nodeName == 'LABEL') {
 				var id = e.parentNode.getAttribute('for');
