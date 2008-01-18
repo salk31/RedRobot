@@ -59,20 +59,22 @@ function anyk(text, docm, n, flag) {
 		xxfart.confirm = w.confirm;	
 	}
 
-    	var r = new Array();    
+    var r = new Array();    
 
-    	for (var i = 0; i < n.length; i++) {
+    for (var i = 0; i < n.length; i++) {
 		var allt = docm.getElementsByTagName(n[i]);
 		for (var j = 0; j < allt.length; j++) {
 			if (flag && allt[j].type=='radio') continue;
             	r.push(new Cand(allt[j]));
 		}
-    	}
+    }
 
-    	var matches = new Array();
+    var matches = new Array();
     	
 	getMatch(digest(text), docm, matches, docm);
-    	for (var i = 0; i < matches.length; i++) {
+	if (matches.length == 0) return null;
+	
+    for (var i = 0; i < matches.length; i++) {
 		var match = matches[i];
 		var s = 1.0;
 		while (match != null) {
