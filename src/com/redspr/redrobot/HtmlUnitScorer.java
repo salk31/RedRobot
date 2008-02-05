@@ -31,7 +31,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 
 public class HtmlUnitScorer {
 
-    final List<Candidate> result = new ArrayList<Candidate>();
+    final List<Candidate> candidates = new ArrayList<Candidate>();
 
     final Bingo bingo;
 
@@ -69,6 +69,10 @@ public class HtmlUnitScorer {
         public DomNode getNode() {
             return path.get(0);
         }
+        
+        public String toString() {
+            return path.get(0).toString();
+        }
     }
 
     HtmlUnitScorer(Bingo bingo2, DomNode start, String[] x) {
@@ -78,13 +82,13 @@ public class HtmlUnitScorer {
         Iterator<DomNode> it = start.getAllHtmlChildElements();
         while (it.hasNext()) {
             DomNode c = it.next();
-            if (bingo2.match(c)) {
-                result.add(new Candidate(c));
+            if (bingo.match(c)) {
+                candidates.add(new Candidate(c));
             }
         }
 
         // find matches and score candidates
-
+        
         for (int i = 0; i < x.length; i++) {
             List<DomNode> matches = new ArrayList<DomNode>();
             getCont(matches, start, x[i]);
@@ -92,26 +96,29 @@ public class HtmlUnitScorer {
             if (matches.size() == 0) {
                 throw new RuntimeException("No match for " + x[i]);
             }
-            for (DomNode match : matches) {
-                // System.out.println("MATCH " + match);
-                double s = 1.0;
-                while (match != null) {
-                    for (Candidate c : result) {
+        
+            for (Candidate c : candidates) {
+                double max = 0.0;
+                for (DomNode match : matches) {
+                    double s = 1.0;
+                    while (match != null) {
                         if (c.path.contains(match)) {
-                            c.score += s;
+                            if (s >  max) max = s;
+                            break;
                         }
+                        s = 0.9 * s;
+                        match = match.getParentDomNode();
                     }
-                    s = 0.9 * s;
-                    match = match.getParentDomNode();
                 }
+                c.score = max;
             }
         }
 
-        Collections.sort(result);
+        Collections.sort(candidates);
         // TODO 00 debugging
-        for (Candidate c : result) {
-            System.out.println("Score=" + c.score + " " + c.getNode());
-        }
+        //for (Candidate c : candidates) {
+        //    System.out.println("Score=" + c.score + " " + c.getNode());
+        //}
     }
 
     static void getCont(List<DomNode> result2, DomNode n, String x2) {
@@ -123,18 +130,14 @@ public class HtmlUnitScorer {
                 HtmlLabel l = (HtmlLabel) c;
                 if (x.equals(digest(l.asText()))) {
                     DomNode tar = l.getReferencedElement();
-                    if (tar != null) result2.add(tar);
+                    if (tar != null)
+                        result2.add(tar);
                 }
-            } else 
-            if (c instanceof DomText) {
+            } else if (c instanceof DomText) {
                 DomText t = (DomText) c;
                 // System.out.println("X '" + t.getData() + "'");
                 if (x.equals(digest(t.getData()))) {
-                    
-                        result2.add(c);
-                       
-                  
-                    
+                    result2.add(c);
                 }
             } else if (c instanceof HtmlSubmitInput) {
                 HtmlSubmitInput s = (HtmlSubmitInput) c;
@@ -148,13 +151,13 @@ public class HtmlUnitScorer {
                     result2.add(e);
                 }
                 getCont(result2, c, x);
-            }   
+            }
         }
     }
 
     public DomNode getBest() {
-        if (result.size() > 0) {
-            return result.iterator().next().getNode();
+        if (candidates.size() > 0) {
+            return candidates.iterator().next().getNode();
         } else {
             throw new RuntimeException("No match");
         }
