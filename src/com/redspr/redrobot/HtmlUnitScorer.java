@@ -110,7 +110,7 @@ public class HtmlUnitScorer {
                         match = match.getParentDomNode();
                     }
                 }
-                c.score = max;
+                c.score += max;
             }
         }
 
