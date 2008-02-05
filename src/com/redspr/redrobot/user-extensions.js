@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with REDROBOT.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 function Cand(e) {
 	this.node = e;
 	this.score = 0.0;
@@ -27,6 +28,9 @@ Cand.prototype.isDesc=function(t) {
 		x = x.parentNode;
 	}
 	return false;
+}
+Cand.prototype.add=function(node, score) {
+	match.push(new Hit(node, score));
 }
 Cand.fn = function(a, b) {
 	if (a.score < b.score) return 1;
@@ -50,8 +54,8 @@ PageBot.prototype.locateElementByFuzzyCheckable = function(text, docm) {
 			}
 		}
 
-function anyk(text, docm, n, flag) {
-
+function anyk(argx, docm, n, flag) {
+	var patterns = argx.split(',');
 	var w = window.frames[0];
 	if (w.document.body.onbeforeunload !== xxfart) {
 		xxfart.orig = w.document.body.onbeforeunload;
@@ -59,41 +63,51 @@ function anyk(text, docm, n, flag) {
 		xxfart.confirm = w.confirm;	
 	}
 
-    var r = new Array();    
+	// work out all candidate elements
+    var cands = new Array();    
 
     for (var i = 0; i < n.length; i++) {
 		var allt = docm.getElementsByTagName(n[i]);
 		for (var j = 0; j < allt.length; j++) {
 			if (flag && allt[j].type=='radio') continue;
-            	r.push(new Cand(allt[j]));
+            	cands.push(new Cand(allt[j]));
 		}
     }
 
-    var matches = new Array();
+	for (var p = 0; p < patterns.length; p++) { // fake loop for patterns
+	    var text = patterns[p];
+	    
+		// work out matching elements
+    	var matches = new Array();
     	
-	getMatch(digest(text), docm, matches, docm);
-	if (matches.length == 0) return null;
+		getMatch(digest(text), docm, matches, docm);
+		if (matches.length == 0) return null;
 	
-    for (var i = 0; i < matches.length; i++) {
-		var match = matches[i];
-		var s = 1.0;
-		while (match != null) {
-			for (var j = 0; j < r.length; j++) {
-				var c = r[j];
-				if (c.isDesc(match)) {
-					c.score=c.score+s;
-				}
-			}
-
-			match = match.parentNode;
-	      	s = s * 0.9;
+		// assign matches to candidates
+		for (var j = 0; j < cands.length; j++) {
+			var c = cands[j];
+			var max = 0;
+			for (var i = 0; i < matches.length; i++) {
+				var match = matches[i];
+				var s = 1.0;
+				while (match != null) {
+					if (c.isDesc(match)) {
+						if (s > max) max = s;
+						break;
+					}
+					match = match.parentNode;
+	      			s = s * 0.9;
+	      		}
+			}		
+			c.score = c.score + max;
 		}	
 	}
-	r.sort(Cand.fn);
-	if (r.length == 0) {
-    		return null;
+	
+	cands.sort(Cand.fn);
+	if (cands.length == 0) {
+    	return null;
 	} else {
-		return r[0].node;
+		return cands[0].node;
 	}
 };
 
