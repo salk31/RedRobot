@@ -39,7 +39,7 @@ public class SeleniumRobot implements Robot {
     }
 
     private Selenium getSelenium(URL url) {
-        // TODO 00 only do this if proto/domain/port changed
+        // TODO 00 do this if proto/domain/port changed
         if (sel == null) {
             String x = url.getProtocol() + "://" + url.getHost() + ":"
                     + url.getPort();
@@ -53,7 +53,6 @@ public class SeleniumRobot implements Robot {
     public SeleniumRobot(String browserString2) {
         this.browserString = browserString2;
         // TODO 00 need to be able to configure this from outside (bean style)
-
     }
 
     public void back() {
@@ -63,6 +62,7 @@ public class SeleniumRobot implements Robot {
 
     public void click(String... x) {
         history.push(sel.getLocation()); // TODO 00 may not be a page
+
         try { 
             sel.select(locClickable(x), x[x.length - 1]);
             return;
@@ -107,21 +107,26 @@ public class SeleniumRobot implements Robot {
     }
 
     private String locClickable(String... x) {
-        return "fuzzyClickable=" + x[0];
+        return "fuzzyClickable=" + escape(x);
     }
 
     private String locKey(String... x) {
-        return "fuzzyKey=" + x[0];
+        return "fuzzyKey=" + escape(x);
     }
 
     private String locCheckable(String... x) {
-        return "fuzzyCheckable=" + x[0];
-    }
-    
-    private String locOption(String... x) {
-        return "fuzzyOption=" + x[0];
+        return "fuzzyCheckable=" + escape(x);
     }
 
+    private static String escape(String... x) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < x.length; i++) {
+            if (i > 0) sb.append(',');
+            sb.append(x[i]);
+        }
+        return sb.toString();
+    }
+    
     public void open(URL url) {
         getSelenium(url);
         sel.open(url.getPath());
