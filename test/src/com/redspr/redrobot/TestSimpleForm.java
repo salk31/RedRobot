@@ -8,13 +8,27 @@ import junit.framework.TestCase;
 public class TestSimpleForm extends TestCase {
 
     public void testSelenium() throws Exception {
+        testAmbiguousForm(new SeleniumRobot());
         testNiceForm(new SeleniumRobot());
-        testBasic(new SeleniumRobot());
+        testSimpleForm(new SeleniumRobot());
     }
     
     public void testHtmlUnit() throws Exception {
+        testAmbiguousForm(new HtmlUnitRobot());
         testNiceForm(new HtmlUnitRobot());
-        testBasic(new HtmlUnitRobot());
+        testSimpleForm(new HtmlUnitRobot());
+    }
+    
+    private void testAmbiguousForm(Robot robot) throws Exception {
+        robot.open(new URL("http://localhost:8080"));
+        robot.click("Test Ambiguous Form");
+        
+        assertEquals("textBoxByTitle", robot.get("First bit", "Field 1"));
+        assertEquals("Two", robot.get("Second bit", "Field 1"));
+        assertEquals("textareaByTitle", robot.get("First bit", "Field 2"));
+        assertEquals("pass", robot.get("Second bit", "Field 2"));
+        
+        assertEquals("yestext", robot.get("Second bit", "Yes"));
     }
     
     private void testNiceForm(Robot robot) throws Exception {
@@ -24,7 +38,7 @@ public class TestSimpleForm extends TestCase {
         assertTrue(robot.isChecked("Checkbox 2"));
     }
     
-    private void testBasic(Robot robot) throws Exception {
+    private void testSimpleForm(Robot robot) throws Exception {
         robot.open(new URL("http://localhost:8080"));
         robot.click("Test Simple Form");
         assertEquals("textBoxByTitle", robot.get("text 1"));
@@ -37,6 +51,4 @@ public class TestSimpleForm extends TestCase {
         assertEquals("Three", robot.get("select 7"));
         assertEquals("pass", robot.get("password 8"));
     }
-    
-
 }
