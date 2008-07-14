@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="imode2" basedir=".">
+<project name="imode2" basedir="." default="start">
 
 	<!-- NEED firefox-bin in path on linux! -->
 	<target name="start" depends="" >
 		<java jar="lib/selenium/selenium-server.jar" fork="true" >
+			 <env key="PATH" path="${env.PATH}:/usr/lib/firefox"/>
 			<arg value="-userExtensions"/>
 			<arg value="src/com/redspr/redrobot/user-extensions.js"/>
 		</java>
