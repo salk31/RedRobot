@@ -38,13 +38,16 @@ Cand.fn = function(a, b) {
 	return 0;
 }
 PageBot.prototype.locateElementByFuzzyClickable = function(text, docm) {
-	return anyk(text, docm, ["a", "button", "input", "select", "textarea", "td"], false);
+	return anyk(text, docm, ["a", null,  "button", null, "input", null, "select", null, "textarea", null, "td", null]);
+}
+function fnTextOnly(elmt) {
+	return elmt.type == 'text' || elmt.type == 'password';
 }
 PageBot.prototype.locateElementByFuzzyKey = function(text, docm) {
-	return anyk(text, docm, ["input", "textarea", "select"], true);
+	return anyk(text, docm, ["input", fnTextOnly, "textarea", null, "select", null]);
 }
 PageBot.prototype.locateElementByFuzzyCheckable = function(text, docm) {
-	return anyk(text, docm, ["input"], false); // XXX further narrow to radio and checkbox?
+	return anyk(text, docm, ["input", null]); // XXX further narrow to radio and checkbox?
 }
 
 		function xxfart() {
@@ -54,7 +57,7 @@ PageBot.prototype.locateElementByFuzzyCheckable = function(text, docm) {
 			}
 		}
 
-function anyk(argx, docm, n, flag) {
+function anyk(argx, docm, n) {
 	var patterns = argx.split(',');
 	var w = window.frames[0];
 	if (w.document.body.onbeforeunload !== xxfart) {
@@ -66,11 +69,12 @@ function anyk(argx, docm, n, flag) {
 	// work out all candidate elements
     var cands = new Array();    
 
-    for (var i = 0; i < n.length; i++) {
+    for (var i = 0; i < n.length; i+=2) {
 		var allt = docm.getElementsByTagName(n[i]);
 		for (var j = 0; j < allt.length; j++) {
-			if (flag && allt[j].type=='radio') continue;
+			if (n[i + 1] == null || n[i + 1](allt[j])) {
             	cands.push(new Cand(allt[j]));
+            }
 		}
     }
 
