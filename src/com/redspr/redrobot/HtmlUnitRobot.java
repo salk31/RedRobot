@@ -126,7 +126,7 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
     }
 
     public int findText(String x) {
-        List<DomNode> result = new ArrayList();
+        List<DomNode> result = new ArrayList<DomNode>();
         HtmlUnitScorer.getCont(result, page.getDocumentHtmlElement(), x);
         return result.size();
     }
@@ -185,7 +185,6 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
 
     public void open(URL url) {
         try {
-            // TODO 00 config base?
             page = (HtmlPage) webClient.getPage(url);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
