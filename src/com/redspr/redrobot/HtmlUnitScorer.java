@@ -126,9 +126,9 @@ public class HtmlUnitScorer {
 
   static void getCont(List<DomNode> result2, DomNode n, String x2) {
     String x = digest(x2); // XXX doing every time!
-    Iterator it = n.getChildIterator();
+    Iterator<DomNode> it = n.getChildIterator();
     while (it.hasNext()) {
-      DomNode c = (DomNode) it.next();
+      DomNode c = it.next();
       if (c instanceof HtmlLabel) {
         HtmlLabel l = (HtmlLabel) c;
         if (x.equals(digest(l.asText()))) {
