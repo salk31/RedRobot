@@ -32,8 +32,6 @@ public class SeleniumRobot implements Robot {
 
   private String browserString;
 
-  // private String base = "http://localhost:8080";
-
   public SeleniumRobot() {
     this("*firefox");
   }
