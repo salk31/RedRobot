@@ -1,6 +1,6 @@
 /*
  * Copyright 2007 Sam Hough
- * 
+ *
  * This file is part of REDROBOT.
  *
  * REDROBOT is free software: you can redistribute it and/or modify
@@ -22,21 +22,21 @@ import java.net.URL;
 
 public interface Robot {
 
-    void back();
+  void back();
 
-    void click(String... x);
+  void click(String... x);
 
-    int findText(String x);
+  int findText(String x);
 
-    String get(String... x);
+  String get(String... x);
 
-    String getConfirmation();
+  String getConfirmation();
 
-    boolean isChecked(String... x);
+  boolean isChecked(String... x);
 
-    void open(URL url);
+  void open(URL url);
 
-    void set(String... x);
-    
-    // TODO 04 a dump/debug method?
+  void set(String... x);
+
+  // TODO 04 a dump/debug method?
 }

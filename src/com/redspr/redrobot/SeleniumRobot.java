@@ -1,6 +1,6 @@
 /*
  * Copyright 2007 Sam Hough
- * 
+ *
  * This file is part of REDROBOT.
  *
  * REDROBOT is free software: you can redistribute it and/or modify
@@ -26,130 +26,139 @@ import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.SeleniumException;
 
 public class SeleniumRobot implements Robot {
-    private Stack<String> history = new Stack<String>();
+  private Stack<String> history = new Stack<String>();
 
-    private Selenium sel;
+  private Selenium sel;
 
-    private String browserString;
+  private String browserString;
 
-    // private String base = "http://localhost:8080";
+  // private String base = "http://localhost:8080";
 
-    public SeleniumRobot() {
-        this("*firefox");
+  public SeleniumRobot() {
+    this("*firefox");
+  }
+
+  private Selenium getSelenium(URL url) {
+    // TODO 00 do this if proto/domain/port changed
+    if (sel == null) {
+      String x = url.getProtocol() + "://" + url.getHost() + ":"
+          + url.getPort();
+
+      sel = new DefaultSelenium("localhost", 4444, browserString, x);
+      sel.start();
     }
+    return sel;
+  }
 
-    private Selenium getSelenium(URL url) {
-        // TODO 00 do this if proto/domain/port changed
-        if (sel == null) {
-            String x = url.getProtocol() + "://" + url.getHost() + ":"
-                    + url.getPort();
+  public SeleniumRobot(String browserString2) {
+    this.browserString = browserString2;
+    // TODO 00 need to be able to configure this from outside (bean style)
+  }
 
-            sel = new DefaultSelenium("localhost", 4444, browserString, x);
-            sel.start();
-        }
-        return sel;
+  @Override
+  public void back() {
+    sel.open(history.pop());
+    // sel.waitForPageToLoad("10000");
+  }
+
+  @Override
+  public void click(String... x) {
+    history.push(sel.getLocation()); // TODO 00 may not be a page
+
+    try {
+      sel.select(locClickable(x), x[x.length - 1]);
+      return;
+    } catch (Throwable t) {
+      // TODO 00?
     }
+    sel.click(locClickable(x));
 
-    public SeleniumRobot(String browserString2) {
-        this.browserString = browserString2;
-        // TODO 00 need to be able to configure this from outside (bean style)
+    try {
+      sel.waitForPageToLoad("10000");
+    } catch (Throwable t) {
     }
+  }
 
-    public void back() {
-        sel.open(history.pop());
-        // sel.waitForPageToLoad("10000");
+  @Override
+  public int findText(String x) {
+    if (sel.isElementPresent("xpath=//node()[text()='" + x + "']")) {
+      return 1;
+    } else {
+      return 0;
     }
+  }
 
-    public void click(String... x) {
-        history.push(sel.getLocation()); // TODO 00 may not be a page
+  @Override
+  public String get(String... x) {
+    try {
+      return sel.getSelectedLabel(locKey(x));
+    } catch (SeleniumException ex) {
+      ex.printStackTrace();
+      // not a select thing
+      // XXX want nicer way
 
-        try { 
-            sel.select(locClickable(x), x[x.length - 1]);
-            return;
-        } catch (Throwable t) {
-         // TODO 00?
-        }
-        sel.click(locClickable(x));
-
-        try {
-            sel.waitForPageToLoad("10000");
-        } catch (Throwable t) {
-        }
     }
+    //System.out.println("NOT SELECT " + x[0]);
+    return sel.getValue(locKey(x)).replaceAll("\\r", "");
+  }
 
-    public int findText(String x) {
-        if (sel.isElementPresent("xpath=//node()[text()='" + x + "']")) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
+  @Override
+  public String getConfirmation() {
+    return sel.getConfirmation();
+  }
 
-    public String get(String... x) {
-        try {
-            return sel.getSelectedLabel(locKey(x));
-        } catch (SeleniumException ex) {
-            ex.printStackTrace();
-            // not a select thing
-            // XXX want nicer way
-            
-        }
-        System.out.println("NOT SELECT " + x[0]);
-        return sel.getValue(locKey(x)).replaceAll("\\r", "");
-    }
+  @Override
+  public boolean isChecked(String... x) {
+    return sel.isChecked(locCheckable(x));
+  }
 
-    public String getConfirmation() {
-        return sel.getConfirmation();
-    }
+  private String locClickable(String... x) {
+    return "fuzzyClickable=" + escape(x);
+  }
 
-    public boolean isChecked(String... x) {
-        return sel.isChecked(locCheckable(x));
-    }
+  private String locKey(String... x) {
+    return "fuzzyKey=" + escape(x);
+  }
 
-    private String locClickable(String... x) {
-        return "fuzzyClickable=" + escape(x);
-    }
+  private String locCheckable(String... x) {
+    return "fuzzyCheckable=" + escape(x);
+  }
 
-    private String locKey(String... x) {
-        return "fuzzyKey=" + escape(x);
+  private static String escape(String... x) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < x.length; i++) {
+      if (i > 0)
+        sb.append(',');
+      sb.append(x[i]);
     }
+    return sb.toString();
+  }
 
-    private String locCheckable(String... x) {
-        return "fuzzyCheckable=" + escape(x);
-    }
+  @Override
+  public void open(URL url) {
+    getSelenium(url);
+    sel.open(url.getPath());
+    sel.waitForPageToLoad("10000");
+  }
 
-    private static String escape(String... x) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < x.length; i++) {
-            if (i > 0) sb.append(',');
-            sb.append(x[i]);
-        }
-        return sb.toString();
-    }
-    
-    public void open(URL url) {
-        getSelenium(url);
-        sel.open(url.getPath());
-        sel.waitForPageToLoad("10000");
-    }
+  public void selenium(String x) {
+    sel.fireEvent(x, "mousedown");
+    sel.fireEvent(x, "mouseup");
+  }
 
-    public void selenium(String x) {
-        sel.fireEvent(x, "mousedown");
-        sel.fireEvent(x, "mouseup");
+  @Override
+  public void set(String... x) {
+    String[] n = new String[x.length - 1];
+    for (int i = 0; i < n.length; i++) {
+      n[i] = x[i];
     }
-
-    public void set(String... x) {
-        String[] n = new String[x.length - 1];
-        for (int i = 0; i < n.length; i++) {
-            n[i] = x[i];
-        }
-        String v = x[x.length - 1];
-        try {
-            sel.select(locKey(n), v);
-            return;
-        } catch (SeleniumException ex) {
-            // XXX log?!?
-        }
-        sel.type(locKey(n), v);
+    String v = x[x.length - 1];
+    try {
+      sel.select(locKey(n), v);
+      return;
+    } catch (SeleniumException ex) {
+      // XXX log?!?
     }
+    sel.type(locKey(n), v);
+  }
 }

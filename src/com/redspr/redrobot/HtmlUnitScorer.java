@@ -1,6 +1,6 @@
 /*
  * Copyright 2007 Sam Hough
- * 
+ *
  * This file is part of REDROBOT.
  *
  * REDROBOT is free software: you can redistribute it and/or modify
@@ -31,135 +31,138 @@ import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 
 public class HtmlUnitScorer {
 
-    final List<Candidate> candidates = new ArrayList<Candidate>();
+  final List<Candidate> candidates = new ArrayList<Candidate>();
 
-    final Bingo bingo;
+  final Bingo bingo;
 
-    public interface Bingo {
-        boolean match(Object node);
+  public interface Bingo {
+    boolean match(Object node);
+  }
+
+  static private String digest(String p) {
+    return p.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+  }
+
+  public class Candidate implements Comparable<Candidate> {
+    private double score;
+
+    private List<DomNode> path = new ArrayList<DomNode>();
+
+    Candidate(DomNode node2) {
+      DomNode p = node2;
+      this.score = 0;
+      while (p != null) {
+        path.add(p);
+
+        p = p.getParentDomNode();
+      }
     }
 
-    static private String digest(String p) {
-        return p.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+    @Override
+    public int compareTo(Candidate b) {
+      if (this.score < b.score)
+        return 1;
+      if (this.score > b.score)
+        return -1;
+      return 0;
     }
 
-    public class Candidate implements Comparable<Candidate> {
-        private double score;
-
-        private List<DomNode> path = new ArrayList<DomNode>();
-
-        Candidate(DomNode node2) {
-            DomNode p = node2;
-            this.score = 0;
-            while (p != null) {
-                path.add(p);
-
-                p = p.getParentDomNode();
-            }
-        }
-
-        public int compareTo(Candidate b) {
-            if (this.score < b.score)
-                return 1;
-            if (this.score > b.score)
-                return -1;
-            return 0;
-        }
-
-        public DomNode getNode() {
-            return path.get(0);
-        }
-        
-        public String toString() {
-            return path.get(0).toString();
-        }
+    public DomNode getNode() {
+      return path.get(0);
     }
 
-    HtmlUnitScorer(Bingo bingo2, DomNode start, String[] x) {
-        this.bingo = bingo2;
-        // System.out.println("START " + start.asXml());
-        // create candidates
-        Iterator<DomNode> it = start.getAllHtmlChildElements();
-        while (it.hasNext()) {
-            DomNode c = it.next();
-            if (bingo.match(c)) {
-                candidates.add(new Candidate(c));
-            }
-        }
+    @Override
+    public String toString() {
+      return path.get(0).toString();
+    }
+  }
 
-        // find matches and score candidates
-        
-        for (int i = 0; i < x.length; i++) {
-            List<DomNode> matches = new ArrayList<DomNode>();
-            getCont(matches, start, x[i]);
-
-            if (matches.size() == 0) {
-                throw new RuntimeException("No match for " + x[i]);
-            }
-        
-            for (Candidate c : candidates) {
-                double max = 0.0;
-                for (DomNode match : matches) {
-                    double s = 1.0;
-                    while (match != null) {
-                        if (c.path.contains(match)) {
-                            if (s >  max) max = s;
-                            break;
-                        }
-                        s = 0.9 * s;
-                        match = match.getParentDomNode();
-                    }
-                }
-                c.score += max;
-            }
-        }
-
-        Collections.sort(candidates);
-        // TODO 00 debugging
-        //for (Candidate c : candidates) {
-        //    System.out.println("Score=" + c.score + " " + c.getNode());
-        //}
+  HtmlUnitScorer(Bingo bingo2, DomNode start, String[] x) {
+    this.bingo = bingo2;
+    // System.out.println("START " + start.asXml());
+    // create candidates
+    Iterator<DomNode> it = start.getAllHtmlChildElements();
+    while (it.hasNext()) {
+      DomNode c = it.next();
+      if (bingo.match(c)) {
+        candidates.add(new Candidate(c));
+      }
     }
 
-    static void getCont(List<DomNode> result2, DomNode n, String x2) {
-        String x = digest(x2); // XXX doing every time!
-        Iterator it = n.getChildIterator();
-        while (it.hasNext()) {
-            DomNode c = (DomNode) it.next();
-            if (c instanceof HtmlLabel) {
-                HtmlLabel l = (HtmlLabel) c;
-                if (x.equals(digest(l.asText()))) {
-                    DomNode tar = l.getReferencedElement();
-                    if (tar != null)
-                        result2.add(tar);
-                }
-            } else if (c instanceof DomText) {
-                DomText t = (DomText) c;
-                // System.out.println("X '" + t.getData() + "'");
-                if (x.equals(digest(t.getData()))) {
-                    result2.add(c);
-                }
-            } else if (c instanceof HtmlSubmitInput) {
-                HtmlSubmitInput s = (HtmlSubmitInput) c;
-                if (x.equals(digest(s.getValueAttribute()))) {
-                    result2.add(s);
-                }
+    // find matches and score candidates
+
+    for (int i = 0; i < x.length; i++) {
+      List<DomNode> matches = new ArrayList<DomNode>();
+      getCont(matches, start, x[i]);
+
+      if (matches.size() == 0) {
+        throw new RuntimeException("No match for " + x[i]);
+      }
+
+      for (Candidate c : candidates) {
+        double max = 0.0;
+        for (DomNode match : matches) {
+          double s = 1.0;
+          while (match != null) {
+            if (c.path.contains(match)) {
+              if (s > max)
+                max = s;
+              break;
             }
-            if (c instanceof HtmlElement) {
-                HtmlElement e = (HtmlElement) c;
-                if (x.equals(digest(e.getAttributeValue("title")))) {
-                    result2.add(e);
-                }
-                getCont(result2, c, x);
-            }
+            s = 0.9 * s;
+            match = match.getParentDomNode();
+          }
         }
+        c.score += max;
+      }
     }
 
-    public DomNode getBest() {
-        if (candidates.size() > 0) {
-            return candidates.iterator().next().getNode();
-        } else {
-            throw new RuntimeException("No match");
+    Collections.sort(candidates);
+    // TODO 00 debugging
+    // for (Candidate c : candidates) {
+    // System.out.println("Score=" + c.score + " " + c.getNode());
+    // }
+  }
+
+  static void getCont(List<DomNode> result2, DomNode n, String x2) {
+    String x = digest(x2); // XXX doing every time!
+    Iterator it = n.getChildIterator();
+    while (it.hasNext()) {
+      DomNode c = (DomNode) it.next();
+      if (c instanceof HtmlLabel) {
+        HtmlLabel l = (HtmlLabel) c;
+        if (x.equals(digest(l.asText()))) {
+          DomNode tar = l.getReferencedElement();
+          if (tar != null)
+            result2.add(tar);
         }
+      } else if (c instanceof DomText) {
+        DomText t = (DomText) c;
+        // System.out.println("X '" + t.getData() + "'");
+        if (x.equals(digest(t.getData()))) {
+          result2.add(c);
+        }
+      } else if (c instanceof HtmlSubmitInput) {
+        HtmlSubmitInput s = (HtmlSubmitInput) c;
+        if (x.equals(digest(s.getValueAttribute()))) {
+          result2.add(s);
+        }
+      }
+      if (c instanceof HtmlElement) {
+        HtmlElement e = (HtmlElement) c;
+        if (x.equals(digest(e.getAttributeValue("title")))) {
+          result2.add(e);
+        }
+        getCont(result2, c, x);
+      }
     }
+  }
+
+  public DomNode getBest() {
+    if (candidates.size() > 0) {
+      return candidates.iterator().next().getNode();
+    } else {
+      throw new RuntimeException("No match");
+    }
+  }
 }
