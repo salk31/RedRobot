@@ -165,13 +165,13 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
       return sb.toString();
     }
 
-    // TODO 00 blowup
+    // TODO 05 blowup
     return null;
   }
 
   @Override
   public String getConfirmation() {
-    return lastConfirm; // TODO 00 clear on transition (make part of page)
+    return lastConfirm; // TODO 05 clear on transition (make part of page)
   }
 
   @Override
@@ -191,7 +191,7 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
     if (elmt instanceof HtmlRadioButtonInput) {
       return ((HtmlRadioButtonInput) elmt).isChecked();
     }
-    // TODO 00 blowup
+    // TODO 05 blowup
     return false;
   }
 
@@ -220,6 +220,6 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
       ((HtmlTextArea) o).setText(v);
     }
 
-    // TODO 00 blowup
+    // TODO 05 blowup
   }
 }

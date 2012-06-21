@@ -118,7 +118,7 @@ public class HtmlUnitScorer {
     }
 
     Collections.sort(candidates);
-    // TODO 00 debugging
+    // TODO 05 debugging
     // for (Candidate c : candidates) {
     // System.out.println("Score=" + c.score + " " + c.getNode());
     // }

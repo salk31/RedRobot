@@ -40,20 +40,19 @@ public class WebDriverRobot implements Robot {
 
   public WebDriverRobot(WebDriver webDriver2) {
     this.webDriver = webDriver2;
-    // TODO 00 need to be able to configure this from outside (bean style)
-try {
-    InputStream is = getClass().getResourceAsStream("/webDriver.js");
-    ByteArrayOutputStream boas = new ByteArrayOutputStream();
-    byte[] buff = new byte[2048];
-    int len;
-    while ((len = is.read(buff)) > 0) {
+
+    try {
+      InputStream is = getClass().getResourceAsStream("/webDriver.js");
+      ByteArrayOutputStream boas = new ByteArrayOutputStream();
+      byte[] buff = new byte[2048];
+      int len;
+      while ((len = is.read(buff)) > 0) {
         boas.write(buff, 0, len);
+      }
+      SCRIPT = boas.toString();
+    } catch (IOException ex) {
+      throw new RuntimeException("Unable to read script" , ex);
     }
-    SCRIPT = boas.toString();
-} catch (IOException ex) {
-    ex.printStackTrace();
-    throw new RuntimeException("Unable to read script" , ex);
-}
   }
 
   @Override
@@ -63,17 +62,7 @@ try {
 
   @Override
   public void click(String... x) {
-    // TODO 00 history.push(sel.getLocation()); // TODO 00 may not be a page
-
-//    try {
-//        webDriver.findElement(By.linkText(x[0])).click();
-//      // TODO 00 sel.select(locClickable(x), x[x.length - 1]);
-//      return;
-//    } catch (Throwable t) {
-//      // TODO 00?
-//    }
     locClickable(x).click();
-
   }
 
   @Override
@@ -153,7 +142,5 @@ try {
     WebElement e = this.locKey(n);
     e.clear();
     e.sendKeys(v);
-
-    // TODO 00 support for select?
   }
 }
