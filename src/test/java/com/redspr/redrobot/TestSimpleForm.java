@@ -3,8 +3,6 @@ import java.net.URL;
 
 import junit.framework.TestCase;
 
-import com.redspr.redrobot.WebDriverRobot;
-
 
 public class TestSimpleForm extends TestCase {
 
@@ -19,12 +17,16 @@ public class TestSimpleForm extends TestCase {
 //        testNiceForm(new HtmlUnitRobot());
 //        testSimpleForm(new HtmlUnitRobot());
 //    }
-
+// TODO 00 need to shut down browsers!
     private void testAmbiguousForm(Robot robot) throws Exception {
         robot.open(new URL("http://localhost:8185"));
         robot.click("Test Ambiguous Form");
 
         assertEquals("textBoxByTitle", robot.get("First bit", "Field 1"));
+        robot.set("First bit", "Field 1", "New value for textBoxByTitle");
+        assertEquals("New value for textBoxByTitle", robot.get("First bit", "Field 1"));
+// TODO 01 how to send "!"?
+
         assertEquals("Two", robot.get("Second bit", "Field 1"));
         assertEquals("textareaByTitle", robot.get("First bit", "Field 2"));
         assertEquals("pass", robot.get("Second bit", "Field 2"));

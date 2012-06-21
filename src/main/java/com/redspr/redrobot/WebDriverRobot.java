@@ -21,7 +21,6 @@ package com.redspr.redrobot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Stack;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openqa.selenium.JavascriptExecutor;
@@ -30,11 +29,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
 
-import com.thoughtworks.selenium.SeleniumException;
-
 public class WebDriverRobot implements Robot {
-  private Stack<String> history = new Stack<String>();
-
   private WebDriver webDriver;
 
   private String SCRIPT;
@@ -63,8 +58,7 @@ try {
 
   @Override
   public void back() {
-    // TODO 00 sel.open(history.pop());
-    // sel.waitForPageToLoad("10000");
+    webDriver.navigate().back();
   }
 
   @Override
@@ -123,7 +117,6 @@ try {
   }
 
   private WebElement locClickable(String... x) {
-
     return doLocate("redrobotIsClickable", x);
   }
 
@@ -150,7 +143,6 @@ try {
      webDriver.get(url.toString());
   }
 
-  // TODO 00 nothing tests this
   @Override
   public void set(String... x) {
     String[] n = new String[x.length - 1];
@@ -158,12 +150,10 @@ try {
       n[i] = x[i];
     }
     String v = x[x.length - 1];
-    try {
-      // TODO 00 sel.select(locKey(n), v);
-      return;
-    } catch (SeleniumException ex) {
-      // XXX log?!?
-    }
-    // TODO 00 sel.type(locKey(n), v);
+    WebElement e = this.locKey(n);
+    e.clear();
+    e.sendKeys(v);
+
+    // TODO 00 support for select?
   }
 }
