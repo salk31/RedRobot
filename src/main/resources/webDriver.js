@@ -21,6 +21,7 @@ function Cand(e) {
   this.node = e;
   this.score = 0.0;
 }
+
 Cand.prototype.isDescendantOf=function(t) {
   var x = this.node;
 
@@ -46,6 +47,9 @@ Cand.prototype.isDescendantOf=function(t) {
   }
   return false;
 }
+
+
+
 Cand.prototype.add=function(node, score) {
   match.push(new Hit(node, score));
 }
@@ -54,6 +58,8 @@ Cand.fn = function(a, b) {
   if (a.score > b.score) return -1;
   return 0;
 }
+
+
 function redrobotIsClickable(node) {
   if (node.nodeName=='A') {
     return true;
@@ -65,11 +71,13 @@ function redrobotIsClickable(node) {
     return true;
   } else if (node.nodeName=='TEXTAREA') {
     return true;
+  } else if (node.nodeName=='OPTION') {
+    return true;
   }
   return false;
 }
 
-
+function PageBot() {}
 PageBot.prototype.locateElementByFuzzyClickable = function(text, docm) {
   return redrobotFindBestMatch(text, docm, redrobotIsClickable);
 }
@@ -110,7 +118,7 @@ function redrobot_onbeforeunload() {
 }
 
 function redrobotFindBestMatch(argx, docm, matchFn) {
-  var patterns = argx.split(',');
+  var patterns = argx;
   var w = docm.defaultView;// window.frames[0];
 
   if (w.onbeforeunload !== redrobot_onbeforeunload) {
@@ -123,7 +131,7 @@ function redrobotFindBestMatch(argx, docm, matchFn) {
     var cands = new Array();    
 
   redrobotIterate(docm, function(nd) {if (matchFn(nd)) cands.push(new Cand(nd))});
-
+  document.title+='done iterate.';
 
   for (var p = 0; p < patterns.length; p++) { // fake loop for patterns
       var text = patterns[p];
@@ -153,6 +161,7 @@ function redrobotFindBestMatch(argx, docm, matchFn) {
       c.score = c.score + max;
     }  
   }
+  document.title+='done score.';
 
   cands.sort(Cand.fn);
   if (cands.length == 0) {
@@ -197,3 +206,6 @@ function redrobotIterate(node, fn) {
     }
   }
 }
+
+return redrobotFindBestMatch(arguments, document, **COMMAND**);
+
