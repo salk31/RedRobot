@@ -30,7 +30,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
 
-import com.redspr.redrobot.Robot;
 import com.thoughtworks.selenium.SeleniumException;
 
 public class WebDriverRobot implements Robot {
@@ -151,11 +150,7 @@ try {
      webDriver.get(url.toString());
   }
 
-  public void selenium(String x) {
-    // TODO 00 sel.fireEvent(x, "mousedown");
-    // TODO 00 sel.fireEvent(x, "mouseup");
-  }
-
+  // TODO 00 nothing tests this
   @Override
   public void set(String... x) {
     String[] n = new String[x.length - 1];

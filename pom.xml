@@ -1,6 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.redspr.redrobot</groupId>
@@ -9,134 +8,98 @@
     <version>0.1.0-SNAPSHOT</version>
     <name>redrobot</name>
     <url>http://code.google.com/p/redrobot/</url>
-    <dependencies>
-                    <dependency>
-                <groupId>org.seleniumhq.selenium</groupId>
-                <artifactId>selenium-java</artifactId>
-                <version>2.23.1</version>
-            </dependency>
 
-<dependency>
-    <groupId>org.seleniumhq.selenium</groupId>
-    <artifactId>selenium-firefox-driver</artifactId>
-    <version>2.23.1</version>
-</dependency>
-        
+    <dependencies>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>2.23.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-firefox-driver</artifactId>
+            <version>2.23.1</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.10</version>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
-    <groupId>htmlunit</groupId>
-    <artifactId>htmlunit</artifactId>
-    <version>1.14</version>
-</dependency>
-        
+            <groupId>htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+            <version>1.14</version>
+        </dependency>
     </dependencies>
+    
     <build>
-     <plugins>
-     
-      <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.12</version>
-            <configuration>
-                <printSummary>true</printSummary>
-                <useFile>false</useFile>
-            </configuration>
-        </plugin>
-     
-<!--                 <plugin> -->
-<!--                 <groupId>org.codehaus.mojo</groupId> -->
-<!--                 <artifactId>tomcat-maven-plugin</artifactId> -->
-<!--                 <configuration> -->
-<!--                     <mode>both</mode> -->
-<!--                     <fork>true</fork> -->
-<!--                     <port>8185</port> -->
-<!--                     <warSourceDirectory>${basedir}/src/test/tomcat/webapps/ROOT</warSourceDirectory> -->
-<!--                     <path>/</path> -->
-<!--                 </configuration> -->
-<!--                 <executions> -->
-<!--                     <execution> -->
-<!--                         <id>start-tc</id> -->
-<!--                         <phase>process-test-classes</phase> -->
-<!--                         <goals> -->
-<!--                             <goal>run</goal> -->
-<!--                         </goals> -->
-<!--                     </execution> -->
-<!--                     <execution> -->
-<!--                         <id>stop-tc</id> -->
-<!--                         <phase>prepare-package</phase> -->
-<!--                         <goals> -->
-<!--                             <goal>shutdown</goal> -->
-<!--                         </goals> -->
-<!--                     </execution> -->
-<!--                 </executions> -->
-<!--             </plugin> -->
-            
-            
-            
-            
-<plugin>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>maven-jetty-plugin</artifactId>
-        <version>6.1.10</version>
-        <configuration>
-                <scanIntervalSeconds>10</scanIntervalSeconds>
-                <stopKey>foo</stopKey>
-                <stopPort>9999</stopPort>
-        </configuration>
-        <executions>
-                <execution>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12</version>
+                <configuration>
+                    <printSummary>true</printSummary>
+                    <useFile>false</useFile>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-plugin</artifactId>
+                <version>6.1.10</version>
+                <configuration>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <stopKey>foo</stopKey>
+                    <stopPort>9999</stopPort>
+                </configuration>
+                <executions>
+                    <execution>
                         <id>start-jetty</id>
                         <phase>process-test-classes</phase>
                         <goals>
-                                <goal>run</goal>
+                            <goal>run</goal>
                         </goals>
                         <configuration>
-                        <contextPath>/</contextPath> 
-                                   <systemProperties>
-                                      <systemProperty>
-              <name>jetty.port</name>
-               <value>8185</value>
-            </systemProperty>
-                                   
-                                   </systemProperties>
-                                   
+                            <contextPath>/</contextPath>
+                            <systemProperties>
+                                <systemProperty>
+                                    <name>jetty.port</name>
+                                    <value>8185</value>
+                                </systemProperty>
+                            </systemProperties>
 
-                        
-                                <scanIntervalSeconds>0</scanIntervalSeconds>
-                                <daemon>true</daemon>
-                                
-                                          <webApp>${basedir}/src/test/tomcat/webapps/ROOT</webApp>
-<!--           <contextHandlers>             -->
-<!--             <contextHandler implementation="org.mortbay.jetty.webapp.WebAppContext"> -->
-<!--               <war>${basedir}../../myother.war</war> -->
-<!--               <contextPath>/other</contextPath> -->
-<!--             </contextHandler> -->
-<!--           </contextHandlers>   -->
-                                
-                                
+                            <scanIntervalSeconds>0</scanIntervalSeconds>
+                            <daemon>true</daemon>
+
+                            <webApp>${basedir}/src/test/tomcat/webapps/ROOT</webApp>
+
                         </configuration>
-                </execution>
-                <execution>
+                    </execution>
+                    <execution>
                         <id>stop-jetty</id>
                         <phase>post-integration-test</phase>
                         <goals>
-                                <goal>stop</goal>
+                            <goal>stop</goal>
                         </goals>
-                </execution>
-        </executions>
-</plugin>
-            
-            
-            
-            
-            
-            
-           </plugins>
-           </build>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
 </project>
