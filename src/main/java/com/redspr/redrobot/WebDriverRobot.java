@@ -23,7 +23,9 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -65,6 +67,27 @@ public class WebDriverRobot implements Robot {
 
   @Override
   public void click(String... x) {
+    try {
+      // TODO 01 unit test for this
+      Alert alert = webDriver.switchTo().alert();
+      if (x.length > 1) {
+          if (!alert.getText().equalsIgnoreCase(x[0])) {
+              throw new IllegalArgumentException("Alert text did not match '" + x[0] + "'");
+          }
+          String button = x[x.length - 1];
+          if ("OK".equalsIgnoreCase(button)) {
+              alert.accept();
+          } else if ("Cancel".equalsIgnoreCase(button)) {
+              alert.dismiss();
+          } else {
+              throw new IllegalArgumentException("It was alert so the last locator should be 'OK' or 'Cancel'");
+          }
+      }
+      return; // XXX hmmm
+    } catch (NoAlertPresentException ex) {
+      // fine
+    }
+
     locClickable(x).click();
     readyStrategy.waitTillReady();
   }
