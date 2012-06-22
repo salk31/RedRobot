@@ -34,6 +34,8 @@ public class WebDriverRobot implements Robot {
 
   private String SCRIPT;
 
+  private ReadyStrategy readyStrategy = new SleepReadyStrategy();
+
   public WebDriverRobot() {
     this(new FirefoxDriver());
   }
@@ -58,11 +60,13 @@ public class WebDriverRobot implements Robot {
   @Override
   public void back() {
     webDriver.navigate().back();
+    readyStrategy.waitTillReady();
   }
 
   @Override
   public void click(String... x) {
     locClickable(x).click();
+    readyStrategy.waitTillReady();
   }
 
   @Override
@@ -130,6 +134,7 @@ public class WebDriverRobot implements Robot {
   @Override
   public void open(URL url) {
      webDriver.get(url.toString());
+     readyStrategy.waitTillReady();
   }
 
   @Override
@@ -142,5 +147,6 @@ public class WebDriverRobot implements Robot {
     WebElement e = this.locKey(n);
     e.clear();
     e.sendKeys(v);
+    readyStrategy.waitTillReady();
   }
 }
