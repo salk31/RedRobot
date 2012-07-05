@@ -131,7 +131,6 @@ function redrobotFindBestMatch(argx, docm, matchFn) {
     var cands = new Array();    
 
   redrobotIterate(docm, function(nd) {if (matchFn(nd)) cands.push(new Cand(nd))});
-  document.title+='done iterate.';
 
   for (var p = 0; p < patterns.length; p++) { // fake loop for patterns
       var text = patterns[p];
@@ -161,7 +160,6 @@ function redrobotFindBestMatch(argx, docm, matchFn) {
       c.score = c.score + max;
     }  
   }
-  document.title+='done score.';
 
   cands.sort(Cand.fn);
   if (cands.length == 0) {
