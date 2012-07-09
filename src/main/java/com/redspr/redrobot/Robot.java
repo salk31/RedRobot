@@ -32,7 +32,10 @@ public interface Robot {
 
   String getConfirmation();
 
+  @Deprecated // use isSelected
   boolean isChecked(String... x);
+
+  boolean isSelected(String... x);
 
   void open(URL url);
 

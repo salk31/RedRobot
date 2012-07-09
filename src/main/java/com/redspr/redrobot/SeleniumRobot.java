@@ -106,8 +106,13 @@ public class SeleniumRobot implements Robot {
   }
 
   @Override
-  public boolean isChecked(String... x) {
+  public boolean isSelected(String... x) {
     return sel.isChecked(locCheckable(x));
+  }
+
+  @Override
+  public boolean isChecked(String... x) {
+      return isSelected(x);
   }
 
   private String locClickable(String... x) {

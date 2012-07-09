@@ -119,10 +119,15 @@ public class WebDriverRobot implements Robot {
   }
 
   @Override
-  public boolean isChecked(String... x) {
+  public boolean isSelected(String... x) {
     WebElement e = locCheckable(x);
 
     return e.isSelected();
+  }
+
+  @Override
+public boolean isChecked(String... x) {
+    return isSelected(x);
   }
 
   private WebElement doLocate(String cmd, String... args) {

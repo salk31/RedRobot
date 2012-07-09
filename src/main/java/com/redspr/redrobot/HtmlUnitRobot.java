@@ -181,7 +181,7 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
   }
 
   @Override
-  public boolean isChecked(String... x) {
+  public boolean isSelected(String... x) {
     HtmlUnitScorer scorer = new HtmlUnitScorer(CHECKABLE,
         page.getDocumentHtmlElement(), x);
     Object elmt = scorer.getBest();
@@ -193,6 +193,11 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
     }
     // TODO 05 blowup
     return false;
+  }
+
+  @Override
+  public boolean isChecked(String... x) {
+      return isSelected(x);
   }
 
   @Override
