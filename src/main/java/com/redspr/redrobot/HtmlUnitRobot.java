@@ -222,4 +222,8 @@ public class HtmlUnitRobot implements Robot, ConfirmHandler {
 
     // TODO 05 blowup
   }
+
+  @Override
+  public void close() {
+  }
 }

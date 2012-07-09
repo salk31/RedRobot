@@ -38,5 +38,7 @@ public interface Robot {
 
   void set(String... x);
 
+  void close();
+
   // TODO 04 a dump/debug method?
 }

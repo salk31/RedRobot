@@ -159,4 +159,8 @@ public class SeleniumRobot implements Robot {
     }
     sel.type(locKey(n), v);
   }
+
+  @Override
+  public void close() {
+  }
 }

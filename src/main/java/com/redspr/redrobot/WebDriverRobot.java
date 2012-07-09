@@ -172,4 +172,9 @@ public class WebDriverRobot implements Robot {
     e.sendKeys(v);
     readyStrategy.waitTillReady();
   }
+
+  @Override
+  public void close() {
+    webDriver.quit();
+  }
 }
