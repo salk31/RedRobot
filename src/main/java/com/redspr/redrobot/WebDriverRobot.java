@@ -21,6 +21,7 @@ package com.redspr.redrobot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openqa.selenium.Alert;
@@ -132,11 +133,27 @@ public boolean isChecked(String... x) {
 
   private WebElement doLocate(String cmd, String... args) {
       JavascriptExecutor jse = (JavascriptExecutor) webDriver;
-      Object y = jse.executeScript(SCRIPT.replace("**COMMAND**", cmd), args);
+      List<WebElement> y = (List) jse.executeScript(SCRIPT.replace("**COMMAND**", cmd), args);
+      for (WebElement we : y) {
+          // TODO 00 unit test for this
+          if (we.isDisplayed()) {
+              return we;
+          }
+      }
 
-      return (WebElement) y;
+      StringBuilder sb = new StringBuilder();
+      sb.append("Unable to find ");
+      sb.append(cmd);
+      for (String a : args) {
+          sb.append(", '");
+          sb.append(a);
+          sb.append("'");
+      }
+
+      throw new RuntimeException(sb.toString());
   }
 
+  // TODO 00 unit test for clicking where has click event
   private WebElement locClickable(String... x) {
     return doLocate("redrobotIsClickable", x);
   }

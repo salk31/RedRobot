@@ -141,7 +141,7 @@ function redrobotFindBestMatch(argx, docm, matchFn) {
       var matches = new Array();
       var digest = redrobotDigest(text);
     redrobotIterate(docm, function(node) {redrobotGetMatch(digest, matches, node)});
-    if (matches.length == 0) return null;
+    if (matches.length == 0) return new Array();
 
     // assign matches to candidates
     for (var j = 0; j < cands.length; j++) {
@@ -164,12 +164,18 @@ function redrobotFindBestMatch(argx, docm, matchFn) {
   }
 
   cands.sort(Cand.fn);
-  if (cands.length == 0) {
-      return null;
-  } else {
-    if (cands[0].node.body) return cands[0].node.body;
-    return cands[0].node;
+  
+  var result = new Array();
+  for (var i = 0; i < cands.length; i++) {
+    var node = cands[i].node;
+    if (node.body) {
+      // XXX what is this for?
+      result.push(node.body);
+    } else {
+      result.push(node);
+    }
   }
+  return result;
 };
 
 function redrobotGetMatch(text, matches, e) {
