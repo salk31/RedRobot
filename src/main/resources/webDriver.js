@@ -73,6 +73,8 @@ function redrobotIsClickable(node) {
     return true;
   } else if (node.nodeName=='OPTION') {
     return true;
+  } else if (node.click) {
+    return true;
   }
   return false;
 }
