@@ -135,7 +135,6 @@ public boolean isChecked(String... x) {
       JavascriptExecutor jse = (JavascriptExecutor) webDriver;
       List<WebElement> y = (List) jse.executeScript(SCRIPT.replace("**COMMAND**", cmd), args);
       for (WebElement we : y) {
-          // TODO 00 unit test for this
           if (we.isDisplayed()) {
               return we;
           }
@@ -150,7 +149,7 @@ public boolean isChecked(String... x) {
           sb.append("'");
       }
 
-      throw new RuntimeException(sb.toString());
+      throw new NotFoundException(sb.toString());
   }
 
   // TODO 00 unit test for clicking where has click event

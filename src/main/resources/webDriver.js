@@ -73,7 +73,8 @@ function redrobotIsClickable(node) {
     return true;
   } else if (node.nodeName=='OPTION') {
     return true;
-  } else if (node.click) {
+  } else if (node.click && node.nodeName != 'BODY' && node.nodeName != 'HTML') {
+    // firefox seems to have click attribute for body and html!?
     return true;
   }
   return false;
@@ -168,12 +169,7 @@ function redrobotFindBestMatch(argx, docm, matchFn) {
   var result = new Array();
   for (var i = 0; i < cands.length; i++) {
     var node = cands[i].node;
-    if (node.body) {
-      // XXX what is this for?
-      result.push(node.body);
-    } else {
-      result.push(node);
-    }
+    result.push(node);
   }
   return result;
 };

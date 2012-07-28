@@ -6,10 +6,16 @@ import junit.framework.TestCase;
 
 public class TestSimpleForm extends TestCase {
 
-    public void testSelenium() throws Exception {
+    public void testDefaultWebDriver() throws Exception {
+    	// XXX need better way to do this, run through different webdriver impl?
+    	// want IDE support so run individual test and start jetty on same port
+    	// XXX also factor out start URL
+    	// XXX at least option to reuse expensive robots like WebDriver?
         testAmbiguousForm(new WebDriverRobot());
         testNiceForm(new WebDriverRobot());
         testSimpleForm(new WebDriverRobot());
+        testHidden(new WebDriverRobot());
+    	testClickable(new WebDriverRobot());
     }
 
 //    public void testHtmlUnit() throws Exception {
@@ -17,7 +23,7 @@ public class TestSimpleForm extends TestCase {
 //        testNiceForm(new HtmlUnitRobot());
 //        testSimpleForm(new HtmlUnitRobot());
 //    }
-// TODO 00 need to shut down browsers!
+    
     private void testAmbiguousForm(Robot robot) throws Exception {
         robot.open(new URL("http://localhost:8185"));
         robot.click("Test Ambiguous Form");
@@ -36,6 +42,8 @@ public class TestSimpleForm extends TestCase {
         assertEquals("pass", robot.get("Second bit", "Field 2"));
 
         assertEquals("yestext", robot.get("Second bit", "Yes"));
+        
+        robot.close();
     }
 
     private void testNiceForm(Robot robot) throws Exception {
@@ -43,6 +51,8 @@ public class TestSimpleForm extends TestCase {
         robot.click("Test Nice Form");
         assertFalse(robot.isChecked("Checkbox 1"));
         assertTrue(robot.isChecked("Checkbox 2"));
+        
+        robot.close();
     }
 
     private void testSimpleForm(Robot robot) throws Exception {
@@ -57,5 +67,31 @@ public class TestSimpleForm extends TestCase {
         robot.click("Three");
         assertEquals("Three", robot.get("select 7"));
         assertEquals("pass", robot.get("password 8"));
+    
+        robot.close();
+    }
+    
+    private void testHidden(Robot robot) throws Exception {
+    	robot.open(new URL("http://localhost:8185"));
+    	robot.click("Test Hidden");
+    	try {
+    		robot.click("Display none");
+    		fail("Should not be able to find that");
+    	} catch (NotFoundException ex) {
+    		// expected
+    	}
+    	robot.close();
+    }
+    
+    private void testClickable(Robot robot) throws Exception {
+    	robot.open(new URL("http://localhost:8185"));
+    	robot.click("Test Clickable");
+    	
+    	{
+    		robot.click("onClick");
+    		robot.click("onClick clicked", "ok");
+    	}
+    	
+    	robot.close();
     }
 }
