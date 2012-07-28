@@ -19,12 +19,14 @@
 
 RedRobot = {}
 
-function Cand(e) {
+// a possible result candidate
+RedRobot.Cand = function(e) {
   this.node = e;
   this.score = 0.0;
 }
 
-Cand.prototype.isDescendantOf=function(t) {
+// return true if candidate is a dependent of t
+RedRobot.Cand.prototype.isDescendantOf = function(t) {
   var x = this.node;
 
   while (t.ownerDocument !== x.ownerDocument) {
@@ -50,18 +52,13 @@ Cand.prototype.isDescendantOf=function(t) {
   return false;
 }
 
-
-
-Cand.prototype.add=function(node, score) {
-  match.push(new Hit(node, score));
-}
-Cand.fn = function(a, b) {
+RedRobot.Cand.fn = function(a, b) {
   if (a.score < b.score) return 1;
   if (a.score > b.score) return -1;
   return 0;
 }
 
-
+// true iff node is something it would make sense for the user to click
 RedRobot.isClickable = function(node) {
   if (node.nodeName=='A') {
     return true;
@@ -82,6 +79,7 @@ RedRobot.isClickable = function(node) {
   return false;
 }
 
+// true iff the node is something the user can enter text or get text
 RedRobot.isKey = function(node) {
   if (node.nodeName=='INPUT') {
     return node.type == 'text' || node.type == 'password';
@@ -92,11 +90,11 @@ RedRobot.isKey = function(node) {
   } else if (node.nodeName == 'SELECT') {
     return true;
   }
-    return false;
+  return false;
 }
 
 
-
+// XXX redundant
 RedRobot.isCheckable = function(node) {
   if (node.nodeName=='INPUT') {
     return (node.type=="checkbox" || node.type=="radio");
@@ -105,23 +103,20 @@ RedRobot.isCheckable = function(node) {
 }
 
 
-
-RedRobot.findBestMatches = function(argx, docm, matchFn) {
-  var patterns = argx;
+RedRobot.findBestMatches = function(patterns, docm, matchFn) {
   var w = docm.defaultView;// window.frames[0];
 
-  // work out all candidate elements
-  var cands = new Array();    
-
-  redrobotIterate(docm, function(nd) {if (matchFn(nd)) cands.push(new Cand(nd))});
+  // work out all candidate elements that match the function provided
+  var cands = new Array();
+  RedRobot.visit(docm, function(nd) {if (matchFn(nd)) cands.push(new RedRobot.Cand(nd))});
 
   for (var p = 0; p < patterns.length; p++) { // fake loop for patterns
     var text = patterns[p];
 
     // work out matching elements
     var matches = new Array();
-    var digest = redrobotDigest(text);
-    redrobotIterate(docm, function(node) {redrobotGetMatch(digest, matches, node)});
+    var digest = RedRobot.digest(text);
+    RedRobot.visit(docm, function(node) {RedRobot.getMatch(digest, matches, node)});
     if (matches.length == 0) return new Array();
 
     // assign matches to candidates
@@ -137,15 +132,16 @@ RedRobot.findBestMatches = function(argx, docm, matchFn) {
             break;
           }
           match = match.parentNode;
-              s = s * 0.9;
-            }
+          s = s * 0.9;
+        }
       }    
       c.score = c.score + max;
     }  
   }
 
-  cands.sort(Cand.fn);
+  cands.sort(RedRobot.Cand.fn);
   
+  // turn into a simple array of nodes
   var result = new Array();
   for (var i = 0; i < cands.length; i++) {
     var node = cands[i].node;
@@ -154,9 +150,9 @@ RedRobot.findBestMatches = function(argx, docm, matchFn) {
   return result;
 };
 
-function redrobotGetMatch(text, matches, e) {
+RedRobot.getMatch = function(text, matches, e) {
   var match = null;
-  if (redrobotDigest(e.nodeValue) == text) {
+  if (RedRobot.digest(e.nodeValue) == text) {
     // e.parentNode.style.color='yellow';
     match = e;
     if (e.parentNode.nodeName == 'LABEL') {
@@ -165,29 +161,27 @@ function redrobotGetMatch(text, matches, e) {
         match = e.ownerDocument.getElementById(id);
       }
     } 
-  } else if (redrobotDigest(e.title) == text || redrobotDigest(e.value) == text) {
+  } else if (RedRobot.digest(e.title) == text || RedRobot.digest(e.value) == text) {
     match = e;
   }
   if (match) matches.push(match);
 }
-function redrobotDigest(x) {
+
+RedRobot.digest = function(x) {
   return String(x).replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 }
 
-function redrobotIterate(node, fn) {
+RedRobot.visit = function(node, fn) {
   fn(node);
   var kids = node.childNodes;
 
   for (var i = 0; i < kids.length; i++) {
     var e = kids[i];
-    redrobotIterate(e, fn);  
+    RedRobot.visit(e, fn);  
     
     if (e.nodeName == 'IFRAME') {
       e.contentDocument.redrobotParentNode = e;
-      redrobotIterate(e.contentDocument, fn);
+      RedRobot.visit(e.contentDocument, fn);
     }
   }
 }
-
-return RedRobot.findBestMatches(arguments, document, **COMMAND**);
-

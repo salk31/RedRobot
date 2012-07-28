@@ -133,7 +133,7 @@ public class WebDriverRobot implements Robot {
 
   private WebElement doLocate(String cmd, String... args) {
       JavascriptExecutor jse = (JavascriptExecutor) webDriver;
-      List<WebElement> y = (List) jse.executeScript(SCRIPT.replace("**COMMAND**", cmd), args);
+      List<WebElement> y = (List) jse.executeScript(SCRIPT + ";return RedRobot.findBestMatches(arguments, document, " + cmd + ")", args);
       for (WebElement we : y) {
           if (we.isDisplayed()) {
               return we;
@@ -162,16 +162,6 @@ public class WebDriverRobot implements Robot {
 
   private WebElement locCheckable(String... x) {
     return doLocate("RedRobot.isCheckable", x);
-  }
-
-  private static String escape(String... x) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < x.length; i++) {
-      if (i > 0)
-        sb.append(',');
-      sb.append(x[i]);
-    }
-    return sb.toString();
   }
 
   @Override
