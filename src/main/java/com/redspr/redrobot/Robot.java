@@ -30,6 +30,7 @@ public interface Robot {
 
   String get(String... x);
 
+  @Deprecated // no replacement, use click(message, "OK")...
   String getConfirmation();
 
   @Deprecated // use isSelected

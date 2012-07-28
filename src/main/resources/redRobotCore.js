@@ -17,6 +17,8 @@
  * along with REDROBOT.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+RedRobot = {}
+
 function Cand(e) {
   this.node = e;
   this.score = 0.0;
@@ -60,7 +62,7 @@ Cand.fn = function(a, b) {
 }
 
 
-function redrobotIsClickable(node) {
+RedRobot.isClickable = function(node) {
   if (node.nodeName=='A') {
     return true;
   } else if (node.nodeName=='BUTTON') {
@@ -80,12 +82,7 @@ function redrobotIsClickable(node) {
   return false;
 }
 
-function PageBot() {}
-PageBot.prototype.locateElementByFuzzyClickable = function(text, docm) {
-  return redrobotFindBestMatch(text, docm, redrobotIsClickable);
-}
-
-function redrobotIsKey(node) {
+RedRobot.isKey = function(node) {
   if (node.nodeName=='INPUT') {
     return node.type == 'text' || node.type == 'password';
     } else if (node.nodeName =='TEXTAREA') {
@@ -98,49 +95,32 @@ function redrobotIsKey(node) {
     return false;
 }
 
-PageBot.prototype.locateElementByFuzzyKey = function(text, docm) {
-  return redrobotFindBestMatch(text, docm, redrobotIsKey);
-}
 
-function redrobotIsCheckable(node) {
+
+RedRobot.isCheckable = function(node) {
   if (node.nodeName=='INPUT') {
     return (node.type=="checkbox" || node.type=="radio");
   }
   return false;
 }
 
-PageBot.prototype.locateElementByFuzzyCheckable = function(text, docm) {
-  return redrobotFindBestMatch(text, docm, redrobotIsCheckable);
-}
 
-function redrobot_onbeforeunload() {
-  var x = redrobot_onbeforeunload.orig();
-  if (x) {
-    redrobot_onbeforeunload.confirm(x);
-  }
-}
 
-function redrobotFindBestMatch(argx, docm, matchFn) {
+RedRobot.findBestMatches = function(argx, docm, matchFn) {
   var patterns = argx;
   var w = docm.defaultView;// window.frames[0];
 
-  if (w.onbeforeunload !== redrobot_onbeforeunload) {
-    redrobot_onbeforeunload.orig = w.onbeforeunload;
-    w.onbeforeunload = redrobot_onbeforeunload;
-    redrobot_onbeforeunload.confirm = w.confirm;  
-  }
-
   // work out all candidate elements
-    var cands = new Array();    
+  var cands = new Array();    
 
   redrobotIterate(docm, function(nd) {if (matchFn(nd)) cands.push(new Cand(nd))});
 
   for (var p = 0; p < patterns.length; p++) { // fake loop for patterns
-      var text = patterns[p];
+    var text = patterns[p];
 
     // work out matching elements
-      var matches = new Array();
-      var digest = redrobotDigest(text);
+    var matches = new Array();
+    var digest = redrobotDigest(text);
     redrobotIterate(docm, function(node) {redrobotGetMatch(digest, matches, node)});
     if (matches.length == 0) return new Array();
 
@@ -209,5 +189,5 @@ function redrobotIterate(node, fn) {
   }
 }
 
-return redrobotFindBestMatch(arguments, document, **COMMAND**);
+return RedRobot.findBestMatches(arguments, document, **COMMAND**);
 

@@ -47,7 +47,7 @@ public class WebDriverRobot implements Robot {
     this.webDriver = webDriver2;
 
     try {
-      InputStream is = getClass().getResourceAsStream("/webDriver.js");
+      InputStream is = getClass().getResourceAsStream("/redRobotCore.js");
       ByteArrayOutputStream boas = new ByteArrayOutputStream();
       byte[] buff = new byte[2048];
       int len;
@@ -127,7 +127,7 @@ public class WebDriverRobot implements Robot {
   }
 
   @Override
-public boolean isChecked(String... x) {
+  public boolean isChecked(String... x) {
     return isSelected(x);
   }
 
@@ -152,17 +152,16 @@ public boolean isChecked(String... x) {
       throw new NotFoundException(sb.toString());
   }
 
-  // TODO 00 unit test for clicking where has click event
   private WebElement locClickable(String... x) {
-    return doLocate("redrobotIsClickable", x);
+    return doLocate("RedRobot.isClickable", x);
   }
 
   private WebElement locKey(String... x) {
-    return doLocate("redrobotIsKey", x);
+    return doLocate("RedRobot.isKey", x);
   }
 
   private WebElement locCheckable(String... x) {
-    return doLocate("redrobotIsCheckable", x);
+    return doLocate("RedRobot.isCheckable", x);
   }
 
   private static String escape(String... x) {
