@@ -125,7 +125,7 @@ RedRobot.findBestMatches = function(patterns, docm, matchFn) {
       var max = 0;
       for (var i = 0; i < matches.length; i++) {
         var match = matches[i];
-        var s = 1.0;
+        var s = match['data-redrobotScore'];
         while (match != null) {
           if (c.isDescendantOf(match)) {
             if (s > max) max = s;
@@ -152,7 +152,8 @@ RedRobot.findBestMatches = function(patterns, docm, matchFn) {
 
 RedRobot.getMatch = function(text, matches, e) {
   var match = null;
-  if (RedRobot.digest(e.nodeValue) == text) {
+  var score;
+  if ((score = RedRobot.textMatch(e.nodeValue, text)) > 0) {
     // e.parentNode.style.color='yellow';
     match = e;
     if (e.parentNode.nodeName == 'LABEL') {
@@ -160,16 +161,30 @@ RedRobot.getMatch = function(text, matches, e) {
       if (id) {
         match = e.ownerDocument.getElementById(id);
       }
-    } 
-  } else if (RedRobot.digest(e.title) == text || RedRobot.digest(e.value) == text) {
+    }
+  } else if ((score = RedRobot.textMatch(e.title, text)) > 0 || (score = RedRobot.textMatch(e.value, text)) > 0) {
     match = e;
   }
-  if (match) matches.push(match);
+
+  if (match) {
+    match['data-redrobotScore'] = score;
+    matches.push(match);
+  }
+}
+
+RedRobot.textMatch = function(candidateText, searchTextDigest) {
+  var candidateTextDigest = RedRobot.digest(candidateText);
+  if (RedRobot.digest(candidateTextDigest).indexOf(searchTextDigest) >= 0) {
+    return searchTextDigest.length / candidateTextDigest.length;
+  } else {
+    return 0;
+  }
 }
 
 RedRobot.digest = function(x) {
   return String(x).replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 }
+
 
 RedRobot.visit = function(node, fn) {
   fn(node);

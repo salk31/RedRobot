@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
@@ -95,11 +96,9 @@ public class WebDriverRobot implements Robot {
 
   @Override
   public int findText(String x) {
-    if (false) { // TODO 00 sel.isElementPresent("xpath=//node()[text()='" + x + "']")) {
-      return 1;
-    } else {
-      return 0;
-    }
+      // TODO 04 think about this properly
+      // TODO 05 escaping
+      return webDriver.findElements(By.xpath("//node()[text()='" + x + "']")).size();
   }
 
   @Override

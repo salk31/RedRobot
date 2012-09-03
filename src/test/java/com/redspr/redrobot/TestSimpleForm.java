@@ -3,29 +3,20 @@ import java.net.URL;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
+
 
 public class TestSimpleForm extends TestCase {
 
-    public void testDefaultWebDriver() throws Exception {
-    	// XXX need better way to do this, run through different webdriver impl?
-    	// want IDE support so run individual test and start jetty on same port
-    	// XXX also factor out start URL
-    	// XXX at least option to reuse expensive robots like WebDriver?
-        testAmbiguousForm(new WebDriverRobot());
-        testNiceForm(new WebDriverRobot());
-        testSimpleForm(new WebDriverRobot());
-        testHidden(new WebDriverRobot());
-    	testClickable(new WebDriverRobot());
+    private Robot getRobot() throws Exception {
+        Robot robot = new WebDriverRobot();
+        robot.open(new URL("http://localhost:8185"));
+        return robot;
     }
 
-//    public void testHtmlUnit() throws Exception {
-//        testAmbiguousForm(new HtmlUnitRobot());
-//        testNiceForm(new HtmlUnitRobot());
-//        testSimpleForm(new HtmlUnitRobot());
-//    }
-    
-    private void testAmbiguousForm(Robot robot) throws Exception {
-        robot.open(new URL("http://localhost:8185"));
+    @Test
+    public void testAmbiguousForm() throws Exception {
+        Robot robot = getRobot();
         robot.click("Test Ambiguous Form");
 
         assertEquals("textBoxByTitle", robot.get("First bit", "Field 1"));
@@ -42,21 +33,23 @@ public class TestSimpleForm extends TestCase {
         assertEquals("pass", robot.get("Second bit", "Field 2"));
 
         assertEquals("yestext", robot.get("Second bit", "Yes"));
-        
+
         robot.close();
     }
 
-    private void testNiceForm(Robot robot) throws Exception {
-        robot.open(new URL("http://localhost:8185"));
+    @Test
+    public void testNiceForm() throws Exception {
+        Robot robot = getRobot();
         robot.click("Test Nice Form");
         assertFalse(robot.isChecked("Checkbox 1"));
         assertTrue(robot.isChecked("Checkbox 2"));
-        
+
         robot.close();
     }
 
-    private void testSimpleForm(Robot robot) throws Exception {
-        robot.open(new URL("http://localhost:8185"));
+    @Test
+    public void testSimpleForm() throws Exception {
+        Robot robot = getRobot();
         robot.click("Test Simple Form");
         assertEquals("textBoxByTitle", robot.get("text 1"));
         assertEquals("textareaByTitle", robot.get("text 2"));
@@ -67,12 +60,13 @@ public class TestSimpleForm extends TestCase {
         robot.click("Three");
         assertEquals("Three", robot.get("select 7"));
         assertEquals("pass", robot.get("password 8"));
-    
+
         robot.close();
     }
-    
-    private void testHidden(Robot robot) throws Exception {
-    	robot.open(new URL("http://localhost:8185"));
+
+    @Test
+    public void testHidden() throws Exception {
+        Robot robot = getRobot();
     	robot.click("Test Hidden");
     	try {
     		robot.click("Display none");
@@ -82,16 +76,30 @@ public class TestSimpleForm extends TestCase {
     	}
     	robot.close();
     }
-    
-    private void testClickable(Robot robot) throws Exception {
-    	robot.open(new URL("http://localhost:8185"));
+
+    @Test
+    public void testClickable() throws Exception {
+        Robot robot = getRobot();
     	robot.click("Test Clickable");
-    	
+
     	{
     		robot.click("onClick");
     		robot.click("onClick clicked", "ok");
     	}
-    	
+
     	robot.close();
+    }
+
+    @Test
+    public void testPartialText() throws Exception {
+        Robot robot = getRobot();
+        robot.click("Test Partial Text");
+
+        {
+            robot.click("foo");
+            robot.click("foo clicked", "ok");  // XXX want more confirmation was the real one!?
+        }
+
+        robot.close();
     }
 }
