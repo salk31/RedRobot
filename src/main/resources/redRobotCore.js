@@ -102,6 +102,9 @@ RedRobot.isCheckable = function(node) {
   return false;
 }
 
+RedRobot.isAnything = function(node) {
+  return (node.nodeName == 'BODY');
+}
 
 RedRobot.findBestMatches = function(patterns, docm, matchFn) {
   var w = docm.defaultView;// window.frames[0];

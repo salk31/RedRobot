@@ -21,11 +21,11 @@ package com.redspr.redrobot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
@@ -96,9 +96,12 @@ public class WebDriverRobot implements Robot {
 
   @Override
   public int findText(String x) {
-      // TODO 04 think about this properly
-      // TODO 05 escaping
-      return webDriver.findElements(By.xpath("//node()[text()='" + x + "']")).size();
+    return doFind("RedRobot.isAnything", x).size();
+  }
+
+  @Override
+  public boolean textExists(String... x) {
+    return !doFind("RedRobot.isAnything", x).isEmpty();
   }
 
   @Override
@@ -130,25 +133,40 @@ public class WebDriverRobot implements Robot {
     return isSelected(x);
   }
 
+  private List<WebElement> doFind(String cmd, String... args) {
+    JavascriptExecutor jse = (JavascriptExecutor) webDriver;
+    List<WebElement> y = (List) jse.executeScript(SCRIPT + ";return RedRobot.findBestMatches(arguments, document, " + cmd + ")", args);
+    List<WebElement> hits = new ArrayList<WebElement>(y.size());
+    for (WebElement we : y) {
+        // TODO 00 can't do this in another frame without error
+      if (we.isDisplayed()) {
+        hits.add(we);
+      }
+    }
+    return hits;
+  }
+
+
   private WebElement doLocate(String cmd, String... args) {
       JavascriptExecutor jse = (JavascriptExecutor) webDriver;
       List<WebElement> y = (List) jse.executeScript(SCRIPT + ";return RedRobot.findBestMatches(arguments, document, " + cmd + ")", args);
+      List<WebElement> hits = new ArrayList<WebElement>(y.size());
       for (WebElement we : y) {
-          if (we.isDisplayed()) {
-              return we;
-          }
+        if (we.isDisplayed()) {
+          return we;
+        }
       }
 
-      StringBuilder sb = new StringBuilder();
-      sb.append("Unable to find ");
-      sb.append(cmd);
-      for (String a : args) {
-          sb.append(", '");
-          sb.append(a);
-          sb.append("'");
-      }
+    StringBuilder sb = new StringBuilder();
+    sb.append("Unable to find ");
+    sb.append(cmd);
+    for (String a : args) {
+      sb.append(", '");
+      sb.append(a);
+      sb.append("'");
+    }
 
-      throw new NotFoundException(sb.toString());
+    throw new NotFoundException(sb.toString());
   }
 
   private WebElement locClickable(String... x) {

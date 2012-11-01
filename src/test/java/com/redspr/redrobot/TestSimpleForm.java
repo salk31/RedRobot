@@ -100,6 +100,10 @@ public class TestSimpleForm extends TestCase {
             robot.click("foo clicked", "ok");  // XXX want more confirmation was the real one!?
         }
 
+        assertTrue(robot.textExists("foo bar"));
+        assertTrue(robot.textExists("foo"));
+
+
         robot.close();
     }
 }

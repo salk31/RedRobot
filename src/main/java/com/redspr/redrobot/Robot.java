@@ -26,7 +26,12 @@ public interface Robot {
 
   void click(String... x);
 
+  @Deprecated // use textExists
   int findText(String x);
+
+  // TODO 00 multiple values best for disambiguation but doesn't filter?
+  // so useless in this context? just does an AND?
+  boolean textExists(String... x);
 
   String get(String... x);
 
