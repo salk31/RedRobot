@@ -83,9 +83,9 @@ RedRobot.isClickable = function(node) {
 RedRobot.isKey = function(node) {
   if (node.nodeName=='INPUT') {
     return node.type == 'text' || node.type == 'password';
-    } else if (node.nodeName =='TEXTAREA') {
-      return true;
-    } else if (node.contenteditable || node.designMode=='on') {
+  } else if (node.nodeName =='TEXTAREA') {
+    return true;
+  } else if (node.contenteditable || node.designMode=='on') {
     return true;
   } else if (node.nodeName == 'SELECT') {
     return true;
