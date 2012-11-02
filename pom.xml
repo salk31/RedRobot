@@ -5,7 +5,7 @@
     <groupId>com.redspr.redrobot</groupId>
     <artifactId>redrobot-core</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.1</version>
+    <version>0.2.3</version>
     <name>redrobot</name>
     <url>http://code.google.com/p/redrobot/</url>
 
@@ -47,6 +47,19 @@
                     <source>1.6</source>
                     <target>1.6</target>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>

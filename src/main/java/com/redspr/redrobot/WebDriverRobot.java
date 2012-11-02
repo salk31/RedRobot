@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
@@ -96,7 +97,7 @@ public class WebDriverRobot implements Robot {
 
   @Override
   public int findText(String x) {
-    return doFind("RedRobot.isAnything", x).size();
+    return webDriver.findElements(By.xpath("//node()[text()='" + x + "']")).size();
   }
 
   @Override
@@ -112,8 +113,12 @@ public class WebDriverRobot implements Robot {
         Select select = new Select(e);
         return select.getFirstSelectedOption().getText();
     }
-
-    return locKey(x).getAttribute("value").replaceAll("\\r", "");
+    WebElement elmt = locKey(x);
+    String r = elmt.getAttribute("value");
+    if (r == null) {
+        r = elmt.getText();
+    }
+    return r.replaceAll("\\r", "");
   }
 
   @Override
@@ -138,9 +143,14 @@ public class WebDriverRobot implements Robot {
     List<WebElement> y = (List) jse.executeScript(SCRIPT + ";return RedRobot.findBestMatches(arguments, document, " + cmd + ")", args);
     List<WebElement> hits = new ArrayList<WebElement>(y.size());
     for (WebElement we : y) {
-        // TODO 00 can't do this in another frame without error
-      if (we.isDisplayed()) {
-        hits.add(we);
+      try {
+        if (we.isDisplayed()) {
+            System.out.println("FOUND " + we.getTagName());
+          hits.add(we);
+        }
+      } catch (Throwable th) {
+          // TODO 00 auto switch to frames?
+          // TODO 00 any elements to just ignore
       }
     }
     return hits;

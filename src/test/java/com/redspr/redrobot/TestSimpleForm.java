@@ -103,6 +103,7 @@ public class TestSimpleForm extends TestCase {
         assertTrue(robot.textExists("foo bar"));
         assertTrue(robot.textExists("foo"));
 
+        assertFalse(robot.textExists("foo bar hidden"));
 
         robot.close();
     }

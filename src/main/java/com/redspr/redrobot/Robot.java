@@ -26,9 +26,23 @@ public interface Robot {
 
   void click(String... x);
 
-  @Deprecated // use textExists
+  /**
+   * Count the visible text matching x on this page.
+   *
+   * NB This method is inconsistent with other locator methods and is being phased out.
+   *
+   * @param x - substring to be searched for
+   * @return number of elements found
+   */
+  @Deprecated
   int findText(String x);
 
+  /**
+   * EXPERIMENTAL - More robust method to check if text on a page.
+   *
+   * @param x - the list of locator strings to be used
+   * @return true iff the locator text is present on the page and visible.
+   */
   // TODO 00 multiple values best for disambiguation but doesn't filter?
   // so useless in this context? just does an AND?
   boolean textExists(String... x);

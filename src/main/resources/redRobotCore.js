@@ -89,6 +89,8 @@ RedRobot.isKey = function(node) {
     return true;
   } else if (node.nodeName == 'SELECT') {
     return true;
+  } else if (node.role && node.role.toUpperCase() == 'TEXTBOX') {
+    return true;
   }
   return false;
 }
