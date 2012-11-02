@@ -104,12 +104,28 @@ RedRobot.isCheckable = function(node) {
   return false;
 }
 
-RedRobot.isAnything = function(node) {
-  return (node.nodeName == 'BODY');
+RedRobot.isText = function(node) {
+  if (node.nodeType == 1) {
+    if (RedRobot.textMatch(node.title, RedRobot.textHack) > 0) return true;
+    if (RedRobot.textMatch(node.value, RedRobot.textHack) > 0) return true;
+      var kids = node.childNodes;
+      for (var i = 0; i < kids.length; i++) {
+        var e = kids[i];
+        if (e.nodeType == 3 && RedRobot.textMatch(e.nodeValue, RedRobot.textHack) > 0) return true;
+      }
+  }
+
+  return false;
 }
 
 RedRobot.findBestMatches = function(patterns, docm, matchFn) {
   var w = docm.defaultView;// window.frames[0];
+
+  if (matchFn == RedRobot.isText) {
+    var text = patterns[patterns.length - 1];
+    patterns.length--;
+    RedRobot.textHack = RedRobot.digest(text);
+  }
 
   // work out all candidate elements that match the function provided
   var cands = new Array();

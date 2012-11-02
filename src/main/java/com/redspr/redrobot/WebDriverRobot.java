@@ -102,7 +102,7 @@ public class WebDriverRobot implements Robot {
 
   @Override
   public boolean textExists(String... x) {
-    return !doFind("RedRobot.isAnything", x).isEmpty();
+    return !doFind("RedRobot.isText", x).isEmpty();
   }
 
   @Override
@@ -145,7 +145,6 @@ public class WebDriverRobot implements Robot {
     for (WebElement we : y) {
       try {
         if (we.isDisplayed()) {
-            System.out.println("FOUND " + we.getTagName());
           hits.add(we);
         }
       } catch (Throwable th) {
