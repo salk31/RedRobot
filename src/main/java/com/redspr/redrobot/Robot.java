@@ -20,10 +20,32 @@ package com.redspr.redrobot;
 
 import java.net.URL;
 
+/**
+ * Simple interface for UI integration testing using visible text and UI semantics.
+ *
+ * The locators "String... x" use fuzzy logic to find a single element.
+ * Multiple values help to select between multiple matches.
+ *
+ * The exact rules of what elements are selected and how they are located are implementation specific.
+ * In general they should aim to work consistently across Robot and UI implementations where practical.
+ */
 public interface Robot {
 
+  /**
+   * Move backwards in the client history.
+   */
   void back();
 
+  /**
+   * Move forwards in the client history.
+   */
+  void forward();
+
+  /**
+   * Find and click an element.
+   *
+   * @param x - list of visible text to locate the element
+   */
   void click(String... x);
 
   /**
@@ -47,6 +69,12 @@ public interface Robot {
   // so useless in this context? just does an AND?
   boolean textExists(String... x);
 
+  /**
+   * Find and return the value of a value UI control. e.g. Text Field
+   *
+   * @param x - list of visible text to locate the element
+   * @return the control element
+   */
   String get(String... x);
 
   @Deprecated // no replacement, use click(message, "OK")...
@@ -55,10 +83,21 @@ public interface Robot {
   @Deprecated // use isSelected
   boolean isChecked(String... x);
 
+  /**
+   * Find and return the state of controls like checkboxes, list box, radio button etc
+   *
+   * @param x - list of visible text to locate the element
+   * @return - true iff the item is selected
+   */
   boolean isSelected(String... x);
 
   void open(URL url);
 
+  /**
+   * Set the content of an element that accepts user input.
+   *
+   * @param x - list of visible text to locate the element
+   */
   void set(String... x);
 
   void close();

@@ -69,6 +69,12 @@ public class WebDriverRobot implements Robot {
   }
 
   @Override
+  public void forward() {
+    webDriver.navigate().forward();
+    readyStrategy.waitTillReady();
+  }
+
+  @Override
   public void click(String... x) {
     try {
       // TODO 01 unit test for this

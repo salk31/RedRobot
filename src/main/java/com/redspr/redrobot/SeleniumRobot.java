@@ -37,7 +37,7 @@ public class SeleniumRobot implements Robot {
   }
 
   private Selenium getSelenium(URL url) {
-    // TODO 09 do this if proto/domain/port changed
+    // XXX do this if proto/domain/port changed
     if (sel == null) {
       String x = url.getProtocol() + "://" + url.getHost() + ":"
           + url.getPort();
@@ -50,7 +50,7 @@ public class SeleniumRobot implements Robot {
 
   public SeleniumRobot(String browserString2) {
     this.browserString = browserString2;
-    // TODO 09 need to be able to configure this from outside (bean style)
+    // XXX need to be able to configure this from outside (bean style)
   }
 
   @Override
@@ -60,14 +60,19 @@ public class SeleniumRobot implements Robot {
   }
 
   @Override
+  public void forward() {
+      throw new RuntimeException("Not implemented yet.");
+  }
+
+  @Override
   public void click(String... x) {
-    history.push(sel.getLocation()); // TODO 09 may not be a page
+    history.push(sel.getLocation()); // XXX may not be a page
 
     try {
       sel.select(locClickable(x), x[x.length - 1]);
       return;
     } catch (Throwable t) {
-      // TODO 09?
+      // XXX
     }
     sel.click(locClickable(x));
 
