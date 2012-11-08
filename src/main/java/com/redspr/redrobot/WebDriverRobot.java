@@ -161,14 +161,16 @@ public class WebDriverRobot implements Robot {
 
 
   private WebElement doLocate(String cmd, String... args) {
-      JavascriptExecutor jse = (JavascriptExecutor) webDriver;
-      List<WebElement> y = (List) jse.executeScript(SCRIPT + ";return RedRobot.findBestMatches(arguments, document, " + cmd + ")", args);
-      List<WebElement> hits = new ArrayList<WebElement>(y.size());
-      for (WebElement we : y) {
-        if (we.isDisplayed()) {
-          return we;
-        }
+    JavascriptExecutor jse = (JavascriptExecutor) webDriver;
+    List<WebElement> y = (List) jse.executeScript(SCRIPT
+        + ";return RedRobot.findBestMatches(arguments, document, " + cmd + ")",
+        args);
+    List<WebElement> hits = new ArrayList<WebElement>(y.size());
+    for (WebElement we : y) {
+      if (we.isDisplayed()) {
+        return we;
       }
+    }
 
     StringBuilder sb = new StringBuilder();
     sb.append("Unable to find ");
