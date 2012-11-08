@@ -87,6 +87,11 @@ public class TestSimpleForm extends TestCase {
     		robot.click("onClick clicked", "ok");
     	}
 
+        {
+            robot.click("onClick");
+            robot.click("onClick clicked", "cancel");
+        }
+
     	robot.close();
     }
 
@@ -104,6 +109,17 @@ public class TestSimpleForm extends TestCase {
         assertTrue(robot.textExists("foo"));
 
         assertFalse(robot.textExists("foo bar hidden"));
+
+        robot.close();
+    }
+
+    @Test
+    public void testIgnore() throws Exception {
+        Robot robot = getRobot();
+
+        robot.click("Test ignore");
+
+        assertFalse(robot.textExists("foo bar"));
 
         robot.close();
     }

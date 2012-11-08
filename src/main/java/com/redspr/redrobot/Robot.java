@@ -62,11 +62,13 @@ public interface Robot {
   /**
    * EXPERIMENTAL - More robust method to check if text on a page.
    *
+   * NB Unlike other locators the final value has extra significance.
+   * It is used to identify candidate elements that are then selected
+   * between based on the other (if any) selector values.
+   *
    * @param x - the list of locator strings to be used
    * @return true iff the locator text is present on the page and visible.
    */
-  // TODO 00 multiple values best for disambiguation but doesn't filter?
-  // so useless in this context? just does an AND?
   boolean textExists(String... x);
 
   /**

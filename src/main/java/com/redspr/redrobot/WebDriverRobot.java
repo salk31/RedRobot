@@ -77,7 +77,6 @@ public class WebDriverRobot implements Robot {
   @Override
   public void click(String... x) {
     try {
-      // TODO 01 unit test for this
       Alert alert = webDriver.switchTo().alert();
       if (x.length > 1) {
           if (!alert.getText().equalsIgnoreCase(x[0])) {
@@ -129,7 +128,7 @@ public class WebDriverRobot implements Robot {
 
   @Override
   public String getConfirmation() {
-    return ""; // TODO 00 sel.getConfirmation();
+    throw new RuntimeException("Not supported");
   }
 
   @Override
@@ -155,7 +154,6 @@ public class WebDriverRobot implements Robot {
         }
       } catch (Throwable th) {
           // TODO 00 auto switch to frames?
-          // TODO 00 any elements to just ignore
       }
     }
     return hits;

@@ -121,6 +121,7 @@ RedRobot.isText = function(node) {
 RedRobot.findBestMatches = function(patterns, docm, matchFn) {
   var w = docm.defaultView;// window.frames[0];
 
+  // TODO 00 fix this extra ugly bit
   if (matchFn == RedRobot.isText) {
     var text = patterns[patterns.length - 1];
     patterns.length--;
