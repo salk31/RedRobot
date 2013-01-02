@@ -104,5 +104,7 @@ public interface Robot {
 
   void close();
 
+  // XXX experimental
+  void setReadyStrategy(ReadyStrategy p);
   // TODO 04 a dump/debug method?
 }

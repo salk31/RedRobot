@@ -178,4 +178,9 @@ public class SeleniumRobot implements Robot {
   public boolean textExists(String... x) {
     throw new RuntimeException("Not implemented");
   }
+
+
+  @Override
+  public void setReadyStrategy(ReadyStrategy p) {
+  }
 }
