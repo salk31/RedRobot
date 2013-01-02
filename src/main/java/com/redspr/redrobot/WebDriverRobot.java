@@ -27,12 +27,14 @@ import java.util.List;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.Select;
 
 public class WebDriverRobot implements Robot {
@@ -48,6 +50,11 @@ public class WebDriverRobot implements Robot {
 
   public WebDriverRobot(WebDriver webDriver2) {
     this.webDriver = webDriver2;
+
+    Capabilities caps = ((RemoteWebDriver) webDriver).getCapabilities();
+    String browserName = caps.getBrowserName();
+    String browserVersion = caps.getVersion();
+    System.out.println("Browser details: " + browserName + " " + browserVersion);
 
     try {
       InputStream is = getClass().getResourceAsStream("/redRobotCore.js");
@@ -163,9 +170,15 @@ public class WebDriverRobot implements Robot {
 
   private WebElement doLocate(String cmd, String... args) {
     JavascriptExecutor jse = (JavascriptExecutor) webDriver;
-    List<WebElement> y = (List) jse.executeScript(SCRIPT
-        + ";return RedRobot.findBestMatches(arguments, document, " + cmd + ")",
-        args);
+    Object rawResult = jse.executeScript(SCRIPT
+            + ";return RedRobot.findBestMatches(arguments, document, " + cmd + ")",
+            args);
+
+    if (!(rawResult instanceof List)) {
+      throw new RuntimeException("Expected a list but got '" + rawResult + "'");
+    }
+
+    List<WebElement> y = (List) rawResult;
     List<WebElement> hits = new ArrayList<WebElement>(y.size());
     for (WebElement we : y) {
       if (we.isDisplayed()) {
