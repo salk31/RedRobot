@@ -5,7 +5,7 @@
     <groupId>com.redspr.redrobot</groupId>
     <artifactId>redrobot-core</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.5</version>
+    <version>0.2.6</version>
     <name>redrobot</name>
     <url>http://code.google.com/p/redrobot/</url>
 

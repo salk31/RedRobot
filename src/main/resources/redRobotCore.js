@@ -210,15 +210,20 @@ RedRobot.digest = function(x) {
 
 RedRobot.visit = function(node, fn) {
   fn(node);
-  var kids = node.childNodes;
 
-  for (var i = 0; i < kids.length; i++) {
-    var e = kids[i];
-    RedRobot.visit(e, fn);  
+  for (var child = node.firstChild; child; child = child.nextSibling) {
+    if (child.nodeType == 1 || child.nodeType == 3) {
+      if (child.getAttribute && child.getAttribute('aria-hidden') == 'true') continue;
     
-    if (e.nodeName == 'IFRAME') {
-      e.contentDocument.redrobotParentNode = e;
-      RedRobot.visit(e.contentDocument, fn);
+      RedRobot.visit(child, fn);  
+    
+      if (child.nodeName == 'IFRAME') {
+        child.contentDocument.redrobotParentNode = child;
+        RedRobot.visit(child.contentDocument, fn);
+      }
     }
   }
+  
 }
+
+//RedRobot.findBestMatches(['Other', 'Other'], document, RedRobot.isClickable)
