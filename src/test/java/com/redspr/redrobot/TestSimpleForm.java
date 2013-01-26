@@ -1,7 +1,5 @@
 package com.redspr.redrobot;
 
-import java.net.URL;
-
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -10,7 +8,7 @@ public class TestSimpleForm extends TestCase {
 
   private Robot getRobot() throws Exception {
     Robot robot = new WebDriverRobot();
-    robot.open(new URL("http://localhost:8185"));
+    robot.open(getClass().getResource("/index.html"));
     return robot;
   }
 
@@ -122,6 +120,19 @@ public class TestSimpleForm extends TestCase {
     robot.click("Test ignore");
 
     assertFalse(robot.textExists("foo bar"));
+
+    robot.close();
+  }
+
+  @Test
+  public void testDialog() throws Exception {
+    Robot robot = getRobot();
+
+    robot.click("Test Dialog");
+
+    robot.click("alert");
+
+    assertTrue(robot.textExists("alert clicked"));
 
     robot.close();
   }

@@ -38,7 +38,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.Select;
 
 public class WebDriverRobot implements Robot {
-  private WebDriver webDriver;
+  private final WebDriver webDriver;
 
   private String SCRIPT;
 
@@ -115,7 +115,13 @@ public class WebDriverRobot implements Robot {
 
   @Override
   public boolean textExists(String... x) {
-    return !doFind("RedRobot.isText", x).isEmpty();
+    try {
+      Alert alert = webDriver.switchTo().alert();
+      // XXX should/could be fuzzy, use rhino to use JS code?
+      return alert.getText().equalsIgnoreCase(x[0]);
+    } catch (NoAlertPresentException ex) {
+      return !doFind("RedRobot.isText", x).isEmpty();
+    }
   }
 
   @Override
