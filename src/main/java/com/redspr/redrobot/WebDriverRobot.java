@@ -24,6 +24,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -36,10 +40,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.Select;
-
-import com.redspr.redrobot.ReadyStrategy;
-import com.redspr.redrobot.Robot;
-import com.redspr.redrobot.SleepReadyStrategy;
 
 public class WebDriverRobot implements Robot {
   private final WebDriver webDriver;
@@ -86,30 +86,46 @@ public class WebDriverRobot implements Robot {
     readyStrategy.waitTillReady();
   }
 
+  private double isMatch(String[] source, String[] input) {
+    Object args = new Object[]{source, input};
+    ScriptEngineManager factory = new ScriptEngineManager();
+    // create a JavaScript engine
+    ScriptEngine engine = factory.getEngineByName("JavaScript");
+    try {
+      engine.eval(SCRIPT);
+      engine.put("source", source);
+      engine.put("input", input);
+      Double rawResult = (Double) engine.eval("RedRobot.multiTextMatch(source, input)");
+      return rawResult.doubleValue();
+    } catch (ScriptException ex) {
+        throw new RuntimeException(ex);
+    }
+  }
+
   @Override
   public void click(String... x) {
+    if (x == null || x.length == 0) {
+        throw new RuntimeException("At least one selector required");
+    }
     try {
       Alert alert = webDriver.switchTo().alert();
-      if (x.length > 1) {
-          if (!alert.getText().equalsIgnoreCase(x[0])) {
-              throw new IllegalArgumentException("Alert text did not match '" + x[0] + "'");
-          }
-          String button = x[x.length - 1];
-          if ("OK".equalsIgnoreCase(button)) {
-              alert.accept();
-          } else if ("Cancel".equalsIgnoreCase(button)) {
-              alert.dismiss();
-          } else {
-              throw new IllegalArgumentException("It was alert so the last locator should be 'OK' or 'Cancel'");
-          }
-      }
-      return; // XXX hmmm
-    } catch (NoAlertPresentException ex) {
-      // fine
-    }
 
-    locClickable(x).click();
-    readyStrategy.waitTillReady();
+      double scoreOk = isMatch(new String[]{alert.getText(), "OK"}, x);
+      double scoreCancel = isMatch(new String[]{alert.getText(), "Cancel"}, x);
+
+      if (scoreOk > scoreCancel) {
+          alert.accept();
+      } else if (scoreOk < scoreCancel) {
+          alert.dismiss();
+      } else {
+          throw new IllegalArgumentException("Alert text did not match '" + x[0] + "'");
+      }
+
+    } catch (NoAlertPresentException ex) {
+      // fine, was no alert
+      locClickable(x).click();
+      readyStrategy.waitTillReady();
+    }
   }
 
   @Override
@@ -122,7 +138,7 @@ public class WebDriverRobot implements Robot {
     try {
       Alert alert = webDriver.switchTo().alert();
       // XXX should/could be fuzzy, use rhino to use JS code?
-      return alert.getText().equalsIgnoreCase(x[0]);
+      return isMatch(new String[]{alert.getText(), "OK", "Cancel"}, x) > 0;
     } catch (NoAlertPresentException ex) {
       return !doFind("RedRobot.isText", x).isEmpty();
     }

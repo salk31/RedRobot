@@ -132,8 +132,13 @@ public class TestSimpleForm extends TestCase {
     robot.click("Test Dialog");
 
     robot.click("alert");
-
     assertTrue(robot.textExists("alert clicked"));
+    robot.click("ok");
+    assertFalse(robot.textExists("alert clicked"));
+
+    robot.click("alert");
+    robot.click("alert clicked", "ok");
+
 
     robot.close();
   }

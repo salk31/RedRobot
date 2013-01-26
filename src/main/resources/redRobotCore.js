@@ -223,7 +223,25 @@ RedRobot.visit = function(node, fn) {
       }
     }
   }
-  
 }
 
+RedRobot.multiTextMatch = function(source, input) {
+  var score;
+  for (var i = 0; i < input.length; i++) {
+    var searchTextDigest = RedRobot.digest(input[i]);
+    var max = 0;
+    for (var s = 0; s < source.length; s++) {
+      var ss = RedRobot.textMatch(source[s], searchTextDigest);
+      if (ss > max) {
+        max = ss;
+      }
+    }
+    if (i == 0) {
+      score = max;
+    } else {
+      score = score * max;
+    }
+  }
+  return score;
+}
 //RedRobot.findBestMatches(['Other', 'Other'], document, RedRobot.isClickable)
