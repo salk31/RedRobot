@@ -37,6 +37,10 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.Select;
 
+import com.redspr.redrobot.ReadyStrategy;
+import com.redspr.redrobot.Robot;
+import com.redspr.redrobot.SleepReadyStrategy;
+
 public class WebDriverRobot implements Robot {
   private final WebDriver webDriver;
 
@@ -187,8 +191,12 @@ public class WebDriverRobot implements Robot {
     List<WebElement> y = (List) rawResult;
     List<WebElement> hits = new ArrayList<WebElement>(y.size());
     for (WebElement we : y) {
-      if (we.isDisplayed()) {
-        return we;
+      try {
+        if (we.isDisplayed()) {
+          return we;
+        }
+      } catch (Throwable ex) {
+        // ignore, log for debug/performance?
       }
     }
 
