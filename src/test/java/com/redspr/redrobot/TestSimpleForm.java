@@ -2,6 +2,7 @@ package com.redspr.redrobot;
 
 import junit.framework.TestCase;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestSimpleForm extends TestCase {
@@ -133,6 +134,28 @@ public class TestSimpleForm extends TestCase {
     robot.click("alert");
 
     assertTrue(robot.textExists("alert clicked"));
+
+    robot.close();
+  }
+
+  @Test
+  @Ignore
+  public void testTable() throws Exception {
+    Robot robot = getRobot();
+
+    robot.click("Test table");
+
+    robot.click("Orange", "Two", "Foo");
+    robot.click("alert orange two", "ok");
+
+    robot.click("Orange", "Three", "Foo");
+    robot.click("alert orange three", "ok");
+
+    robot.click("red", "two", "Foo");
+    robot.click("alert red two", "ok");
+
+    robot.click("red", "one", "Foo");
+    robot.click("alert red one", "ok");
 
     robot.close();
   }
