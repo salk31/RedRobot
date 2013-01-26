@@ -86,8 +86,7 @@ public class WebDriverRobot implements Robot {
     readyStrategy.waitTillReady();
   }
 
-  private double isMatch(String[] source, String[] input) {
-    Object args = new Object[]{source, input};
+  double isMatch(String[] source, String[] input) {
     ScriptEngineManager factory = new ScriptEngineManager();
     // create a JavaScript engine
     ScriptEngine engine = factory.getEngineByName("JavaScript");
@@ -137,7 +136,7 @@ public class WebDriverRobot implements Robot {
   public boolean textExists(String... x) {
     try {
       Alert alert = webDriver.switchTo().alert();
-      // XXX should/could be fuzzy, use rhino to use JS code?
+      // XXX magic
       return isMatch(new String[]{alert.getText(), "OK", "Cancel"}, x) > 0;
     } catch (NoAlertPresentException ex) {
       return !doFind("RedRobot.isText", x).isEmpty();
