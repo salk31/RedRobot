@@ -5,13 +5,27 @@
     <groupId>com.redspr.redrobot</groupId>
     <artifactId>redrobot-core</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.7</version>
     <name>redrobot</name>
+    <version>0.2.7</version>
+    <description>Alternative WebDriver selectors.</description>
     <url>http://code.google.com/p/redrobot/</url>
+
+    <licenses>
+        <license>
+            <name>GPL</name>
+            <url>http://www.gnu.org/licenses/</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <scm>
+        <url>https://code.google.com/p/redrobot/</url>
+        <connection>scm:git:https://code.google.com/p/redrobot/</connection>
+    </scm>
 
     <distributionManagement>
         <repository>
