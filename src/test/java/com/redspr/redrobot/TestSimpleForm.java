@@ -1,16 +1,19 @@
 package com.redspr.redrobot;
 
-import java.net.URL;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
-public class TestSimpleForm extends TestCase {
+public class TestSimpleForm {
 
   private Robot getRobot() throws Exception {
     Robot robot = new WebDriverRobot();
-    robot.open(new URL("http://localhost:8185"));
+    robot.open(getClass().getResource("/index.html"));
     return robot;
   }
 
@@ -127,6 +130,62 @@ public class TestSimpleForm extends TestCase {
 
     robot.click("option2", "OK");
 
+    robot.close();
+  }
+
+  @Test
+  public void testDialog() throws Exception {
+    Robot robot = getRobot();
+
+    robot.click("Test Dialog");
+
+    robot.click("alert");
+    assertTrue(robot.textExists("alert clicked"));
+    robot.click("ok");
+    assertFalse(robot.textExists("alert clicked"));
+
+    robot.click("alert");
+    robot.click("alert clicked", "ok");
+
+
+    robot.close();
+  }
+
+  @Test
+  @Ignore
+  public void testTable() throws Exception {
+    Robot robot = getRobot();
+
+    robot.click("Test table");
+
+    robot.click("Orange", "Two", "Foo");
+    robot.click("alert orange two", "ok");
+
+    robot.click("Orange", "Three", "Foo");
+    robot.click("alert orange three", "ok");
+
+    robot.click("red", "two", "Foo");
+    robot.click("alert red two", "ok");
+
+    robot.click("red", "one", "Foo");
+    robot.click("alert red one", "ok");
+
+    robot.close();
+  }
+
+  @Test
+  public void testTextMatch() throws Exception {
+    WebDriverRobot robot = (WebDriverRobot) getRobot();
+    {
+      double score = robot.isMatch(new String[]{"some 12356 guff"}, new String[]{"12356"});
+      assertTrue(score > 0);
+      assertTrue(score < 1);
+    }
+
+    {
+        double score = robot.isMatch(new String[]{"some 12356 guff"}, new String[]{"12356", "XXX"});
+        assertTrue(score == 0);
+      }
     robot.close();
   }
 }
