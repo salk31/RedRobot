@@ -175,21 +175,32 @@ RedRobot.findBestMatches = function(patterns, docm, matchFn) {
 RedRobot.getMatch = function(text, matches, e) {
   var match = null;
   var score;
-  if ((score = RedRobot.textMatch(e.nodeValue, text)) > 0) {
-    // e.parentNode.style.color='yellow';
-    match = e;
-    if (e.parentNode.nodeName == 'LABEL') {
-      var id = e.parentNode.getAttribute('for');
-      if (id) {
-        match = e.ownerDocument.getElementById(id);
+  var boost = 1.0;
+  switch (e.nodeName) {
+  case "#text" :
+    if ((score = RedRobot.textMatch(e.nodeValue, text)) > 0) {
+      match = e;
+      if (e.parentNode.nodeName == 'LABEL') {
+        var id = e.parentNode.getAttribute('for');
+        if (id) {
+          match = e.ownerDocument.getElementById(id);
+        }
+      }
+      
+      if (e.parentNode.nodeName == 'OPTION') {
+        if (!e.parentNode.selected) boost = 0.5;
       }
     }
-  } else if ((score = RedRobot.textMatch(e.title, text)) > 0 || (score = RedRobot.textMatch(e.value, text)) > 0) {
-    match = e;
+    break;
+  default : 
+    if ((score = RedRobot.textMatch(e.title, text)) > 0 || (score = RedRobot.textMatch(e.value, text)) > 0) {
+      match = e;
+    }
   }
 
+
   if (match) {
-    match['data-redrobotScore'] = score;
+    match['data-redrobotScore'] = score * boost;
     matches.push(match);
   }
 }
@@ -209,18 +220,19 @@ RedRobot.digest = function(x) {
 
 
 RedRobot.visit = function(node, fn) {
-  fn(node);
-
   for (var child = node.firstChild; child; child = child.nextSibling) {
-    if (child.nodeType == 1 || child.nodeType == 3) {
+    // XXX do different things for text vs element!
+    if (child.nodeType == 1) {
+      fn(child);
       if (child.getAttribute && child.getAttribute('aria-hidden') == 'true') continue;
-    
       RedRobot.visit(child, fn);  
-    
+        
       if (child.nodeName == 'IFRAME') {
         child.contentDocument.redrobotParentNode = child;
         RedRobot.visit(child.contentDocument, fn);
       }
+    } else if (child.nodeType == 3) {
+      fn(child);
     }
   }
   

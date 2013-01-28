@@ -115,13 +115,17 @@ public class TestSimpleForm extends TestCase {
     robot.close();
   }
 
+  // TODO 00 webdriver open file?
+
   @Test
-  public void testIgnore() throws Exception {
+  public void testAmbiguousSelect() throws Exception {
     Robot robot = getRobot();
 
-    robot.click("Test ignore");
+    robot.click("Test ambiguous select");
 
-    assertFalse(robot.textExists("foo bar"));
+    robot.click("One");
+
+    robot.click("option2", "OK");
 
     robot.close();
   }
