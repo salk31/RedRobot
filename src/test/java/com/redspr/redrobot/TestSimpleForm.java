@@ -1,11 +1,14 @@
 package com.redspr.redrobot;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class TestSimpleForm extends TestCase {
+public class TestSimpleForm {
 
   private Robot getRobot() throws Exception {
     Robot robot = new WebDriverRobot();
