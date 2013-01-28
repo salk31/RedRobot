@@ -11,7 +11,7 @@
     <artifactId>redrobot-core</artifactId>
     <packaging>jar</packaging>
     <name>redrobot</name>
-    <version>0.2.10-SNAPSHOT</version>
+    <version>0.2.7</version>
     <description>Alternative WebDriver selectors.</description>
     <url>http://code.google.com/p/redrobot/</url>
 
@@ -33,13 +33,6 @@
         <developerConnection>scm:git:https://code.google.com/p/redrobot/</developerConnection>
         <connection>scm:git:https://code.google.com/p/redrobot/</connection>
     </scm>
-
-    <distributionManagement>
-        <repository>
-            <id>uas-releases</id>
-            <url>http://repository.diamond.ac.uk/artifactory/libs-releases-local</url>
-        </repository>
-    </distributionManagement>
 
     <dependencies>
         <dependency>
