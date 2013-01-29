@@ -1,14 +1,20 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+    
     <groupId>com.redspr.redrobot</groupId>
     <artifactId>redrobot-core</artifactId>
     <packaging>jar</packaging>
     <name>redrobot</name>
-    <version>0.2.7</version>
+    <version>0.2.11-SNAPSHOT</version>
     <description>Alternative WebDriver selectors.</description>
     <url>http://code.google.com/p/redrobot/</url>
+
 
     <licenses>
         <license>
@@ -24,15 +30,9 @@
 
     <scm>
         <url>https://code.google.com/p/redrobot/</url>
+        <developerConnection>scm:git:https://code.google.com/p/redrobot/</developerConnection>
         <connection>scm:git:https://code.google.com/p/redrobot/</connection>
     </scm>
-
-    <distributionManagement>
-        <repository>
-            <id>uas-releases</id>
-            <url>http://repository.diamond.ac.uk/artifactory/libs-releases-local</url>
-        </repository>
-    </distributionManagement>
 
     <dependencies>
         <dependency>

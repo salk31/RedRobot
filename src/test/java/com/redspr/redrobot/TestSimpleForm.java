@@ -1,6 +1,5 @@
 package com.redspr.redrobot;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -118,7 +117,16 @@ public class TestSimpleForm {
     robot.close();
   }
 
-  // TODO 00 webdriver open file?
+  @Test
+  public void testIgnore() throws Exception {
+    Robot robot = getRobot();
+
+    robot.click("Test ignore");
+
+    assertFalse(robot.textExists("foo bar"));
+
+    robot.close();
+  }
 
   @Test
   public void testAmbiguousSelect() throws Exception {
