@@ -72,9 +72,16 @@ RedRobot.isClickable = function(node) {
     return true;
   } else if (node.nodeName=='OPTION') {
     return true;
-  } else if (node.click && node.nodeName != 'BODY' && node.nodeName != 'HTML') {
-    // firefox seems to have click attribute for body and html!?
-    return true;
+  } else if (node.getAttribute) {
+    switch (node.getAttribute('role')) {
+    case 'menuitem':
+    case 'tab':
+    case 'listitem':
+    case 'treeitem':
+    case 'button':
+      return true;
+    default:
+    }
   }
   return false;
 }

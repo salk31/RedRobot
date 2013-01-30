@@ -65,6 +65,11 @@ public class SeleniumRobot implements Robot {
   }
 
   @Override
+  public void reload() {
+      throw new RuntimeException("Not implemented yet.");
+  }
+
+  @Override
   public void click(String... x) {
     history.push(sel.getLocation()); // XXX may not be a page
 

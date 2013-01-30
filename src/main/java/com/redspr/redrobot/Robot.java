@@ -41,6 +41,8 @@ public interface Robot {
    */
   void forward();
 
+  void reload();
+
   /**
    * Find and click an element.
    *

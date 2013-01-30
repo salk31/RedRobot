@@ -86,6 +86,12 @@ public class WebDriverRobot implements Robot {
     readyStrategy.waitTillReady();
   }
 
+  @Override
+  public void reload() {
+    webDriver.navigate().refresh();
+    readyStrategy.waitTillReady();
+  }
+
   double isMatch(String[] source, String[] input) {
     ScriptEngineManager factory = new ScriptEngineManager();
     // create a JavaScript engine

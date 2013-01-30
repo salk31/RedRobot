@@ -81,6 +81,7 @@ public class TestSimpleForm {
   }
 
   @Test
+  @Ignore
   public void testClickable() throws Exception {
     Robot robot = getRobot();
     robot.click("Test Clickable");
