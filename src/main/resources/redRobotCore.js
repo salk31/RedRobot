@@ -180,36 +180,66 @@ RedRobot.findBestMatches = function(patterns, docm, matchFn) {
 };
 
 RedRobot.getMatch = function(text, matches, e) {
-  var match = null;
-  var score;
-  var boost = 1.0;
   switch (e.nodeName) {
   case "#text" :
     if ((score = RedRobot.textMatch(e.nodeValue, text)) > 0) {
-      match = e;
-      if (e.parentNode.nodeName == 'LABEL') {
-        var id = e.parentNode.getAttribute('for');
+      var parentNode = e.parentNode;
+      switch (parentNode.nodeName) {
+      case 'LABEL' :
+        var id = parentNode.getAttribute('for');
         if (id) {
-          match = e.ownerDocument.getElementById(id);
+          RedRobot.pushMatch(matches, e.ownerDocument.getElementById(id), score);
+        } else {
+          RedRobot.pushMatch(matches, e, score);
         }
-      }
-      
-      if (e.parentNode.nodeName == 'OPTION') {
-        if (!e.parentNode.selected) boost = 0.5;
+        break;
+        
+      case 'OPTION' :
+        if (!e.parentNode.selected) {
+          score = score * 0.5;
+        }
+        RedRobot.pushMatch(matches, e, score);
+        break;
+        
+      case 'TH' :
+        var row = parentNode.parentNode;
+        var tbody = row.parentNode;
+        var col0 = 0;
+        for (var i = 0; i < parentNode.cellIndex; i++) {
+          col0 += row.cells[i].colSpan;
+          parentNode.title += row.cells[i].colSpan;
+        
+        }
+        var col1 = col0 + parentNode.colSpan;
+
+        for (var i = row.rowIndex + 1; i < tbody.rows.length; i++) {
+          var currentCol = 0;
+          var currentColIdx = 0;
+          var currentRow = tbody.rows[i];
+          while (currentCol < col1) {
+            var currentCell = currentRow.cells[currentColIdx++];
+            if (currentCol >= col0) {
+              RedRobot.pushMatch(matches, currentCell, 0.9);
+            }
+            currentCol += currentCell.colSpan;
+          }
+        }
+        break;
+      default:
+        RedRobot.pushMatch(matches, e, score);
       }
     }
     break;
   default : 
     if ((score = RedRobot.textMatch(e.title, text)) > 0 || (score = RedRobot.textMatch(e.value, text)) > 0) {
-      match = e;
+      RedRobot.pushMatch(matches, e, score);
     }
   }
+}
 
-
-  if (match) {
-    match['data-redrobotScore'] = score * boost;
-    matches.push(match);
-  }
+RedRobot.pushMatch = function(matches, elmt, score) {
+  elmt['data-redrobotScore'] = score;
+  matches.push(elmt);
 }
 
 RedRobot.textMatch = function(candidateText, searchTextDigest) {

@@ -80,6 +80,8 @@ public class TestSimpleForm {
     robot.close();
   }
 
+
+  // TODO 00 test ARIA roles
   @Test
   @Ignore
   public void testClickable() throws Exception {
@@ -160,8 +162,8 @@ public class TestSimpleForm {
     robot.close();
   }
 
+  // TODO 00 test colspan
   @Test
-  @Ignore
   public void testTable() throws Exception {
     Robot robot = getRobot();
 
@@ -175,9 +177,6 @@ public class TestSimpleForm {
 
     robot.click("red", "two", "Foo");
     robot.click("alert red two", "ok");
-
-    robot.click("red", "one", "Foo");
-    robot.click("alert red one", "ok");
 
     robot.close();
   }
