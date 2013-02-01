@@ -174,6 +174,7 @@ RedRobot.findBestMatches = function(patterns, docm, matchFn) {
   var result = new Array();
   for (var i = 0; i < cands.length; i++) {
     var node = cands[i].node;
+    node['data-redrobotTotal'] = cands[i].score;
     result.push(node);
   }
   return result;
@@ -301,10 +302,10 @@ RedRobot.addDebug = function(docm, elmt, x, y) {
   css.innerHTML = 
 	  ".RedRobotDebug {"
 	  + "position: relative;"
-	  + "width: 200px;"
-	  + "height: 100px;"
+//	  + "width: 200px;"
+//	  + "height: 100px;"
 	  + "text-align: center;"
-	  + "line-height: 100px;"
+//	  + "line-height: 100px;"
 	  + "background-color: #fff;"
 	  + "border: 8px solid #666;"
 	  + "-webkit-border-radius: 30px;"
@@ -314,33 +315,11 @@ RedRobot.addDebug = function(docm, elmt, x, y) {
 	  + "-moz-box-shadow: 2px 2px 4px #888;"
 	  + "box-shadow: 2px 2px 4px #888;"
 	  + "}\n"
-	  + ".RedRobotDebug:before"
-	  + "{"
-	  + "content: ' ';"
-	  + "position: absolute;"
-	  + "width: 0;"
-	  + "height: 0;"
-	  + "left: 30px;"
-	  + "top: 100px;"
-	  + "border: 25px solid;"
-	  + "border-color: #666 transparent transparent #666;"
-	  + "}\n"
-	  + ".RedRobotDebug:after"
-	  + "{"
-	  + "content: ' ';"
-	  + "position: absolute;"
-	  + "width: 0;"
-	  + "height: 0;"
-	  + "left: 38px;"
-	  + "top: 100px;"
-	  + "border: 15px solid;"
-	  + "border-color: #fff transparent transparent #fff;"
-	  + "}";
+;
   docm.body.appendChild(css);
-  var div = docm.createElement('div');
-  docm.body.appendChild(div);
-  div.setAttribute('class', 'RedRobotDebug');
-  div.setAttribute('style', 'position:absolute; left:' + x + 'px; top:' + y + 'px');
-  div.setInnerText = 'debug';
+
+  elmt.setAttribute('class', 'RedRobotDebug');
+  elmt.setAttribute('title', elmt['data-redrobotTotal']);
+
 }
 //RedRobot.findBestMatches(['Other', 'Other'], document, RedRobot.isClickable)
