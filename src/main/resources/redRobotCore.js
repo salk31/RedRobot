@@ -169,7 +169,7 @@ RedRobot.findBestMatches = function(patterns, docm, matchFn) {
   }
 
   cands.sort(RedRobot.Cand.fn);
-  
+
   // turn into a simple array of nodes
   var result = new Array();
   for (var i = 0; i < cands.length; i++) {
@@ -239,6 +239,7 @@ RedRobot.getMatch = function(text, matches, e) {
 
 RedRobot.pushMatch = function(matches, elmt, score) {
   elmt['data-redrobotScore'] = score;
+
   matches.push(elmt);
 }
 
@@ -292,5 +293,54 @@ RedRobot.multiTextMatch = function(source, input) {
     }
   }
   return score;
+}
+
+RedRobot.addDebug = function(docm, elmt, x, y) {
+  var css = docm.createElement("style");
+  css.type = "text/css";
+  css.innerHTML = 
+	  ".RedRobotDebug {"
+	  + "position: relative;"
+	  + "width: 200px;"
+	  + "height: 100px;"
+	  + "text-align: center;"
+	  + "line-height: 100px;"
+	  + "background-color: #fff;"
+	  + "border: 8px solid #666;"
+	  + "-webkit-border-radius: 30px;"
+	  + "-moz-border-radius: 30px;"
+	  + "border-radius: 30px;"
+	  + "-webkit-box-shadow: 2px 2px 4px #888;"
+	  + "-moz-box-shadow: 2px 2px 4px #888;"
+	  + "box-shadow: 2px 2px 4px #888;"
+	  + "}\n"
+	  + ".RedRobotDebug:before"
+	  + "{"
+	  + "content: ' ';"
+	  + "position: absolute;"
+	  + "width: 0;"
+	  + "height: 0;"
+	  + "left: 30px;"
+	  + "top: 100px;"
+	  + "border: 25px solid;"
+	  + "border-color: #666 transparent transparent #666;"
+	  + "}\n"
+	  + ".RedRobotDebug:after"
+	  + "{"
+	  + "content: ' ';"
+	  + "position: absolute;"
+	  + "width: 0;"
+	  + "height: 0;"
+	  + "left: 38px;"
+	  + "top: 100px;"
+	  + "border: 15px solid;"
+	  + "border-color: #fff transparent transparent #fff;"
+	  + "}";
+  docm.body.appendChild(css);
+  var div = docm.createElement('div');
+  docm.body.appendChild(div);
+  div.setAttribute('class', 'RedRobotDebug');
+  div.setAttribute('style', 'position:absolute; left:' + x + 'px; top:' + y + 'px');
+  div.setInnerText = 'debug';
 }
 //RedRobot.findBestMatches(['Other', 'Other'], document, RedRobot.isClickable)

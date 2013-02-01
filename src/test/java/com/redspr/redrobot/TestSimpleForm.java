@@ -178,7 +178,7 @@ public class TestSimpleForm {
     robot.click("red", "two", "Foo");
     robot.click("alert red two", "ok");
 
-    robot.close();
+    //robot.close();
   }
 
   @Test

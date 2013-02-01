@@ -214,6 +214,15 @@ public class WebDriverRobot implements Robot {
     for (WebElement we : y) {
       try {
         if (we.isDisplayed()) {
+            try {
+            JavascriptExecutor jse2 = (JavascriptExecutor) webDriver;
+            Object rawResult2 = jse2.executeScript(SCRIPT
+                    + ";return RedRobot.addDebug(document, arguments[0], arguments[1], arguments[2])",
+                    new Object[]{we, we.getLocation().getX(), we.getLocation().getY()});
+
+            } catch (Throwable tg) {
+                tg.printStackTrace();
+            }
           return we;
         }
       } catch (Throwable ex) {
