@@ -198,6 +198,37 @@ public class WebDriverRobot implements Robot {
     return hits;
   }
 
+  private void debug(List<WebElement> elements) {
+      clearDebug();
+      int count = 1;
+      for (WebElement elmt : elements) {
+      try {
+      JavascriptExecutor jse2 = (JavascriptExecutor) webDriver;
+      Object rawResult2 = jse2.executeScript(SCRIPT
+              + ";return RedRobot.addDebug(document, arguments[0], arguments[1])",
+              new Object[]{elmt, count});
+      count++;
+      } catch (Throwable tg) {
+          tg.printStackTrace();
+
+      }
+       if (count > 4) break;
+      }
+  }
+
+  private void clearDebug() {
+
+      try {
+      JavascriptExecutor jse2 = (JavascriptExecutor) webDriver;
+      Object rawResult2 = jse2.executeScript(SCRIPT
+              + ";return RedRobot.clearDebug(document)");
+
+      } catch (Throwable tg) {
+          tg.printStackTrace();
+
+      }
+
+  }
 
   private WebElement doLocate(String cmd, String... args) {
     JavascriptExecutor jse = (JavascriptExecutor) webDriver;
@@ -210,19 +241,11 @@ public class WebDriverRobot implements Robot {
     }
 
     List<WebElement> y = (List) rawResult;
-    List<WebElement> hits = new ArrayList<WebElement>(y.size());
+
+    debug(y);
     for (WebElement we : y) {
       try {
         if (we.isDisplayed()) {
-            try {
-            JavascriptExecutor jse2 = (JavascriptExecutor) webDriver;
-            Object rawResult2 = jse2.executeScript(SCRIPT
-                    + ";return RedRobot.addDebug(document, arguments[0], arguments[1], arguments[2])",
-                    new Object[]{we, we.getLocation().getX(), we.getLocation().getY()});
-
-            } catch (Throwable tg) {
-                tg.printStackTrace();
-            }
           return we;
         }
       } catch (Throwable ex) {

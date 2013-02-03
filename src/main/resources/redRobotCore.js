@@ -296,11 +296,20 @@ RedRobot.multiTextMatch = function(source, input) {
   return score;
 }
 
-RedRobot.addDebug = function(docm, elmt, x, y) {
+RedRobot.clearDebug = function(docm) {
+  var elmts = docm.getElementsByClassName("RedRobot");
+  while (elmts.length > 0) {
+    elmts[0].parentNode.removeChild(elmts[0]);
+  }
+}
+
+RedRobot.addDebug = function(docm, elmt, label) {
+  var name = "rr" + Math.floor(Math.random() * 0x100000).toString(16);
   var css = docm.createElement("style");
   css.type = "text/css";
+  css.className = "RedRobot";
   css.innerHTML = 
-	  ".RedRobotDebug {"
+	  "." + name + " {"
 	  + "position: relative;"
 //	  + "width: 200px;"
 //	  + "height: 100px;"
@@ -315,11 +324,11 @@ RedRobot.addDebug = function(docm, elmt, x, y) {
 	  + "-moz-box-shadow: 2px 2px 4px #888;"
 	  + "box-shadow: 2px 2px 4px #888;"
 	  + "}\n"
-	  + ".RedRobotDebug:before"
+	  + "." + name + ":before"
 	  + "{"
 	  + "font-size: 10px;"
 	  + "color: #fff;"
-	  + "content: '1';"
+	  + "content: '" + label + "';"
 	  + "position: absolute;"
 	  + "width: 12px;"
 	  + "height: 12px;"
@@ -336,8 +345,8 @@ RedRobot.addDebug = function(docm, elmt, x, y) {
 ;
   docm.body.appendChild(css);
 
-  elmt.setAttribute('class', 'RedRobotDebug');
-  elmt.setAttribute('title', elmt['data-redrobotTotal']);
+  elmt.className += ' ' + name;
+//  elmt.setAttribute('title', elmt['data-redrobotTotal']);
 
 }
 //RedRobot.findBestMatches(['Other', 'Other'], document, RedRobot.isClickable)
