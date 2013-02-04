@@ -128,7 +128,9 @@ public class WebDriverRobot implements Robot {
 
     } catch (NoAlertPresentException ex) {
       // fine, was no alert
+      clearDebug();
       locClickable(x).click();
+      debug();  //XXX grrr, can't do it if modal present
       readyStrategy.waitTillReady();
     }
   }
@@ -198,15 +200,15 @@ public class WebDriverRobot implements Robot {
     return hits;
   }
 
-  private void debug(List<WebElement> elements) {
-      clearDebug();
+  private void debug() {
+
       int count = 1;
-      for (WebElement elmt : elements) {
+      for (WebElement elmt : last) {
       try {
       JavascriptExecutor jse2 = (JavascriptExecutor) webDriver;
       Object rawResult2 = jse2.executeScript(SCRIPT
-              + ";return RedRobot.addDebug(document, arguments[0], arguments[1])",
-              new Object[]{elmt, count});
+              + ";return RedRobot.addDebug(document, arguments[0], arguments[1], arguments[2], arguments[3])",
+              new Object[]{elmt, elmt.getLocation().getX(), elmt.getLocation().getY(), count});
       count++;
       } catch (Throwable tg) {
           tg.printStackTrace();
@@ -230,6 +232,8 @@ public class WebDriverRobot implements Robot {
 
   }
 
+  private List<WebElement> last;
+
   private WebElement doLocate(String cmd, String... args) {
     JavascriptExecutor jse = (JavascriptExecutor) webDriver;
     Object rawResult = jse.executeScript(SCRIPT
@@ -241,29 +245,35 @@ public class WebDriverRobot implements Robot {
     }
 
     List<WebElement> y = (List) rawResult;
-
-    debug(y);
+    last = y;
+    WebElement got = null;
+    //debug(y);
     for (WebElement we : y) {
       try {
         if (we.isDisplayed()) {
-          return we;
+          got = we;
+          break;
         }
       } catch (Throwable ex) {
         // ignore, log for debug/performance?
       }
     }
+    //debug(y);
+    if (got == null) {
+      StringBuilder sb = new StringBuilder();
+      sb.append("Unable to find ");
+      sb.append(cmd);
+      for (String a : args) {
+        sb.append(", '");
+        sb.append(a);
+        sb.append("'");
+      }
 
-    StringBuilder sb = new StringBuilder();
-    sb.append("Unable to find ");
-    sb.append(cmd);
-    for (String a : args) {
-      sb.append(", '");
-      sb.append(a);
-      sb.append("'");
+      throw new NotFoundException(sb.toString());
     }
-
-    throw new NotFoundException(sb.toString());
+    return got;
   }
+
 
   private WebElement locClickable(String... x) {
     return doLocate("RedRobot.isClickable", x);

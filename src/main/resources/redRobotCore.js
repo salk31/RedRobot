@@ -303,16 +303,18 @@ RedRobot.clearDebug = function(docm) {
   }
 }
 
-RedRobot.addDebug = function(docm, elmt, label) {
+RedRobot.addDebug = function(docm, elmt, x, y, label) {
   var name = "rr" + Math.floor(Math.random() * 0x100000).toString(16);
   var css = docm.createElement("style");
   css.type = "text/css";
   css.className = "RedRobot";
   css.innerHTML = 
 	  "." + name + " {"
-	  + "position: relative;"
-//	  + "width: 200px;"
-//	  + "height: 100px;"
+	  + "position: absolute;"
+	  + "left:" + x + ";"
+      + "top:" + y + ";"
+	  + "width: 10px;"
+	  + "height: 10px;"
 	  + "text-align: center;"
 //	  + "line-height: 100px;"
 	  + "background-color: #fff;"
@@ -343,9 +345,12 @@ RedRobot.addDebug = function(docm, elmt, label) {
 //	  + "border-color: #666 transparent #666 transparent;"
 	  + "}\n"
 ;
+  
   docm.body.appendChild(css);
-
-  elmt.className += ' ' + name;
+  var div = docm.createElement('div');
+  docm.body.appendChild(div);
+  
+  div.className = 'RedRobot ' + name;
 //  elmt.setAttribute('title', elmt['data-redrobotTotal']);
 
 }
