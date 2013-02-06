@@ -26,11 +26,11 @@ import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.SeleniumException;
 
 public class SeleniumRobot implements Robot {
-  private Stack<String> history = new Stack<String>();
+  private final Stack<String> history = new Stack<String>();
 
   private Selenium sel;
 
-  private String browserString;
+  private final String browserString;
 
   public SeleniumRobot() {
     this("*firefox");
@@ -70,12 +70,12 @@ public class SeleniumRobot implements Robot {
   }
 
   @Override
-  public void click(String... x) {
+  public Result click(String... x) {
     history.push(sel.getLocation()); // XXX may not be a page
 
     try {
       sel.select(locClickable(x), x[x.length - 1]);
-      return;
+      return null;
     } catch (Throwable t) {
       // XXX
     }
@@ -85,6 +85,8 @@ public class SeleniumRobot implements Robot {
       sel.waitForPageToLoad("10000");
     } catch (Throwable t) {
     }
+
+    return null;
   }
 
   @Override

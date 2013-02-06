@@ -220,7 +220,7 @@ RedRobot.getMatch = function(text, matches, e) {
           while (currentCol < col1) {
             var currentCell = currentRow.cells[currentColIdx++];
             if (currentCol >= col0) {
-              RedRobot.pushMatch(matches, currentCell, 0.9);
+              RedRobot.pushMatch(matches, currentCell, score / tbody.rows.length);
             }
             currentCol += currentCell.colSpan;
           }
@@ -311,13 +311,13 @@ RedRobot.addDebug = function(docm, elmt, x, y, label) {
   css.innerHTML = 
 	  "." + name + " {"
 	  + "position: absolute;"
-	  + "left:" + x + ";"
-      + "top:" + y + ";"
-	  + "width: 10px;"
-	  + "height: 10px;"
+	  + "left:" + (x - 6)+ ";"
+      + "top:" + (y - 6) + ";"
+	  + "width: 20px;"
+	  + "height: 20px;"
 	  + "text-align: center;"
 //	  + "line-height: 100px;"
-	  + "background-color: #fff;"
+	  + "background-color: transparent;"
 	  + "border: 8px solid #666;"
 	  + "-webkit-border-radius: 30px;"
 	  + "-moz-border-radius: 30px;"
@@ -334,13 +334,14 @@ RedRobot.addDebug = function(docm, elmt, x, y, label) {
 	  + "position: absolute;"
 	  + "width: 12px;"
 	  + "height: 12px;"
+	  + "z-index: 2;"
 	  + "background-color: red;"
 	  + "border: 2px solid #666;"
 	  + "-webkit-border-radius: 5px;"
 	  + "-moz-border-radius: 5px;"
 	  + "border-radius: 5px;"
-//	  + "right: 5px;"
-//	  + "top: 5px;"
+	  + "right: 12px;"
+	  + "top: 12px;"
 //	  + "border: 1px solid;"
 //	  + "border-color: #666 transparent #666 transparent;"
 	  + "}\n"

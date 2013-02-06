@@ -169,14 +169,15 @@ public class TestSimpleForm {
 
     robot.click("Test table");
 
-    robot.click("Orange", "Two", "Foo");
-    robot.click("alert orange two", "ok");
+    //robot.click("Orange", "Two", "Foo");
+    //robot.click("alert orange two", "ok");
 
-    robot.click("Orange", "Three", "Foo");
-    robot.click("alert orange three", "ok");
+    //robot.click("Orange", "Three", "Foo");
+    //robot.click("alert orange three", "ok");
 
-    robot.click("red", "two", "Foo");
+    Result r = robot.click("red", "two", "Foo");
     robot.click("alert red two", "ok");
+    r.renderDebug();
 
     //robot.close();
   }

@@ -108,7 +108,7 @@ public class WebDriverRobot implements Robot {
   }
 
   @Override
-  public void click(String... x) {
+  public Result click(String... x) {
     if (x == null || x.length == 0) {
         throw new RuntimeException("At least one selector required");
     }
@@ -125,13 +125,14 @@ public class WebDriverRobot implements Robot {
       } else {
           throw new IllegalArgumentException("Alert text did not match '" + x[0] + "'");
       }
-
+      return null;
     } catch (NoAlertPresentException ex) {
       // fine, was no alert
-      clearDebug();
+
       locClickable(x).click();
-      debug();  //XXX grrr, can't do it if modal present
+
       readyStrategy.waitTillReady();
+      return new WebDriverResult(this, last);
     }
   }
 
@@ -200,10 +201,10 @@ public class WebDriverRobot implements Robot {
     return hits;
   }
 
-  private void debug() {
+  void debug(List<WebElement> xxx) {
 
       int count = 1;
-      for (WebElement elmt : last) {
+      for (WebElement elmt : xxx) {
       try {
       JavascriptExecutor jse2 = (JavascriptExecutor) webDriver;
       Object rawResult2 = jse2.executeScript(SCRIPT
@@ -218,7 +219,7 @@ public class WebDriverRobot implements Robot {
       }
   }
 
-  private void clearDebug() {
+   void clearDebug() {
 
       try {
       JavascriptExecutor jse2 = (JavascriptExecutor) webDriver;

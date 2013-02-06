@@ -48,7 +48,7 @@ public interface Robot {
    *
    * @param x - list of visible text to locate the element
    */
-  void click(String... x);
+  Result click(String... x);
 
   /**
    * Count the visible text matching x on this page.
