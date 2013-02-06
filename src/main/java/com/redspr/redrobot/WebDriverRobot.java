@@ -145,7 +145,14 @@ public class WebDriverRobot implements Robot {
       // XXX magic
       return isMatch(new String[]{alert.getText(), "OK", "Cancel"}, x) > 0;
     } catch (NoAlertPresentException ex) {
-      return !doFind("RedRobot.isText", x).isEmpty();
+      String[] n = allButLast(x);
+      String v = x[x.length - 1];
+      try {
+        locText(n , v);
+      } catch (NotFoundException ex2) {
+        return false;
+      }
+      return true;
     }
   }
 
@@ -199,11 +206,11 @@ public class WebDriverRobot implements Robot {
   }
 
 
-  private WebElement doLocate(String cmd, String... args) {
+  private WebElement doLocate(String cmd, Object cmdArg, String[] args) {
     JavascriptExecutor jse = (JavascriptExecutor) webDriver;
     Object rawResult = jse.executeScript(SCRIPT
-            + ";return RedRobot.findBestMatches(arguments, document, " + cmd + ")",
-            args);
+            + ";return RedRobot.findBestMatches(document, " + cmd + " , arguments[0], arguments[1])",
+            new Object[]{cmdArg, args});
 
     if (!(rawResult instanceof List)) {
       throw new RuntimeException("Expected a list but got '" + rawResult + "'");
@@ -234,15 +241,19 @@ public class WebDriverRobot implements Robot {
   }
 
   private WebElement locClickable(String... x) {
-    return doLocate("RedRobot.isClickable", x);
+    return doLocate("RedRobot.isClickable", null, x);
+  }
+
+  private WebElement locText(String[] x, String v) {
+    return doLocate("RedRobot.isText", v, x);
   }
 
   private WebElement locKey(String... x) {
-    return doLocate("RedRobot.isKey", x);
+    return doLocate("RedRobot.isKey", null, x);
   }
 
   private WebElement locCheckable(String... x) {
-    return doLocate("RedRobot.isCheckable", x);
+    return doLocate("RedRobot.isCheckable", null, x);
   }
 
   @Override
@@ -251,12 +262,17 @@ public class WebDriverRobot implements Robot {
      readyStrategy.waitTillReady();
   }
 
-  @Override
-  public void set(String... x) {
+  private String[] allButLast(String[] x) {
     String[] n = new String[x.length - 1];
     for (int i = 0; i < n.length; i++) {
       n[i] = x[i];
     }
+    return n;
+  }
+
+  @Override
+  public void set(String... x) {
+    String[] n = allButLast(x);
     String v = x[x.length - 1];
     WebElement e = this.locKey(n);
     try {

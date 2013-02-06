@@ -111,33 +111,27 @@ RedRobot.isCheckable = function(node) {
   return false;
 }
 
-RedRobot.isText = function(node) {
+RedRobot.isText = function(node, text) {
+  var digest = RedRobot.digest(text); // do too many times
   if (node.nodeType == 1) {
-    if (RedRobot.textMatch(node.title, RedRobot.textHack) > 0) return true;
-    if (RedRobot.textMatch(node.value, RedRobot.textHack) > 0) return true;
+    if (RedRobot.textMatch(node.title, digest) > 0) return true;
+    if (RedRobot.textMatch(node.value, digest) > 0) return true;
       var kids = node.childNodes;
       for (var i = 0; i < kids.length; i++) {
         var e = kids[i];
-        if (e.nodeType == 3 && RedRobot.textMatch(e.nodeValue, RedRobot.textHack) > 0) return true;
+        if (e.nodeType == 3 && RedRobot.textMatch(e.nodeValue, digest) > 0) return true;
       }
   }
 
   return false;
 }
 
-RedRobot.findBestMatches = function(patterns, docm, matchFn) {
+RedRobot.findBestMatches = function(docm, matchFn, matchFnArg, patterns) {
   var w = docm.defaultView;// window.frames[0];
-
-  // TODO 00 fix this extra ugly bit
-  if (matchFn == RedRobot.isText) {
-    var text = patterns[patterns.length - 1];
-    patterns.length--;
-    RedRobot.textHack = RedRobot.digest(text);
-  }
 
   // work out all candidate elements that match the function provided
   var cands = new Array();
-  RedRobot.visit(docm, function(nd) {if (matchFn(nd)) cands.push(new RedRobot.Cand(nd))});
+  RedRobot.visit(docm, function(nd) {if (matchFn(nd, matchFnArg)) cands.push(new RedRobot.Cand(nd))});
 
   for (var p = 0; p < patterns.length; p++) { // fake loop for patterns
     var text = patterns[p];
