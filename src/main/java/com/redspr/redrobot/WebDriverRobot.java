@@ -107,8 +107,8 @@ public class WebDriverRobot implements Robot {
     try {
       Alert alert = webDriver.switchTo().alert();
 
-      double scoreOk = isMatch(new String[]{alert.getText(), "OK"}, x);
-      double scoreCancel = isMatch(new String[]{alert.getText(), "Cancel"}, x);
+      double scoreOk = isMatch(new String[]{alert.getText(), OK}, x);
+      double scoreCancel = isMatch(new String[]{alert.getText(), CANCEL}, x);
 
       if (scoreOk > scoreCancel) {
           alert.accept();
@@ -134,8 +134,8 @@ public class WebDriverRobot implements Robot {
   public boolean textExists(String... x) {
     try {
       Alert alert = webDriver.switchTo().alert();
-      // XXX magic
-      return isMatch(new String[]{alert.getText(), "OK", "Cancel"}, x) > 0;
+
+      return isMatch(new String[]{alert.getText(), OK, CANCEL}, x) > 0;
     } catch (NoAlertPresentException ex) {
       String[] n = allButLast(x);
       String v = x[x.length - 1];

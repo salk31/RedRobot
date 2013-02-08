@@ -30,6 +30,8 @@ import java.net.URL;
  * In general they should aim to work consistently across Robot and UI implementations where practical.
  */
 public interface Robot {
+  String OK = "OK";
+  String CANCEL = "CANCEL";
 
   /**
    * Move backwards in the client history.
@@ -41,6 +43,9 @@ public interface Robot {
    */
   void forward();
 
+  /**
+   * Reload the current URL.
+   */
   void reload();
 
   /**
@@ -81,7 +86,7 @@ public interface Robot {
    */
   String get(String... x);
 
-  @Deprecated // no replacement, use click(message, "OK")...
+  @Deprecated // use click(message, "OK")...
   String getConfirmation();
 
   @Deprecated // use isSelected
