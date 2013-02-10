@@ -332,7 +332,7 @@ RedRobot.addDebug = function(docm, elmt, index, color) {
 ;
   
   docm.body.appendChild(css);
-  elmt.className += name;
+  elmt.className += ' ' + name;
   css.className = 'RedRobot ' + name;
 //  elmt.setAttribute('title', elmt['data-redrobotTotal']);
 

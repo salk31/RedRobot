@@ -176,16 +176,16 @@ public class TestSimpleForm {
 
     robot.click("Test table");
 
-   // robot.click("Orange", "Two", "Foo");
-   // robot.click("alert orange two", "ok");
+    robot.click("dog", "Two", "Foo");
+    robot.click("alert dog two", "ok");
 
-   // robot.click("Orange", "Three", "Foo");
-   // robot.click("alert orange three", "ok");
+    robot.click("dog", "Three", "Foo");
+    robot.click("alert dog three", "ok");
 
-    robot.click("red", "two", "Foo");
-    robot.click("alert red two", "ok");
+    robot.click("cat", "two", "Foo");
+    robot.click("alert cat two", "ok");
 
-    output(robot, "tableRedTwoFoo");
+    output(robot, "tableCatTwoFoo");
 
     robot.close();
   }
