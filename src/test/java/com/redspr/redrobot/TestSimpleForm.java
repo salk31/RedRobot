@@ -5,8 +5,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 
 public class TestSimpleForm {
 
@@ -162,22 +170,35 @@ public class TestSimpleForm {
     robot.close();
   }
 
-  // TODO 00 test colspan
   @Test
   public void testTable() throws Exception {
     Robot robot = getRobot();
 
     robot.click("Test table");
 
-    //robot.click("Orange", "Two", "Foo");
-    //robot.click("alert orange two", "ok");
+   // robot.click("Orange", "Two", "Foo");
+   // robot.click("alert orange two", "ok");
 
-    //robot.click("Orange", "Three", "Foo");
-    //robot.click("alert orange three", "ok");
+   // robot.click("Orange", "Three", "Foo");
+   // robot.click("alert orange three", "ok");
 
-    Result r = robot.click("red", "two", "Foo");
+    robot.click("red", "two", "Foo");
     robot.click("alert red two", "ok");
-    r.renderDebug();
+
+    output(robot, "tableRedTwoFoo");
+
+    robot.close();
+  }
+
+  @Test
+  public void testTableColSpan() throws Exception {
+    Robot robot = getRobot();
+
+    robot.click("Test table col span");
+
+    robot.click("bird", "three", "Foo");
+    robot.click("alert bird three", "ok");
+    output(robot, "tableColSpanBirdThree");
 
     //robot.close();
   }
@@ -196,5 +217,28 @@ public class TestSimpleForm {
         assertTrue(score == 0);
       }
     robot.close();
+  }
+
+  @Test
+  public void testScale() throws Exception {
+    Robot robot = getRobot();
+    robot.click("Test Scale");
+
+    robot.click("aa");
+    output(robot, "scale");
+
+ //   robot.close();
+  }
+
+  private void output(Robot robot, String filename) {
+    WebDriver driver = robot.unwrap(WebDriver.class);
+    driver.manage().window().setSize(new Dimension(10, 10));
+    File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+      // Now you can do whatever you need to do with it, for example copy somewhere
+    try {
+      FileUtils.copyFile(scrFile, new File("c:\\tmp\\" + filename + ".png"));
+    } catch (IOException ex) {
+      throw new RuntimeException(ex);
+    }
   }
 }

@@ -190,4 +190,12 @@ public class SeleniumRobot implements Robot {
   @Override
   public void setReadyStrategy(ReadyStrategy p) {
   }
+
+@Override
+public <T> T unwrap(Class<T> desiredType) {
+    // TODO Auto-generated method stub
+
+    throw new RuntimeException("not Robot.unwrap implemented");
+
+}
 }

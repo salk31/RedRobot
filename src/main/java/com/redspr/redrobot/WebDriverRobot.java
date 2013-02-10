@@ -202,20 +202,49 @@ public class WebDriverRobot implements Robot {
   }
 
   void debug(List<WebElement> xxx) {
+    clearDebug();
+    String[] color = {"#fe0000", "#ff4e00", "#ff7701", "#ffa200", "#ffc801", "#fef200", "#eeff37", "#d6fe5d", "#b7ff91", "#90ffba", "#59ffde", "#19f1ff", "#33c1ff", "#3c92ff", "#386aff", "#2a3eff", "#0100fe"};
 
-      int count = 1;
+    System.out.print("<table border='1'><tr>");
+    for (String c : color) {
+        System.out.print("<td style='background-color:");
+        System.out.print(c);
+        System.out.print("'>");
+        System.out.print("&nbsp;&nbsp;");
+        System.out.print("</td>");
+    }
+    System.out.println("</tr></table>");
+
+    double min = Double.MAX_VALUE;
+    double max = Double.MIN_VALUE;
+    for (WebElement elmt : xxx) {
+      if (elmt.isDisplayed()) {
+        double score = Double.parseDouble(elmt.getAttribute("RedRobot_score"));
+        if (score < min) {
+          min = score;
+        }
+        if (score > max) {
+          max = score;
+        }
+      }
+    }
+    double gap = max - min;
+    double band = gap / ( color.length -1);
+int count = 0;
       for (WebElement elmt : xxx) {
       try {
+          double score = Double.parseDouble(elmt.getAttribute("RedRobot_score"));
+          int index = (int) ((score - min) / band);
       JavascriptExecutor jse2 = (JavascriptExecutor) webDriver;
       Object rawResult2 = jse2.executeScript(SCRIPT
-              + ";return RedRobot.addDebug(document, arguments[0], arguments[1], arguments[2], arguments[3])",
-              new Object[]{elmt, elmt.getLocation().getX(), elmt.getLocation().getY(), count});
+              + ";return RedRobot.addDebug(document, arguments[0], arguments[1], arguments[2])",
+              new Object[]{elmt, count, color[color.length - index - 1]});
       count++;
       } catch (Throwable tg) {
           tg.printStackTrace();
 
       }
-       if (count > 4) break;
+
       }
   }
 
@@ -246,9 +275,8 @@ public class WebDriverRobot implements Robot {
     }
 
     List<WebElement> y = (List) rawResult;
-    last = y;
+    debug(y);
     WebElement got = null;
-    //debug(y);
     for (WebElement we : y) {
       try {
         if (we.isDisplayed()) {
@@ -319,5 +347,13 @@ public class WebDriverRobot implements Robot {
   @Override
   public void setReadyStrategy(ReadyStrategy p) {
     this.readyStrategy = p;
+  }
+
+  @Override
+  public <T> T unwrap(Class<T> desiredType) {
+    if (desiredType.isInstance(webDriver)) {
+      return (T) webDriver;
+    }
+    throw new IllegalArgumentException("Don't know how to get an instance of " + desiredType);
   }
 }

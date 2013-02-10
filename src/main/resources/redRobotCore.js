@@ -174,7 +174,7 @@ RedRobot.findBestMatches = function(patterns, docm, matchFn) {
   var result = new Array();
   for (var i = 0; i < cands.length; i++) {
     var node = cands[i].node;
-    node['data-redrobotTotal'] = cands[i].score;
+    node.setAttribute('RedRobot_score', "" + cands[i].score);
     result.push(node);
   }
   return result;
@@ -219,10 +219,11 @@ RedRobot.getMatch = function(text, matches, e) {
           var currentRow = tbody.rows[i];
           while (currentCol < col1) {
             var currentCell = currentRow.cells[currentColIdx++];
-            if (currentCol >= col0) {
+            var nextCol = currentCol + currentCell.colSpan;
+            if (col0 < nextCol) {
               RedRobot.pushMatch(matches, currentCell, score / tbody.rows.length);
             }
-            currentCol += currentCell.colSpan;
+            currentCol = nextCol;
           }
         }
         break;
@@ -246,7 +247,7 @@ RedRobot.pushMatch = function(matches, elmt, score) {
 
 RedRobot.textMatch = function(candidateText, searchTextDigest) {
   var candidateTextDigest = RedRobot.digest(candidateText);
-  if (RedRobot.digest(candidateTextDigest).indexOf(searchTextDigest) >= 0) {
+  if (candidateTextDigest.indexOf(searchTextDigest) >= 0) {
     return searchTextDigest.length / candidateTextDigest.length;
   } else {
     return 0;
@@ -303,55 +304,36 @@ RedRobot.clearDebug = function(docm) {
   }
 }
 
-RedRobot.addDebug = function(docm, elmt, x, y, label) {
+RedRobot.addDebug = function(docm, elmt, index, color) {
   var name = "rr" + Math.floor(Math.random() * 0x100000).toString(16);
   var css = docm.createElement("style");
   css.type = "text/css";
   css.className = "RedRobot";
   css.innerHTML = 
 	  "." + name + " {"
-	  + "position: absolute;"
-	  + "left:" + (x - 6)+ ";"
-      + "top:" + (y - 6) + ";"
-	  + "width: 20px;"
-	  + "height: 20px;"
-	  + "text-align: center;"
+//	  + "position: absolute;"
+//	  + "left:" + (x - 6)+ ";"
+//      + "top:" + (y - 6) + ";"
+//	  + "width: 20px;"
+//	  + "height: 20px;"
+//	  + "text-align: center;"
 //	  + "line-height: 100px;"
-	  + "background-color: transparent;"
-	  + "border: 8px solid #666;"
+	  + "z-index: " + (10-index) + ";"
+	  + "color: black;"
+	  + "background-color: " + color + ";"
+	  + "border: 8px solid " + color + ";"
 	  + "-webkit-border-radius: 30px;"
 	  + "-moz-border-radius: 30px;"
 	  + "border-radius: 30px;"
-	  + "-webkit-box-shadow: 2px 2px 4px #888;"
-	  + "-moz-box-shadow: 2px 2px 4px #888;"
-	  + "box-shadow: 2px 2px 4px #888;"
-	  + "}\n"
-	  + "." + name + ":before"
-	  + "{"
-	  + "font-size: 10px;"
-	  + "color: #fff;"
-	  + "content: '" + label + "';"
-	  + "position: absolute;"
-	  + "width: 12px;"
-	  + "height: 12px;"
-	  + "z-index: 2;"
-	  + "background-color: red;"
-	  + "border: 2px solid #666;"
-	  + "-webkit-border-radius: 5px;"
-	  + "-moz-border-radius: 5px;"
-	  + "border-radius: 5px;"
-	  + "right: 12px;"
-	  + "top: 12px;"
-//	  + "border: 1px solid;"
-//	  + "border-color: #666 transparent #666 transparent;"
+	  + "-webkit-box-shadow: 4px 4px 8px " + color + ";"
+	  + "-moz-box-shadow: 4px 4px 8px " + color + ";"
+	  + "box-shadow: 4px 4px 8px " + color + ";"
 	  + "}\n"
 ;
   
   docm.body.appendChild(css);
-  var div = docm.createElement('div');
-  docm.body.appendChild(div);
-  
-  div.className = 'RedRobot ' + name;
+  elmt.className += name;
+  css.className = 'RedRobot ' + name;
 //  elmt.setAttribute('title', elmt['data-redrobotTotal']);
 
 }
