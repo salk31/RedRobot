@@ -212,10 +212,11 @@ RedRobot.getMatch = function(text, matches, e) {
           var currentRow = tbody.rows[i];
           while (currentCol < col1) {
             var currentCell = currentRow.cells[currentColIdx++];
-            if (currentCol >= col0) {
-              RedRobot.pushMatch(matches, currentCell, 0.9);
+            var nextCol = currentCol + currentCell.colSpan;
+            if (col0 < nextCol) {
+              RedRobot.pushMatch(matches, currentCell, score / tbody.rows.length);
             }
-            currentCol += currentCell.colSpan;
+            currentCol = nextCol;
           }
         }
         break;
@@ -238,7 +239,7 @@ RedRobot.pushMatch = function(matches, elmt, score) {
 
 RedRobot.textMatch = function(candidateText, searchTextDigest) {
   var candidateTextDigest = RedRobot.digest(candidateText);
-  if (RedRobot.digest(candidateTextDigest).indexOf(searchTextDigest) >= 0) {
+  if (candidateTextDigest.indexOf(searchTextDigest) >= 0) {
     return searchTextDigest.length / candidateTextDigest.length;
   } else {
     return 0;

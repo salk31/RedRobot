@@ -162,7 +162,6 @@ public class TestSimpleForm {
     robot.close();
   }
 
-  // TODO 00 test colspan
   @Test
   public void testTable() throws Exception {
     Robot robot = getRobot();
@@ -177,6 +176,19 @@ public class TestSimpleForm {
 
     robot.click("red", "two", "Foo");
     robot.click("alert red two", "ok");
+
+    robot.close();
+  }
+
+  @Test
+  public void testTableColSpan() throws Exception {
+    Robot robot = getRobot();
+
+    robot.click("Test table col span");
+
+    robot.click("bird", "three", "Foo");
+    robot.click("alert bird three", "ok");
+    //output(robot, "tableColSpanBirdThree");
 
     robot.close();
   }
