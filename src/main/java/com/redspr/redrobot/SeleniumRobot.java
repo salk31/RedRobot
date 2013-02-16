@@ -70,7 +70,7 @@ public class SeleniumRobot implements Robot {
   }
 
   @Override
-  public Result click(String... x) {
+  public LocatorResult click(String... x) {
     history.push(sel.getLocation()); // XXX may not be a page
 
     try {
@@ -196,6 +196,14 @@ public <T> T unwrap(Class<T> desiredType) {
     // TODO Auto-generated method stub
 
     throw new RuntimeException("not Robot.unwrap implemented");
+
+}
+
+@Override
+public void addListener(RobotListener listener) {
+    // TODO Auto-generated method stub
+
+    throw new RuntimeException("not Robot.addListener implemented");
 
 }
 }

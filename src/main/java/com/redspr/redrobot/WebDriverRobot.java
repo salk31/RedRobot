@@ -48,6 +48,8 @@ public class WebDriverRobot implements Robot {
 
   private ReadyStrategy readyStrategy = new SleepReadyStrategy();
 
+  private final List<RobotListener> listeners = new ArrayList<RobotListener>();
+
   public WebDriverRobot() {
     this(new FirefoxDriver());
   }
@@ -77,19 +79,19 @@ public class WebDriverRobot implements Robot {
   @Override
   public void back() {
     webDriver.navigate().back();
-    readyStrategy.waitTillReady();
+    waitTillReady();
   }
 
   @Override
   public void forward() {
     webDriver.navigate().forward();
-    readyStrategy.waitTillReady();
+    waitTillReady();
   }
 
   @Override
   public void reload() {
     webDriver.navigate().refresh();
-    readyStrategy.waitTillReady();
+    waitTillReady();
   }
 
   double isMatch(String[] source, String[] input) {
@@ -108,7 +110,7 @@ public class WebDriverRobot implements Robot {
   }
 
   @Override
-  public Result click(String... x) {
+  public LocatorResult click(String... x) {
     if (x == null || x.length == 0) {
         throw new RuntimeException("At least one selector required");
     }
@@ -129,11 +131,28 @@ public class WebDriverRobot implements Robot {
     } catch (NoAlertPresentException ex) {
       // fine, was no alert
 
+      for (RobotListener l : listeners) {
+        l.actionStart();
+      }
       locClickable(x).click();
+      for (RobotListener l : listeners) {
+          l.actionEnd();
+      }
 
-      readyStrategy.waitTillReady();
+      waitTillReady();
+
       return new WebDriverResult(this, last);
     }
+  }
+
+  private void waitTillReady() {
+      for (RobotListener l : listeners) {
+          l.waitTillReadyStart();
+      }
+      readyStrategy.waitTillReady();
+      for (RobotListener l : listeners) {
+          l.waitTillReadyEnd();
+      }
   }
 
   @Override
@@ -265,6 +284,10 @@ int count = 0;
   private List<WebElement> last;
 
   private WebElement doLocate(String cmd, String... args) {
+    for (RobotListener l : listeners) {
+        l.locatorStart();
+    }
+
     JavascriptExecutor jse = (JavascriptExecutor) webDriver;
     Object rawResult = jse.executeScript(SCRIPT
             + ";return RedRobot.findBestMatches(arguments, document, " + cmd + ")",
@@ -300,6 +323,9 @@ int count = 0;
 
       throw new NotFoundException(sb.toString());
     }
+    for (RobotListener l : listeners) {
+        l.locatorEnd(null);
+    }
     return got;
   }
 
@@ -319,7 +345,7 @@ int count = 0;
   @Override
   public void open(URL url) {
      webDriver.get(url.toString());
-     readyStrategy.waitTillReady();
+     waitTillReady();
   }
 
   @Override
@@ -336,7 +362,7 @@ int count = 0;
     } catch (WebDriverException ex) {
       throw new RuntimeException("Failed trying to click on name='" + e.getTagName() + "' text='" + e.getText() + "'", ex);
     }
-    readyStrategy.waitTillReady();
+    waitTillReady();
   }
 
   @Override
@@ -355,5 +381,10 @@ int count = 0;
       return (T) webDriver;
     }
     throw new IllegalArgumentException("Don't know how to get an instance of " + desiredType);
+  }
+
+  @Override
+  public void addListener(RobotListener listener) {
+    listeners.add(listener);
   }
 }

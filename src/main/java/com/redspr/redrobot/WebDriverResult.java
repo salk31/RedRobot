@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.openqa.selenium.WebElement;
 
-public class WebDriverResult implements Result {
+public class WebDriverResult implements LocatorResult {
 
     WebDriverRobot driver;
 

@@ -48,7 +48,7 @@ public interface Robot {
    *
    * @param x - list of visible text to locate the element
    */
-  Result click(String... x);
+  LocatorResult click(String... x);
 
   /**
    * Count the visible text matching x on this page.
@@ -112,4 +112,7 @@ public interface Robot {
 
   // EXPERIMENTAL
   <T> T unwrap(Class<T> desiredType);
+
+  // EXPERIMENTAL
+  void addListener(RobotListener listener);
 }

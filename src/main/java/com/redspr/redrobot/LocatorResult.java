@@ -1,6 +1,6 @@
 package com.redspr.redrobot;
 
-public interface Result {
+public interface LocatorResult {
   void renderDebug();
 
   void clearDebug();
