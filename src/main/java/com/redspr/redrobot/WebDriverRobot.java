@@ -115,7 +115,7 @@ public class WebDriverRobot implements Robot {
       } else if (scoreOk < scoreCancel) {
           alert.dismiss();
       } else {
-          throw new IllegalArgumentException("Alert text did not match '" + x[0] + "'");
+          throw new IllegalArgumentException("Asked to click on '" + x[0] + "' but was an Alert with text '" + alert.getText() + "'");
       }
 
     } catch (NoAlertPresentException ex) {
