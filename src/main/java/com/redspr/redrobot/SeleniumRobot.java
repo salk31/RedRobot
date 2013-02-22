@@ -188,4 +188,9 @@ public class SeleniumRobot implements Robot {
   @Override
   public void setReadyStrategy(ReadyStrategy p) {
   }
+  
+  @Override
+  public void addListener(RobotListener listener) {
+    throw new RuntimeException("Robot.addListener not implemented");
+  }
 }

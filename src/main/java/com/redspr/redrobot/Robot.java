@@ -114,4 +114,7 @@ public interface Robot {
   // XXX experimental
   void setReadyStrategy(ReadyStrategy p);
   // TODO 04 a dump/debug method?
+
+  // EXPERIMENTAL
+  void addListener(RobotListener listener);
 }

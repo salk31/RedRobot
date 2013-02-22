@@ -21,6 +21,7 @@ package com.redspr.redrobot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.script.ScriptEngine;
@@ -44,6 +45,8 @@ public class WebDriverRobot implements Robot {
   private String SCRIPT;
 
   private ReadyStrategy readyStrategy = new SleepReadyStrategy();
+
+  private final List<RobotListener> listeners = new ArrayList<RobotListener>();
 
   public WebDriverRobot() {
     this(new FirefoxDriver());
@@ -69,19 +72,19 @@ public class WebDriverRobot implements Robot {
   @Override
   public void back() {
     webDriver.navigate().back();
-    readyStrategy.waitTillReady();
+    waitTillReady();
   }
 
   @Override
   public void forward() {
     webDriver.navigate().forward();
-    readyStrategy.waitTillReady();
+    waitTillReady();
   }
 
   @Override
   public void reload() {
     webDriver.navigate().refresh();
-    readyStrategy.waitTillReady();
+    waitTillReady();
   }
 
   double isMatch(String[] source, String[] input) {
@@ -120,9 +123,26 @@ public class WebDriverRobot implements Robot {
 
     } catch (NoAlertPresentException ex) {
       // fine, was no alert
+
+      for (RobotListener l : listeners) {
+        l.actionStart();
+      }
       locClickable(x).click();
-      readyStrategy.waitTillReady();
+      for (RobotListener l : listeners) {
+        l.actionEnd();
+      }
+      waitTillReady();
     }
+  }
+
+  private void waitTillReady() {
+      for (RobotListener l : listeners) {
+          l.waitTillReadyStart();
+      }
+      readyStrategy.waitTillReady();
+      for (RobotListener l : listeners) {
+          l.waitTillReadyEnd();
+      }
   }
 
   @Override
@@ -210,6 +230,9 @@ public class WebDriverRobot implements Robot {
       sb.append(a);
       sb.append("'");
     }
+    for (RobotListener l : listeners) {
+        l.locatorEnd(null);
+    }
 
     throw new NotFoundException(sb.toString());
   }
@@ -233,7 +256,7 @@ public class WebDriverRobot implements Robot {
   @Override
   public void open(URL url) {
      webDriver.get(url.toString());
-     readyStrategy.waitTillReady();
+     waitTillReady();
   }
 
   private String[] allButLast(String[] x) {
@@ -255,7 +278,7 @@ public class WebDriverRobot implements Robot {
     } catch (WebDriverException ex) {
       throw new RuntimeException("Failed trying to click on name='" + e.getTagName() + "' text='" + e.getText() + "'", ex);
     }
-    readyStrategy.waitTillReady();
+    waitTillReady();
   }
 
   @Override
@@ -266,5 +289,10 @@ public class WebDriverRobot implements Robot {
   @Override
   public void setReadyStrategy(ReadyStrategy p) {
     this.readyStrategy = p;
+  }
+
+  @Override
+  public void addListener(RobotListener listener) {
+    listeners.add(listener);
   }
 }
