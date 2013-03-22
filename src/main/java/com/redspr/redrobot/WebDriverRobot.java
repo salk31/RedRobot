@@ -136,6 +136,7 @@ public class WebDriverRobot implements Robot {
   }
 
   private void waitTillReady() {
+    if (!alertPresent()) {
       for (RobotListener l : listeners) {
           l.waitTillReadyStart();
       }
@@ -143,6 +144,7 @@ public class WebDriverRobot implements Robot {
       for (RobotListener l : listeners) {
           l.waitTillReadyEnd();
       }
+    }
   }
 
   @Override
@@ -294,5 +296,19 @@ public class WebDriverRobot implements Robot {
   @Override
   public void addListener(RobotListener listener) {
     listeners.add(listener);
+  }
+
+  private boolean alertPresent() {
+    try {
+      webDriver.switchTo().alert();
+      return true;
+    } catch (NoAlertPresentException ex) {
+      return false;
+    }
+  }
+
+  @Override
+  public <T> T unwrap(Class<T> implClass) {
+      return (T) webDriver;
   }
 }

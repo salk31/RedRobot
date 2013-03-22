@@ -1,0 +1,8 @@
+How to release:
+* mvn release:clean
+* mvn release:prepare
+* mvn release:perform
+* https://oss.sonatype.org/ - close and release
+
+
+https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide

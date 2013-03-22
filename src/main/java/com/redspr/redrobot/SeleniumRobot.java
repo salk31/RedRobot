@@ -26,11 +26,11 @@ import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.SeleniumException;
 
 public class SeleniumRobot implements Robot {
-  private Stack<String> history = new Stack<String>();
+  private final Stack<String> history = new Stack<String>();
 
   private Selenium sel;
 
-  private String browserString;
+  private final String browserString;
 
   public SeleniumRobot() {
     this("*firefox");
@@ -188,9 +188,14 @@ public class SeleniumRobot implements Robot {
   @Override
   public void setReadyStrategy(ReadyStrategy p) {
   }
-  
+
   @Override
   public void addListener(RobotListener listener) {
     throw new RuntimeException("Robot.addListener not implemented");
+  }
+
+  @Override
+  public <T> T unwrap(Class<T> implClass) {
+    throw new RuntimeException("Not implemented");
   }
 }

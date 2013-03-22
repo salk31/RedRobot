@@ -117,4 +117,6 @@ public interface Robot {
 
   // EXPERIMENTAL
   void addListener(RobotListener listener);
+
+  <T> T unwrap(Class<T> implClass);
 }

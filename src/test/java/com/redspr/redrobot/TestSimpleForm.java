@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openqa.selenium.JavascriptExecutor;
 
 public class TestSimpleForm {
 
@@ -206,6 +207,25 @@ public class TestSimpleForm {
         double score = robot.isMatch(new String[]{"some 12356 guff"}, new String[]{"12356", "XXX"});
         assertTrue(score == 0);
       }
+    robot.close();
+  }
+
+  @Test
+  public void testAlertThenWait() throws Exception {
+    final WebDriverRobot robot = (WebDriverRobot) getRobot();
+
+    robot.setReadyStrategy(new ReadyStrategy() {
+      @Override
+      public void waitTillReady() {
+          JavascriptExecutor je = robot.unwrap(JavascriptExecutor.class);
+          je.executeScript("var x = 1;");
+      }
+    });
+
+    robot.click("Test Dialog");
+
+    robot.click("alert");
+    robot.click("ok");
     robot.close();
   }
 }
