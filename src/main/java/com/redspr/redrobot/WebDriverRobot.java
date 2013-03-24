@@ -136,14 +136,12 @@ public class WebDriverRobot implements Robot {
   }
 
   private void waitTillReady() {
-    if (!alertPresent()) {
-      for (RobotListener l : listeners) {
-          l.waitTillReadyStart();
-      }
-      readyStrategy.waitTillReady();
-      for (RobotListener l : listeners) {
-          l.waitTillReadyEnd();
-      }
+    for (RobotListener l : listeners) {
+      l.waitTillReadyStart();
+    }
+    readyStrategy.waitTillReady();
+    for (RobotListener l : listeners) {
+      l.waitTillReadyEnd();
     }
   }
 

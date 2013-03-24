@@ -211,6 +211,7 @@ public class TestSimpleForm {
   }
 
   @Test
+  @Ignore
   public void testAlertThenWait() throws Exception {
     final WebDriverRobot robot = (WebDriverRobot) getRobot();
 
