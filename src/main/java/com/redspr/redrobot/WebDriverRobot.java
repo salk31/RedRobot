@@ -238,7 +238,7 @@ public class WebDriverRobot implements Robot {
   }
 
   private WebElement locClickable(String... x) {
-    return doLocate("RedRobot.isClickable", null, x);
+    return doLocate("RedRobot.isClickable", "", x);
   }
 
   private WebElement locText(String[] x, String v) {
@@ -246,11 +246,11 @@ public class WebDriverRobot implements Robot {
   }
 
   private WebElement locKey(String... x) {
-    return doLocate("RedRobot.isKey", null, x);
+    return doLocate("RedRobot.isKey", "", x);
   }
 
   private WebElement locCheckable(String... x) {
-    return doLocate("RedRobot.isCheckable", null, x);
+    return doLocate("RedRobot.isCheckable", "", x);
   }
 
   @Override

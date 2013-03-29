@@ -8,11 +8,16 @@ import static org.junit.Assert.fail;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+
+import com.gargoylesoftware.htmlunit.AlertHandler;
+import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.WebClient;
 
 public class TestSimpleForm {
 
   private Robot getRobot() throws Exception {
-    Robot robot = new WebDriverRobot();
+    Robot robot = new WebDriverRobot(Foo.foo());
     robot.open(getClass().getResource("/index.html"));
     return robot;
   }
@@ -228,5 +233,28 @@ public class TestSimpleForm {
     robot.click("alert");
     robot.click("ok");
     robot.close();
+  }
+
+  @Test
+  public void testWebDriver() throws Exception {
+      HtmlUnitDriver driver = new HtmlUnitDriver() {
+         @Override
+        protected WebClient
+              modifyWebClient(WebClient client) {
+             client.setAlertHandler(new AlertHandler() {
+
+                @Override
+                public void handleAlert(Page arg0, String arg1) {
+                    int i = 0;
+                }});
+             return client;
+          }
+      };
+
+      driver.setJavascriptEnabled(true);
+      driver.get(getClass().getResource("/index.html").toString());
+
+      driver.executeScript("alert('hi')");
+
   }
 }
