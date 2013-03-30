@@ -154,7 +154,7 @@ nav = webDriver.switchTo();
   @Override
   public boolean textExists(String... x) {
     try {
-      Alert alert = webDriver.switchTo().alert();
+      Alert alert = nav.alert();
 
       return isMatch(new String[]{alert.getText(), OK, CANCEL}, x) > 0;
     } catch (NoAlertPresentException ex) {

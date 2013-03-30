@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import com.gargoylesoftware.htmlunit.AlertHandler;
@@ -111,9 +112,12 @@ public class TestSimpleForm {
   public void testPartialText() throws Exception {
     Robot robot = getRobot();
     robot.click("Test Partial Text");
-
+System.out.println("*************************" +
+robot.unwrap(WebDriver.class).getPageSource());
     {
-      robot.click("foo");
+        assertTrue(robot.textExists("foo"));
+
+      robot.click("foo");  // BREAKS
       robot.click("foo clicked", "ok"); // XXX want more confirmation was the
                                         // real one!?
     }
@@ -156,7 +160,7 @@ public class TestSimpleForm {
 
     robot.click("Test Dialog");
 
-    robot.click("alert");
+    robot.click("alert"); // BREAKS!
     assertTrue(robot.textExists("alert clicked"));
     robot.click("ok");
     assertFalse(robot.textExists("alert clicked"));
