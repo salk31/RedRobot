@@ -125,9 +125,12 @@ if (obj2 != null) {
                         }
                     }
                     System.out.println("Thread put result " );
+
+                    if (!call.isAsync()) {
                     call.result = ret;
 
                     done.add(call);
+                    }
 
                 } catch (Throwable th) {
                     th.printStackTrace();
@@ -174,6 +177,10 @@ return p;
         Method method;
         Object[] args;
         Object result;
+
+        boolean isAsync() {
+            return method != null && Void.class.equals(method.getReturnType());
+        }
     }
 
     static WebDriver foo() {
@@ -183,14 +190,14 @@ return p;
 
         Call call = new Call();
         todo.add(call);
-
+if (!call.isAsync()) {
         try {
             done.poll(100, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
+}
         return (WebDriver) call.result;
     };
 
