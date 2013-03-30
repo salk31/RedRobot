@@ -34,6 +34,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriver.TargetLocator;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -51,10 +52,10 @@ public class WebDriverRobot implements Robot {
   public WebDriverRobot() {
     this(new FirefoxDriver());
   }
-
+private final TargetLocator nav;
   public WebDriverRobot(WebDriver webDriver2) {
     this.webDriver = webDriver2;
-
+nav = webDriver.switchTo();
     try {
       InputStream is = getClass().getResourceAsStream("/redRobotCore.js");
       ByteArrayOutputStream boas = new ByteArrayOutputStream();
@@ -108,7 +109,7 @@ public class WebDriverRobot implements Robot {
         throw new RuntimeException("At least one selector required");
     }
     try {
-      Alert alert = webDriver.switchTo().alert();
+      Alert alert = nav.alert();
 
       double scoreOk = isMatch(new String[]{alert.getText(), OK}, x);
       double scoreCancel = isMatch(new String[]{alert.getText(), CANCEL}, x);
