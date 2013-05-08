@@ -230,24 +230,32 @@ public class TestSimpleForm {
     robot.close();
   }
 
-  @Ignore
   @Test
   public void testPerformance() throws Exception {
     final WebDriverRobot robot = (WebDriverRobot) getRobot();
     SimplePerformanceListener listener = new SimplePerformanceListener();
     robot.addListener(listener);
 
+
+
     robot.click("Test Performance");
 
+    robot.setReadyStrategy(new ReadyStrategy() {
+        @Override
+        public void waitTillReady() {
+        }
+    });
+    int N = 10;
+
     long t0 = listener.getTotal();
-    for (int i = 0; i < 10; i++) {
-    robot.click("block 100ms");
+    for (int i = 0; i < N; i++) {
+      robot.click("block 200ms");
     }
     long t1 = listener.getTotal();
 
     long T = t1 - t0;
-    assertTrue("was " + T, T < 95);
-    assertTrue("was " + T, T > 105);
+    assertTrue("Was " + T, T > N * 190);
+    assertTrue("Was " + T, T < N * 300); // XXX terrible! calibrating thing?
 
     robot.close();
   }
