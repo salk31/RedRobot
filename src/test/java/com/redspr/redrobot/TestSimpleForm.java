@@ -229,4 +229,26 @@ public class TestSimpleForm {
     robot.click("ok");
     robot.close();
   }
+
+  @Ignore
+  @Test
+  public void testPerformance() throws Exception {
+    final WebDriverRobot robot = (WebDriverRobot) getRobot();
+    SimplePerformanceListener listener = new SimplePerformanceListener();
+    robot.addListener(listener);
+
+    robot.click("Test Performance");
+
+    long t0 = listener.getTotal();
+    for (int i = 0; i < 10; i++) {
+    robot.click("block 100ms");
+    }
+    long t1 = listener.getTotal();
+
+    long T = t1 - t0;
+    assertTrue("was " + T, T < 95);
+    assertTrue("was " + T, T > 105);
+
+    robot.close();
+  }
 }

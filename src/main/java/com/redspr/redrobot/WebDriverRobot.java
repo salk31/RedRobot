@@ -123,11 +123,11 @@ public class WebDriverRobot implements Robot {
 
     } catch (NoAlertPresentException ex) {
       // fine, was no alert
-
+      WebElement elmt = locClickable(x);
       for (RobotListener l : listeners) {
         l.actionStart();
       }
-      locClickable(x).click();
+      elmt.click();
       for (RobotListener l : listeners) {
         l.actionEnd();
       }
