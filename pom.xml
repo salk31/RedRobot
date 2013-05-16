@@ -11,7 +11,7 @@
     <artifactId>redrobot-core</artifactId>
     <packaging>jar</packaging>
     <name>redrobot</name>
-    <version>0.2.17</version>
+    <version>0.2.18-SNAPSHOT</version>
     <description>Alternative WebDriver selectors.</description>
     <url>http://code.google.com/p/redrobot/</url>
 
@@ -32,7 +32,7 @@
         <url>https://code.google.com/p/redrobot/</url>
         <developerConnection>scm:git:https://code.google.com/p/redrobot/</developerConnection>
         <connection>scm:git:https://code.google.com/p/redrobot/</connection>
-      <tag>0.2.17</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <dependencies>
