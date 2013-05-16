@@ -273,7 +273,8 @@ public class WebDriverRobot implements Robot {
     String v = x[x.length - 1];
     WebElement e = this.locKey(n);
     try {
-      e.clear();
+      JavascriptExecutor js = (JavascriptExecutor) webDriver;
+      js.executeScript("arguments[0].value = ''", e);
       e.sendKeys(v);
     } catch (WebDriverException ex) {
       throw new RuntimeException("Failed trying to click on name='" + e.getTagName() + "' text='" + e.getText() + "'", ex);
