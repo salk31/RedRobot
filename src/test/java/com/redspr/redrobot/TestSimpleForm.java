@@ -259,4 +259,30 @@ public class TestSimpleForm {
 
     robot.close();
   }
+
+  @Test
+  public void testAria() throws Exception {
+    Robot robot = getRobot();
+    robot.click("Test Aria");
+
+    assertEquals("Correct value", robot.get("Red"));
+
+    robot.close();
+  }
+
+  @Ignore
+  @Test
+  public void testWatermark() throws Exception {
+    Robot robot = getRobot();
+    robot.click("Test Watermark");
+
+    String v = "asd" + System.currentTimeMillis();
+
+    robot.set("Box one", v);
+
+    String v2 = robot.get("Box one");
+    assertEquals(v, v2);
+
+    robot.close();
+  }
 }
