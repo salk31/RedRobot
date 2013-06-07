@@ -22,5 +22,8 @@ package com.redspr.redrobot;
  * Pluggable code for waiting for a page to be ready.
  */
 public interface ReadyStrategy {
+  /**
+   * Block while the browser is busy.
+   */
   void waitTillReady();
 }
