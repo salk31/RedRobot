@@ -22,6 +22,11 @@ package com.redspr.redrobot;
  * Could not find the requested object.
  */
 public class NotFoundException extends RuntimeException {
+  /**
+   * Construct a new not found expection with a detailed message.
+   *
+   * @param msg - message text.
+   */
   public NotFoundException(String msg) {
     super(msg);
   }
