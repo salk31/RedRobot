@@ -96,9 +96,22 @@ public interface Robot {
    */
   String get(String... x);
 
+  /**
+   * Does not hide the implementation of the popup
+   * (native or HTML/JavaScript) so is being phased out.
+   * 
+   * @return confirmation text
+   */
   @Deprecated // use click(message, "OK")...
   String getConfirmation();
 
+  /**
+   * Does not hide the implementation of the control
+   * so is being phased out.
+   * 
+   * @param x locator text
+   * @return true iff is checked
+   */
   @Deprecated // use isSelected
   boolean isChecked(String... x);
 
@@ -110,6 +123,11 @@ public interface Robot {
    */
   boolean isSelected(String... x);
 
+  /**
+   * Open the provided URL then wait till the browser is done.
+   * 
+   * @param url
+   */
   void open(URL url);
 
   /**
@@ -119,14 +137,42 @@ public interface Robot {
    */
   void set(String... x);
 
+  /**
+   * Close the browser and any other used resources.
+   */
   void close();
 
-  // XXX experimental
+  
+  /**
+   * Allow the strategy for waiting for the browser to be ready
+   * to be changed at any time.
+   * 
+   * EXPERIMENTAL
+   * 
+   * @param p the ReadyStrategy implementation.
+   */
   void setReadyStrategy(ReadyStrategy p);
   // TODO 04 a dump/debug method?
 
-  // EXPERIMENTAL
+  /**
+   * Add a RobotListener which will be notified by various
+   * events.
+   * 
+   * Listeners are called in the order they were added.
+   * 
+   * EXPERIMENTAL
+   * 
+   * @param listener
+   */
   void addListener(RobotListener listener);
 
+  /**
+   * Try and find an implementation instance of the class implClass.
+   * 
+   * This will almost always be the browser interface implementation being used.
+   * 
+   * @param implClass
+   * @return the unwrapped instance
+   */
   <T> T unwrap(Class<T> implClass);
 }
