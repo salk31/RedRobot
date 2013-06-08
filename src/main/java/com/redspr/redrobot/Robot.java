@@ -21,16 +21,25 @@ package com.redspr.redrobot;
 import java.net.URL;
 
 /**
- * Simple interface for UI integration testing using visible text and UI semantics.
+ * Simple interface for UI integration testing using visible text
+ * and UI semantics.
  *
  * The locators "String... x" use fuzzy logic to find a single element.
  * Multiple values help to select between multiple matches.
  *
- * The exact rules of what elements are selected and how they are located are implementation specific.
- * In general they should aim to work consistently across Robot and UI implementations where practical.
+ * The exact rules of what elements are selected and how they are located
+ * are implementation specific. In general they should aim to work
+ * consistently across Robot and UI implementations where practical.
  */
 public interface Robot {
+  /**
+   * Text to use to hit OK on a native JavaScript popup box.
+   */
   String OK = "OK";
+
+  /**
+   * Text to use to hit CANCEL on a native JavaScript popup box.
+   */
   String CANCEL = "CANCEL";
 
   /**
@@ -58,7 +67,8 @@ public interface Robot {
   /**
    * Count the visible text matching x on this page.
    *
-   * NB This method is inconsistent with other locator methods and is being phased out.
+   * NB This method is inconsistent with other locator methods
+   * and is being phased out.
    *
    * @param x - substring to be searched for
    * @return number of elements found
