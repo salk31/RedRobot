@@ -116,7 +116,8 @@ public interface Robot {
   boolean isChecked(String... x);
 
   /**
-   * Find and return the state of controls like checkboxes, list box, radio button etc
+   * Find and return the state of controls like checkboxes,
+   * list box, radio button etc.
    *
    * @param x - list of visible text to locate the element
    * @return - true iff the item is selected
@@ -126,7 +127,7 @@ public interface Robot {
   /**
    * Open the provided URL then wait till the browser is done.
    *
-   * @param url
+   * @param url - URL to open.
    */
   void open(URL url);
 
@@ -162,7 +163,7 @@ public interface Robot {
    *
    * EXPERIMENTAL
    *
-   * @param listener
+   * @param listener - listener to add.
    */
   void addListener(RobotListener listener);
 
