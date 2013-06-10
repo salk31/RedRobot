@@ -135,6 +135,9 @@ public class WebDriverRobot implements Robot {
     }
   }
 
+  /**
+   * Use the provided wait strategy and call listeners.
+   */
   private void waitTillReady() {
     for (RobotListener l : listeners) {
       l.waitTillReadyStart();
@@ -145,10 +148,11 @@ public class WebDriverRobot implements Robot {
     }
   }
 
-  @Override
-  public int findText(String x) {
-    return webDriver.findElements(By.xpath("//node()[text()='" + x + "']")).size();
-  }
+    @Override
+    public int findText(String x) {
+        return webDriver.findElements(By.xpath("//node()[text()='" + x + "']"))
+                .size();
+    }
 
   @Override
   public boolean textExists(String... x) {
@@ -203,9 +207,10 @@ public class WebDriverRobot implements Robot {
 
   private WebElement doLocate(String cmd, Object cmdArg, String[] args) {
     JavascriptExecutor jse = (JavascriptExecutor) webDriver;
-    Object rawResult = jse.executeScript(SCRIPT
-            + ";return RedRobot.findBestMatches(document, " + cmd + " , arguments[0], arguments[1])",
-            new Object[]{cmdArg, args});
+        Object rawResult = jse.executeScript(SCRIPT
+                + ";return RedRobot.findBestMatches(document, " + cmd
+                + " , arguments[0], arguments[1])",
+                new Object[] { cmdArg, args });
 
     if (!(rawResult instanceof List)) {
       throw new RuntimeException("Expected a list but got '" + rawResult + "'");
@@ -284,8 +289,9 @@ public class WebDriverRobot implements Robot {
       js.executeScript("arguments[0].value = ''", e);
       e.sendKeys(v);
     } catch (WebDriverException ex) {
-      throw new RuntimeException("Failed trying to click on name='" + e.getTagName() + "' text='" + e.getText() + "'", ex);
-    }
+            throw new RuntimeException("Failed trying to click on name='"
+                    + e.getTagName() + "' text='" + e.getText() + "'", ex);
+        }
     waitTillReady();
   }
 
@@ -302,15 +308,6 @@ public class WebDriverRobot implements Robot {
   @Override
   public void addListener(RobotListener listener) {
     listeners.add(listener);
-  }
-
-  private boolean alertPresent() {
-    try {
-      webDriver.switchTo().alert();
-      return true;
-    } catch (NoAlertPresentException ex) {
-      return false;
-    }
   }
 
   @Override
