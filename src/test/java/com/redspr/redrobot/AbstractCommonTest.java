@@ -9,13 +9,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.JavascriptExecutor;
 
-public class TestSimpleForm {
+abstract public class AbstractCommonTest {
 
-  private Robot getRobot() throws Exception {
-    Robot robot = new WebDriverRobot();
-    robot.open(getClass().getResource("/index.html"));
-    return robot;
-  }
+  abstract protected Robot getRobot() throws Exception;
 
   @Test
   public void testAmbiguousForm() throws Exception {
