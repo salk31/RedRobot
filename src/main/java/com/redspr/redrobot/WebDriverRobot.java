@@ -211,10 +211,17 @@ public class WebDriverRobot implements Robot {
       throw new RuntimeException("Expected a list but got '" + rawResult + "'");
     }
 
+    for (RobotListener l : listeners) {
+      l.locatorStart();
+    }
+
     List<WebElement> y = (List) rawResult;
     for (WebElement we : y) {
       try {
         if (we.isDisplayed()) {
+          for (RobotListener l : listeners) {
+            l.locatorEnd(new LocatorResultImpl(we));
+          }
           return we;
         }
       } catch (Throwable ex) {

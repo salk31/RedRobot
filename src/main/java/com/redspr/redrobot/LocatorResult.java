@@ -23,4 +23,5 @@ package com.redspr.redrobot;
  */
 public interface LocatorResult {
 
+    <T> T unwrap(Class<T> impl);
 }
