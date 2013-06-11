@@ -1,11 +1,26 @@
 <html>
 	<body>
 		<form>
+            <div>
 				<select title="Field 1">
-					<option value="select1" onclick="alert('option1')">One</option>
-					<option value="select2" onclick="alert('option2')" selected>One</option>
-					<option value="select3" onclick="alert('option3')">One</option>
+					<option value="select1" selected>One</option>
+					<option value="select2">Two</option>
+					<option value="select3">Three</option>
+                    <option value="select4">Four</option>
 				</select>
+
+                <input type="text" value="First" title="Foo" />
+            </div>
+            <div>
+                <select title="Field 2">
+                    <option value="select1">One</option>
+                    <option value="select2" selected>Two</option>
+                    <option value="select3">Three</option>
+                    <option value="select4">Four</option>
+                </select>
+
+                <input type="text" value="Second" title="Foo" />
+            </div>
 		</form>
 	</body>
 </html>

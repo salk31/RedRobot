@@ -134,9 +134,7 @@ abstract public class AbstractCommonTest {
 
     robot.click("Test ambiguous select");
 
-    robot.click("One");
-
-    robot.click("option2", "OK");
+    assertEquals("Second", robot.get("Two", "Foo"));
 
     robot.close();
   }
