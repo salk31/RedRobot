@@ -58,7 +58,7 @@ abstract public class AbstractCommonTest {
     assertTrue(robot.isChecked("radio 5"));
     assertEquals(" Two", robot.get("select 7"));
     robot.click("Three");
-    assertEquals("Three", robot.get("select 7"));
+    assertEquals("Three ", robot.get("select 7"));
     assertEquals("pass", robot.get("password 8"));
 
     robot.close();
