@@ -24,7 +24,7 @@ abstract public class AbstractCommonTest {
         robot.get("First bit", "Field 1"));
     // TODO 01 how to send "!"?
 
-    assertEquals("Two", robot.get("Second bit", "Field 1"));
+    assertEquals(" Two", robot.get("Second bit", "Field 1"));
     assertEquals("textareaByTitle", robot.get("First bit", "Field 2"));
     robot.set("First bit", "Field 2", "New text for textareaByTitle");
     assertEquals("New text for textareaByTitle",
@@ -56,7 +56,7 @@ abstract public class AbstractCommonTest {
     assertTrue(robot.isChecked("checkbox 3"));
     assertFalse(robot.isChecked("checkbox 4"));
     assertTrue(robot.isChecked("radio 5"));
-    assertEquals("Two", robot.get("select 7"));
+    assertEquals(" Two", robot.get("select 7"));
     robot.click("Three");
     assertEquals("Three", robot.get("select 7"));
     assertEquals("pass", robot.get("password 8"));
