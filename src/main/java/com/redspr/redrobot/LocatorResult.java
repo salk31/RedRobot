@@ -19,9 +19,15 @@
 package com.redspr.redrobot;
 
 /**
- *
+ * A matched element. Wraps an implementation specific match.
  */
 public interface LocatorResult {
 
-    <T> T unwrap(Class<T> impl);
+    /**
+     * Try to unwrap the underlying implementation.
+     *
+     * @param implClass
+     * @return instance of implClass where possible
+     */
+    <T> T unwrap(Class<T> implClass);
 }
