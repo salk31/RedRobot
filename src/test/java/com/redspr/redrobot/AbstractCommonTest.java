@@ -184,7 +184,7 @@ abstract public class AbstractCommonTest {
   }
 
   @Test
-  @Ignore
+  @Ignore // does not work in FF or Chrome, blocked by modal
   public void testAlertThenWait() throws Exception {
     final WebDriverRobot robot = (WebDriverRobot) getRobot();
 

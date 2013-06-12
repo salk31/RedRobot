@@ -40,12 +40,24 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
 
 public class WebDriverRobot implements Robot {
+  /**
+   * Wrapped implementation.
+   */
   private final WebDriver webDriver;
 
+  /**
+   * JavaScript source.
+   */
   private String SCRIPT;
 
+  /**
+   * Swappable ready strategy.
+   */
   private ReadyStrategy readyStrategy = new SleepReadyStrategy();
 
+  /**
+   * Listeners to be called in order.
+   */
   private final List<RobotListener> listeners = new ArrayList<RobotListener>();
 
   public WebDriverRobot() {
