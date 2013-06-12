@@ -21,14 +21,14 @@ abstract public class AbstractCommonTest {
     assertEquals("textBoxByTitle", robot.get("First bit", "Field 1"));
     robot.set("First bit", "Field 1", "New value for textBoxByTitle");
     assertEquals("New value for textBoxByTitle",
-        robot.get("First bit", "Field 1"));
+    robot.get("First bit", "Field 1"));
     // TODO 01 how to send "!"?
 
     assertEquals(" Two", robot.get("Second bit", "Field 1"));
     assertEquals("textareaByTitle", robot.get("First bit", "Field 2"));
     robot.set("First bit", "Field 2", "New text for textareaByTitle");
     assertEquals("New text for textareaByTitle",
-        robot.get("First bit", "Field 2"));
+    robot.get("First bit", "Field 2"));
 
     assertEquals("pass", robot.get("Second bit", "Field 2"));
 
@@ -74,27 +74,6 @@ abstract public class AbstractCommonTest {
     } catch (NotFoundException ex) {
       // expected
     }
-    robot.close();
-  }
-
-
-  // TODO 00 test ARIA roles
-  @Test
-  @Ignore
-  public void testClickable() throws Exception {
-    Robot robot = getRobot();
-    robot.click("Test Clickable");
-
-    {
-      robot.click("onClick");
-      robot.click("onClick clicked", "ok");
-    }
-
-    {
-      robot.click("onClick");
-      robot.click("onClick clicked", "cancel");
-    }
-
     robot.close();
   }
 
