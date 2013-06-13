@@ -18,7 +18,12 @@
  */
 package com.redspr.redrobot;
 
-// EXPERIMENTAL
+/**
+ * Simple listener to Robot events.
+ *
+ * EXPERIMENTAL
+ *
+ */
 public interface RobotListener {
   /**
    * Called before the wait strategy is called.
