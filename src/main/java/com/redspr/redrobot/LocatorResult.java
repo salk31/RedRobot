@@ -26,7 +26,7 @@ public interface LocatorResult {
     /**
      * Try to unwrap the underlying implementation.
      *
-     * @param implClass
+     * @param implClass the desired class
      * @return instance of implClass where possible
      */
     <T> T unwrap(Class<T> implClass);
