@@ -24,6 +24,12 @@ package com.redspr.redrobot;
 public interface ReadyStrategy {
   /**
    * Block while the browser is busy.
+   *
+   * Mixing JavaScript and modal dialogs won't work.
+   * The single JavaScript thread is blocked so can't be used.
+   *
+   * Chrome supports findElement while modal is present.
+   * Firefox clears the modal.
    */
   void waitTillReady();
 }
