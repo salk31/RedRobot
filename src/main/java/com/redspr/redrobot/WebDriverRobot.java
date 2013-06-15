@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -41,6 +43,10 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
 public class WebDriverRobot implements Robot {
+
+  private static final Logger LOGGER =
+            Logger.getLogger(WebDriverRobot.class.getName());
+
   /**
    * Wrapped implementation.
    */
@@ -238,7 +244,7 @@ public class WebDriverRobot implements Robot {
           return we;
         }
       } catch (Throwable ex) {
-        // ignore, log for debug/performance?
+        LOGGER.log(Level.WARNING, "Locator failed", ex);
       }
     }
 
