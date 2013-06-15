@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <script>
+            function block(n) {
+                var t1 = new Date().getTime() + n;
+                while (t1 > new Date().getTime()) {
+                    document.title = 'wait ' + t1;
+                }
+            }
+        </script>
+    </head>
+	<body>
+	    <a onclick="block(0)">block 0ms</a><br/>
+        <a onclick="block(100)">block 100ms</a><br/>
+        <a onclick="block(200)">block 200ms</a>
+	</body>
+</html>

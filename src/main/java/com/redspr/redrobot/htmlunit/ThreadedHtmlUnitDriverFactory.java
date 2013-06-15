@@ -1,13 +1,11 @@
-package com.redspr.redrobot;
+package com.redspr.redrobot.htmlunit;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -22,12 +20,15 @@ import com.gargoylesoftware.htmlunit.AlertHandler;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 
-public class Foo {
+public class ThreadedHtmlUnitDriverFactory {
 
-    static Set<Class> proxy = new HashSet();
+   // static Set<Class> classesToProxy = new HashSet();
+
+    //static Map<Object, Object> targetToProxy = new IdentityHashMap();
+
     static {
-        proxy.add(TargetLocator.class);
-        proxy.add(WebDriver.class);
+      //  classesToProxy.add(TargetLocator.class);
+      //  classesToProxy.add(WebDriver.class);
 
         new Thread(new PrimeRun()).start();
     }
@@ -48,14 +49,29 @@ public class Foo {
         return null;
     }
 
-    static LinkedBlockingQueue<Call> todo = new LinkedBlockingQueue();
-    static LinkedBlockingQueue<Call> done = new LinkedBlockingQueue();
+    /**
+     *
+     * @param method
+     * @return true iff the result of this invocation can be cached
+     *
+     * TODO of fetch early?
+     */
+    static boolean cache(Method method) {
+        if (method.getName().equals("navigate")) {
+            return true;
+        }
+        return false;
+    }
+
+    static LinkedBlockingQueue<Call> todo = new LinkedBlockingQueue<Call>();
+    static LinkedBlockingQueue<Call> done = new LinkedBlockingQueue<Call>();
 
     static class PrimeRun implements Runnable {
-        Map proxyToTarget = new IdentityHashMap();
+        Map<Object, Object> proxyToTarget = new IdentityHashMap<Object, Object>();
+        Map<Object, Object> targetToProxy = new IdentityHashMap<Object, Object>();
 
-        Bar alert;
-
+        AlertAdapter alert;
+// TODO thread is blocked when call navigate...
         @Override
         public void run() {
             System.out.println("Thread start");
@@ -63,7 +79,7 @@ public class Foo {
                 Call call = null;
                 try {
 
-                    call = todo.poll(100, TimeUnit.SECONDS);
+                    call = todo.poll(10, TimeUnit.SECONDS);
                     System.out.println("Thread got task " + call.method);
 
                     Object obj2 = proxyToTarget.get(call.obj);
@@ -81,7 +97,7 @@ public class Foo {
                                     @Override
                                     public void handleAlert(Page arg0,
                                             String arg1) {
-                                        alert = new Bar(arg1);
+                                        alert = new AlertAdapter(arg1);
                                         System.out.println("Got alert " + arg1);
                                         try {
                                             alert.semaphore.poll(100, TimeUnit.SECONDS);
@@ -106,11 +122,15 @@ public class Foo {
                     }
 
                     if (ret != null) {
+                        Object p = targetToProxy.get(ret);
+                        if (p != null) {
+                            ret = p;
+                        } else {
                         Class[] clazz = proxy(ret);
                         if (clazz != null) {
                             ret = createProxy(clazz, ret);
                         }
-
+                        }
                     }
                     System.out.println("Thread put result ");
 
@@ -127,6 +147,8 @@ public class Foo {
         }
 
         Object createProxy(Class[] clazz, final Object target) {
+
+
             if (target instanceof List) {
                 List l = (List) target;
                 for (int i = 0; i < l.size(); i++) {
@@ -163,7 +185,11 @@ Thread.sleep(1000);
                     if (call.isAsync()) {
                         return null;
                     }
-                    Call call2 = done.poll(100, TimeUnit.SECONDS);
+                    Call call2 = done.poll(10, TimeUnit.SECONDS);
+
+                    if (call2 == null) {
+                        throw new RuntimeException("Timed out waiting response to " + call);
+                    }
 
                     if (call2.throwable != null) {
                         throw call2.throwable;
@@ -176,6 +202,7 @@ Thread.sleep(1000);
             Object p = Proxy.newProxyInstance(WebDriver.class.getClassLoader(),
                     clazz, handler);
             proxyToTarget.put(p, target);
+            targetToProxy.put(target, p);
             return p;
         }
     }
@@ -190,9 +217,27 @@ Thread.sleep(1000);
         boolean isAsync() {
             return method != null && Void.TYPE.equals(method.getReturnType());
         }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Call ");
+            sb.append(method);
+            sb.append("(");
+            if (args != null) {
+            for (int i = 0; i < args.length; i++) {
+                if (i > 0) {
+                    sb.append(",");
+                }
+                sb.append(args[i]);
+            }
+            }
+            sb.append(")");
+            return sb.toString();
+        }
     }
 
-    static WebDriver foo() {
+    public static WebDriver create() {
         Call call = new Call();
         todo.add(call);
         if (!call.isAsync()) {

@@ -1,4 +1,4 @@
-package com.redspr.redrobot;
+package com.redspr.redrobot.htmlunit;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -6,13 +6,13 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.Beta;
 import org.openqa.selenium.security.Credentials;
 
-class Bar implements Alert {
+class AlertAdapter implements Alert {
 
     private final String msg;
 
     public LinkedBlockingQueue semaphore = new LinkedBlockingQueue();
 
-    Bar(String msg2) {
+    AlertAdapter(String msg2) {
         this.msg = msg2;
     }
 

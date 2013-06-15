@@ -22,5 +22,14 @@ package com.redspr.redrobot;
  * Pluggable code for waiting for a page to be ready.
  */
 public interface ReadyStrategy {
+  /**
+   * Block while the browser is busy.
+   *
+   * Mixing JavaScript and modal dialogs won't work.
+   * The single JavaScript thread is blocked so can't be used.
+   *
+   * Chrome supports findElement while modal is present.
+   * Firefox clears the modal.
+   */
   void waitTillReady();
 }

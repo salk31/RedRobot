@@ -18,15 +18,43 @@
  */
 package com.redspr.redrobot;
 
-// EXPERIMENTAL
+/**
+ * Simple listener to Robot events.
+ *
+ * EXPERIMENTAL
+ *
+ */
 public interface RobotListener {
+  /**
+   * Called before the wait strategy is called.
+   */
   void waitTillReadyStart();
+
+  /**
+   * Called after the wait strategy is called.
+   */
   void waitTillReadyEnd();
 
+  /**
+   * Called before each action is executed. e.g. before click
+   */
   // XXX say which action?
   void actionStart();
+
+  /**
+   * Called after each action is executed. e.g. after set
+   */
   void actionEnd();
 
+  /**
+   * Called before a locator is evaluated.
+   */
   void locatorStart();
+
+  /**
+   * Called after a locator is evaluated.
+   *
+   * @param result - the result of the locator execution.
+   */
   void locatorEnd(LocatorResult result);
 }

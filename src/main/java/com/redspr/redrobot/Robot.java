@@ -21,16 +21,25 @@ package com.redspr.redrobot;
 import java.net.URL;
 
 /**
- * Simple interface for UI integration testing using visible text and UI semantics.
+ * Simple interface for UI integration testing using visible text
+ * and UI semantics.
  *
  * The locators "String... x" use fuzzy logic to find a single element.
  * Multiple values help to select between multiple matches.
  *
- * The exact rules of what elements are selected and how they are located are implementation specific.
- * In general they should aim to work consistently across Robot and UI implementations where practical.
+ * The exact rules of what elements are selected and how they are located
+ * are implementation specific. In general they should aim to work
+ * consistently across Robot and UI implementations where practical.
  */
 public interface Robot {
+  /**
+   * Text to use to hit OK on a native JavaScript popup box.
+   */
   String OK = "OK";
+
+  /**
+   * Text to use to hit CANCEL on a native JavaScript popup box.
+   */
   String CANCEL = "CANCEL";
 
   /**
@@ -58,7 +67,8 @@ public interface Robot {
   /**
    * Count the visible text matching x on this page.
    *
-   * NB This method is inconsistent with other locator methods and is being phased out.
+   * NB This method is inconsistent with other locator methods
+   * and is being phased out.
    *
    * @param x - substring to be searched for
    * @return number of elements found
@@ -86,20 +96,39 @@ public interface Robot {
    */
   String get(String... x);
 
+  /**
+   * Does not hide the implementation of the popup
+   * (native or HTML/JavaScript) so is being phased out.
+   *
+   * @return confirmation text
+   */
   @Deprecated // use click(message, "OK")...
   String getConfirmation();
 
+  /**
+   * Does not hide the implementation of the control
+   * so is being phased out.
+   *
+   * @param x locator text
+   * @return true iff is checked
+   */
   @Deprecated // use isSelected
   boolean isChecked(String... x);
 
   /**
-   * Find and return the state of controls like checkboxes, list box, radio button etc
+   * Find and return the state of controls like checkboxes,
+   * list box, radio button etc.
    *
    * @param x - list of visible text to locate the element
    * @return - true iff the item is selected
    */
   boolean isSelected(String... x);
 
+  /**
+   * Open the provided URL then wait till the browser is done.
+   *
+   * @param url - URL to open.
+   */
   void open(URL url);
 
   /**
@@ -109,14 +138,42 @@ public interface Robot {
    */
   void set(String... x);
 
+  /**
+   * Close the browser and any other used resources.
+   */
   void close();
 
-  // XXX experimental
+
+  /**
+   * Allow the strategy for waiting for the browser to be ready
+   * to be changed at any time.
+   *
+   * EXPERIMENTAL
+   *
+   * @param p the ReadyStrategy implementation.
+   */
   void setReadyStrategy(ReadyStrategy p);
   // TODO 04 a dump/debug method?
 
-  // EXPERIMENTAL
+  /**
+   * Add a RobotListener which will be notified by various
+   * events.
+   *
+   * Listeners are called in the order they were added.
+   *
+   * EXPERIMENTAL
+   *
+   * @param listener - listener to add.
+   */
   void addListener(RobotListener listener);
 
+  /**
+   * Try and find an implementation instance of the class implClass.
+   *
+   * This will almost always be the browser interface implementation being used.
+   *
+   * @param implClass
+   * @return the unwrapped instance
+   */
   <T> T unwrap(Class<T> implClass);
 }

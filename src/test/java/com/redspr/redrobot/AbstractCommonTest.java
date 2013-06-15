@@ -8,20 +8,10 @@ import static org.junit.Assert.fail;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
-import com.gargoylesoftware.htmlunit.AlertHandler;
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.WebClient;
+abstract public class AbstractCommonTest {
 
-public class TestSimpleForm {
-
-  private Robot getRobot() throws Exception {
-    Robot robot = new WebDriverRobot(Foo.foo());
-    robot.open(getClass().getResource("/index.html"));
-    return robot;
-  }
+  abstract protected Robot getRobot() throws Exception;
 
   @Test
   public void testAmbiguousForm() throws Exception {
@@ -31,14 +21,14 @@ public class TestSimpleForm {
     assertEquals("textBoxByTitle", robot.get("First bit", "Field 1"));
     robot.set("First bit", "Field 1", "New value for textBoxByTitle");
     assertEquals("New value for textBoxByTitle",
-        robot.get("First bit", "Field 1"));
+    robot.get("First bit", "Field 1"));
     // TODO 01 how to send "!"?
 
-    assertEquals("Two", robot.get("Second bit", "Field 1"));
+    assertEquals(" Two", robot.get("Second bit", "Field 1"));
     assertEquals("textareaByTitle", robot.get("First bit", "Field 2"));
     robot.set("First bit", "Field 2", "New text for textareaByTitle");
     assertEquals("New text for textareaByTitle",
-        robot.get("First bit", "Field 2"));
+    robot.get("First bit", "Field 2"));
 
     assertEquals("pass", robot.get("Second bit", "Field 2"));
 
@@ -66,9 +56,9 @@ public class TestSimpleForm {
     assertTrue(robot.isChecked("checkbox 3"));
     assertFalse(robot.isChecked("checkbox 4"));
     assertTrue(robot.isChecked("radio 5"));
-    assertEquals("Two", robot.get("select 7"));
+    assertEquals(" Two", robot.get("select 7"));
     robot.click("Three");
-    assertEquals("Three", robot.get("select 7"));
+    assertEquals("Three ", robot.get("select 7"));
     assertEquals("pass", robot.get("password 8"));
 
     robot.close();
@@ -87,37 +77,13 @@ public class TestSimpleForm {
     robot.close();
   }
 
-
-  // TODO 00 test ARIA roles
-  @Test
-  @Ignore
-  public void testClickable() throws Exception {
-    Robot robot = getRobot();
-    robot.click("Test Clickable");
-
-    {
-      robot.click("onClick");
-      robot.click("onClick clicked", "ok");
-    }
-
-    {
-      robot.click("onClick");
-      robot.click("onClick clicked", "cancel");
-    }
-
-    robot.close();
-  }
-
   @Test
   public void testPartialText() throws Exception {
     Robot robot = getRobot();
     robot.click("Test Partial Text");
-System.out.println("*************************" +
-robot.unwrap(WebDriver.class).getPageSource());
-    {
-        assertTrue(robot.textExists("foo"));
 
-      robot.click("foo");  // BREAKS
+    {
+      robot.click("foo");
       robot.click("foo clicked", "ok"); // XXX want more confirmation was the
                                         // real one!?
     }
@@ -147,9 +113,7 @@ robot.unwrap(WebDriver.class).getPageSource());
 
     robot.click("Test ambiguous select");
 
-    robot.click("One");
-
-    robot.click("option2", "OK");
+    assertEquals("Second", robot.get("Two", "Foo"));
 
     robot.close();
   }
@@ -160,7 +124,7 @@ robot.unwrap(WebDriver.class).getPageSource());
 
     robot.click("Test Dialog");
 
-    robot.click("alert"); // BREAKS!
+    robot.click("alert");
     assertTrue(robot.textExists("alert clicked"));
     robot.click("ok");
     assertFalse(robot.textExists("alert clicked"));
@@ -220,7 +184,8 @@ robot.unwrap(WebDriver.class).getPageSource());
   }
 
   @Test
-  @Ignore
+  @Ignore // does not work in FF or Chrome, blocked by modal
+  // can use findElement in chrome
   public void testAlertThenWait() throws Exception {
     final WebDriverRobot robot = (WebDriverRobot) getRobot();
 
@@ -240,25 +205,58 @@ robot.unwrap(WebDriver.class).getPageSource());
   }
 
   @Test
-  public void testWebDriver() throws Exception {
-      HtmlUnitDriver driver = new HtmlUnitDriver() {
-         @Override
-        protected WebClient
-              modifyWebClient(WebClient client) {
-             client.setAlertHandler(new AlertHandler() {
+  public void testPerformance() throws Exception {
+    final WebDriverRobot robot = (WebDriverRobot) getRobot();
+    SimplePerformanceListener listener = new SimplePerformanceListener();
+    robot.addListener(listener);
 
-                @Override
-                public void handleAlert(Page arg0, String arg1) {
-                    int i = 0;
-                }});
-             return client;
-          }
-      };
 
-      driver.setJavascriptEnabled(true);
-      driver.get(getClass().getResource("/index.html").toString());
 
-      driver.executeScript("alert('hi')");
+    robot.click("Test Performance");
 
+    robot.setReadyStrategy(new ReadyStrategy() {
+        @Override
+        public void waitTillReady() {
+        }
+    });
+    int N = 10;
+
+    long t0 = listener.getTotal();
+    for (int i = 0; i < N; i++) {
+      robot.click("block 200ms");
+    }
+    long t1 = listener.getTotal();
+
+    long T = t1 - t0;
+    assertTrue("Was " + T, T > N * 190);
+    assertTrue("Was " + T, T < N * 300); // XXX terrible! calibrating thing?
+
+    robot.close();
+  }
+
+  @Test
+  public void testAria() throws Exception {
+    Robot robot = getRobot();
+    robot.click("Test Aria");
+
+    assertEquals("Correct value", robot.get("Red"));
+
+    robot.close();
+  }
+
+  @Ignore
+  @Test
+  public void testWatermark() throws Exception {
+    Robot robot = getRobot();
+    robot.click("Test Watermark");
+
+    String v = "asd" + System.currentTimeMillis();
+
+    robot.set("Box one", v);
+
+    String v2 = robot.get("Box one");
+    assertEquals(v, v2);
+
+    robot.close();
   }
 }

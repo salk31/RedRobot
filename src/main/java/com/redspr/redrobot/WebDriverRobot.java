@@ -19,52 +19,65 @@
 package com.redspr.redrobot;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriver.TargetLocator;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+
 public class WebDriverRobot implements Robot {
+
+  private static final Logger LOGGER =
+            Logger.getLogger(WebDriverRobot.class.getName());
+
+  /**
+   * Wrapped implementation.
+   */
   private final WebDriver webDriver;
 
+  /**
+   * JavaScript source.
+   */
   private String SCRIPT;
 
+  /**
+   * Swappable ready strategy.
+   */
   private ReadyStrategy readyStrategy = new SleepReadyStrategy();
 
+  /**
+   * Listeners to be called in order.
+   */
   private final List<RobotListener> listeners = new ArrayList<RobotListener>();
 
   public WebDriverRobot() {
     this(new FirefoxDriver());
   }
-private final TargetLocator nav;
+
   public WebDriverRobot(WebDriver webDriver2) {
     this.webDriver = webDriver2;
-nav = webDriver.switchTo();
+
+    URL url = getClass().getResource("/redRobotCore.js");
+
     try {
-      InputStream is = getClass().getResourceAsStream("/redRobotCore.js");
-      ByteArrayOutputStream boas = new ByteArrayOutputStream();
-      byte[] buff = new byte[2048];
-      int len;
-      while ((len = is.read(buff)) > 0) {
-        boas.write(buff, 0, len);
-      }
-      SCRIPT = boas.toString();
+      SCRIPT = Resources.toString(url, Charsets.UTF_8);
     } catch (IOException ex) {
       throw new RuntimeException("Unable to read script" , ex);
     }
@@ -109,7 +122,7 @@ nav = webDriver.switchTo();
         throw new RuntimeException("At least one selector required");
     }
     try {
-      Alert alert = nav.alert();
+      Alert alert = webDriver.switchTo().alert();
 
       double scoreOk = isMatch(new String[]{alert.getText(), OK}, x);
       double scoreCancel = isMatch(new String[]{alert.getText(), CANCEL}, x);
@@ -119,16 +132,18 @@ nav = webDriver.switchTo();
       } else if (scoreOk < scoreCancel) {
           alert.dismiss();
       } else {
-          throw new IllegalArgumentException("Asked to click on '" + x[0] + "' but was an Alert with text '" + alert.getText() + "'");
+          throw new IllegalArgumentException("Asked to click on '"
+                  + x[0] + "' but was an Alert with text '"
+                  + alert.getText() + "'");
       }
 
     } catch (NoAlertPresentException ex) {
       // fine, was no alert
-
+      WebElement elmt = locClickable(x);
       for (RobotListener l : listeners) {
         l.actionStart();
       }
-      locClickable(x).click();
+      elmt.click();
       for (RobotListener l : listeners) {
         l.actionEnd();
       }
@@ -136,6 +151,9 @@ nav = webDriver.switchTo();
     }
   }
 
+  /**
+   * Use the provided wait strategy and call listeners.
+   */
   private void waitTillReady() {
     for (RobotListener l : listeners) {
       l.waitTillReadyStart();
@@ -146,15 +164,16 @@ nav = webDriver.switchTo();
     }
   }
 
-  @Override
-  public int findText(String x) {
-    return webDriver.findElements(By.xpath("//node()[text()='" + x + "']")).size();
-  }
+    @Override
+    public int findText(String x) {
+        return webDriver.findElements(By.xpath("//node()[text()='" + x + "']"))
+                .size();
+    }
 
   @Override
   public boolean textExists(String... x) {
     try {
-      Alert alert = nav.alert();
+      Alert alert = webDriver.switchTo().alert();
 
       return isMatch(new String[]{alert.getText(), OK, CANCEL}, x) > 0;
     } catch (NoAlertPresentException ex) {
@@ -204,22 +223,30 @@ nav = webDriver.switchTo();
 
   private WebElement doLocate(String cmd, Object cmdArg, String[] args) {
     JavascriptExecutor jse = (JavascriptExecutor) webDriver;
-    Object rawResult = jse.executeScript(SCRIPT
-            + ";return RedRobot.findBestMatches(document, " + cmd + " , arguments[0], arguments[1])",
-            new Object[]{cmdArg, args});
+        Object rawResult = jse.executeScript(SCRIPT
+                + ";return RedRobot.findBestMatches(document, " + cmd
+                + " , arguments[0], arguments[1])",
+                new Object[] {cmdArg, args });
 
     if (!(rawResult instanceof List)) {
       throw new RuntimeException("Expected a list but got '" + rawResult + "'");
+    }
+
+    for (RobotListener l : listeners) {
+      l.locatorStart();
     }
 
     List<WebElement> y = (List) rawResult;
     for (WebElement we : y) {
       try {
         if (we.isDisplayed()) {
+          for (RobotListener l : listeners) {
+            l.locatorEnd(new LocatorResultImpl(we));
+          }
           return we;
         }
       } catch (Throwable ex) {
-        // ignore, log for debug/performance?
+        LOGGER.log(Level.WARNING, "Locator failed", ex);
       }
     }
 
@@ -274,11 +301,13 @@ nav = webDriver.switchTo();
     String v = x[x.length - 1];
     WebElement e = this.locKey(n);
     try {
-      e.clear();
+      JavascriptExecutor js = (JavascriptExecutor) webDriver;
+      // TODO 00 doesn't like this? js.executeScript("arguments[0].value = ''", e);
       e.sendKeys(v);
     } catch (WebDriverException ex) {
-      throw new RuntimeException("Failed trying to click on name='" + e.getTagName() + "' text='" + e.getText() + "'", ex);
-    }
+            throw new RuntimeException("Failed trying to click on name='"
+                    + e.getTagName() + "' text='" + e.getText() + "'", ex);
+        }
     waitTillReady();
   }
 
@@ -295,15 +324,6 @@ nav = webDriver.switchTo();
   @Override
   public void addListener(RobotListener listener) {
     listeners.add(listener);
-  }
-
-  private boolean alertPresent() {
-    try {
-      webDriver.switchTo().alert();
-      return true;
-    } catch (NoAlertPresentException ex) {
-      return false;
-    }
   }
 
   @Override
