@@ -19,7 +19,6 @@
 package com.redspr.redrobot;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -38,6 +36,9 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 
 public class WebDriverRobot implements Robot {
   /**
@@ -67,15 +68,10 @@ public class WebDriverRobot implements Robot {
   public WebDriverRobot(WebDriver webDriver2) {
     this.webDriver = webDriver2;
 
+    URL url = getClass().getResource("/redRobotCore.js");
+
     try {
-      InputStream is = getClass().getResourceAsStream("/redRobotCore.js");
-      ByteArrayOutputStream boas = new ByteArrayOutputStream();
-      byte[] buff = new byte[2048];
-      int len;
-      while ((len = is.read(buff)) > 0) {
-        boas.write(buff, 0, len);
-      }
-      SCRIPT = boas.toString();
+      SCRIPT = Resources.toString(url, Charsets.UTF_8);
     } catch (IOException ex) {
       throw new RuntimeException("Unable to read script" , ex);
     }
@@ -222,7 +218,7 @@ public class WebDriverRobot implements Robot {
         Object rawResult = jse.executeScript(SCRIPT
                 + ";return RedRobot.findBestMatches(document, " + cmd
                 + " , arguments[0], arguments[1])",
-                new Object[] { cmdArg, args });
+                new Object[] {cmdArg, args });
 
     if (!(rawResult instanceof List)) {
       throw new RuntimeException("Expected a list but got '" + rawResult + "'");
