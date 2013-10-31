@@ -41,8 +41,8 @@ abstract public class AbstractCommonTest {
   public void testNiceForm() throws Exception {
     Robot robot = getRobot();
     robot.click("Test Nice Form");
-    assertFalse(robot.isChecked("Checkbox 1"));
-    assertTrue(robot.isChecked("Checkbox 2"));
+    assertFalse(robot.isSelected("Checkbox 1"));
+    assertTrue(robot.isSelected("Checkbox 2"));
 
     robot.close();
   }
@@ -53,9 +53,9 @@ abstract public class AbstractCommonTest {
     robot.click("Test Simple Form");
     assertEquals("textBoxByTitle", robot.get("text 1"));
     assertEquals("textareaByTitle", robot.get("text 2"));
-    assertTrue(robot.isChecked("checkbox 3"));
-    assertFalse(robot.isChecked("checkbox 4"));
-    assertTrue(robot.isChecked("radio 5"));
+    assertTrue(robot.isSelected("checkbox 3"));
+    assertFalse(robot.isSelected("checkbox 4"));
+    assertTrue(robot.isSelected("radio 5"));
     assertEquals(" Two", robot.get("select 7"));
     robot.click("Three");
     assertEquals("Three ", robot.get("select 7"));
@@ -219,7 +219,7 @@ abstract public class AbstractCommonTest {
         public void waitTillReady() {
         }
     });
-    int N = 10;
+    int N = 50;
 
     long t0 = listener.getTotal();
     for (int i = 0; i < N; i++) {
@@ -227,9 +227,9 @@ abstract public class AbstractCommonTest {
     }
     long t1 = listener.getTotal();
 
-    long T = t1 - t0;
-    assertTrue("Was " + T, T > N * 190);
-    assertTrue("Was " + T, T < N * 300); // XXX terrible! calibrating thing?
+    long pct = 100 * (t1 - t0) / (N * 200);
+    assertTrue("Was " + pct, pct > 90);
+    assertTrue("Was " + pct, pct < 150); // XXX terrible! calibrating thing?
 
     robot.close();
   }
