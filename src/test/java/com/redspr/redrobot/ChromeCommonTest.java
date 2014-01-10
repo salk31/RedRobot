@@ -1,7 +1,9 @@
 package com.redspr.redrobot;
 
+import org.junit.Ignore;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+@Ignore
 public class ChromeCommonTest extends AbstractCommonTest {
 
   @Override
