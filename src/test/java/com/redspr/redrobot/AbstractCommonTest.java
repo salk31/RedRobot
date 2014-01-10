@@ -118,6 +118,25 @@ abstract public class AbstractCommonTest {
     robot.close();
   }
 
+  // https://code.google.com/p/redrobot/issues/detail?id=30
+  @Test
+  public void testAmbiguousTable() throws Exception {
+      Robot robot = getRobot();
+
+      robot.click("Test ambiguous table");
+
+      String[] chars = new String[]{"a", "b", "c", "d"};
+      for (String first : chars) {
+          for (String second : chars) {
+              robot.click(first, second);
+              assertTrue(robot.textExists("alert " + second));
+              robot.click("ok");
+          }
+      }
+
+      robot.close();
+  }
+
   @Test
   public void testDialog() throws Exception {
     Robot robot = getRobot();

@@ -129,6 +129,8 @@ RedRobot.isText = function(node, text) {
   return false;
 }
 
+// main entry point
+//
 RedRobot.findBestMatches = function(docm, matchFn, matchFnArg, patterns) {
   var w = docm.defaultView;// window.frames[0];
 
@@ -161,7 +163,7 @@ RedRobot.findBestMatches = function(docm, matchFn, matchFnArg, patterns) {
           s = s * 0.9;
         }
       }    
-      c.score = c.score + max;
+      c.score = c.score + max * Math.pow(2, p);
     }  
   }
 
