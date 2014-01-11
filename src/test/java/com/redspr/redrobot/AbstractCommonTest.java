@@ -248,6 +248,8 @@ abstract public class AbstractCommonTest {
 
     long pct = 100 * (t1 - t0) / (N * 200);
     assertTrue("Was " + pct, pct > 90);
+
+    System.out.println("testPerformance " + pct + "%");
     assertTrue("Was " + pct, pct < 150); // XXX terrible! calibrating thing?
 
     robot.close();
