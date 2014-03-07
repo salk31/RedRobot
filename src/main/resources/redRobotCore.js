@@ -203,11 +203,11 @@ RedRobot.getMatch = function(text, matches, e) {
       case 'TH' :
         var row = parentNode.parentNode;
         var tbody = row.parentNode;
+        
+        // calc the start and end of the cols the heading covers
         var col0 = 0;
         for (var i = 0; i < parentNode.cellIndex; i++) {
           col0 += row.cells[i].colSpan;
-          parentNode.title += row.cells[i].colSpan;
-        
         }
         var col1 = col0 + parentNode.colSpan;
 
@@ -219,7 +219,7 @@ RedRobot.getMatch = function(text, matches, e) {
             var currentCell = currentRow.cells[currentColIdx++];
             var nextCol = currentCol + currentCell.colSpan;
             if (col0 < nextCol) {
-              RedRobot.pushMatch(matches, currentCell, score / tbody.rows.length);
+              RedRobot.pushMatch(matches, currentCell, score);
             }
             currentCol = nextCol;
           }

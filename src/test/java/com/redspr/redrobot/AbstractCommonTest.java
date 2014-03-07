@@ -187,6 +187,18 @@ abstract public class AbstractCommonTest {
   }
 
   @Test
+  public void testTableTotalScore() throws Exception {
+    Robot robot = getRobot();
+
+    robot.click("Test table total score");
+
+    robot.click("cat");
+    robot.click("alert a", "ok");
+
+    robot.close();
+  }
+
+  @Test
   public void testTextMatch() throws Exception {
     WebDriverRobot robot = (WebDriverRobot) getRobot();
     {
