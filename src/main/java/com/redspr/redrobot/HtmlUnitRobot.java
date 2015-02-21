@@ -29,17 +29,17 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoAlertPresentException;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.Select;
-
-import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.ScriptResult;
+import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import com.gargoylesoftware.htmlunit.javascript.host.html.HTMLElement;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import com.google.gson.Gson;
+import com.redspr.redrobot.HtmlUnitRobotWorker.Foo;
 
 public class HtmlUnitRobot implements Robot {
 
@@ -49,7 +49,7 @@ public class HtmlUnitRobot implements Robot {
   /**
    * Wrapped implementation.
    */
-  private final WebClient webDriver;
+  private final HtmlUnitRobotWorker webDriver;
 
   /**
    * JavaScript source.
@@ -67,11 +67,8 @@ public class HtmlUnitRobot implements Robot {
   private final List<RobotListener> listeners = new ArrayList<RobotListener>();
 
   public HtmlUnitRobot() {
-    this(new WebClient());
-  }
-
-  public HtmlUnitRobot(WebClient webDriver2) {
-    this.webDriver = webDriver2;
+    this.webDriver = new HtmlUnitRobotWorker();
+    (new Thread(webDriver)).start();
 
     URL url = getClass().getResource("/redRobotCore.js");
 
@@ -82,25 +79,30 @@ public class HtmlUnitRobot implements Robot {
     }
   }
 
+  private void call(Foo foo) {
+      webDriver.queue(foo);
+  }
+
   @Override
   public void back() {
-      try {
-        webDriver.getWebWindows().get(0).getHistory().back();
-    } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
+      call(new Foo() {
+          @Override
+        public void execute(HtmlUnitRobotWorker webDriver) throws Exception {
+              webDriver.getWebWindow().getHistory().back();
+          }
+      });
     waitTillReady();
   }
 
   @Override
   public void forward() {
-      try {
-        webDriver.getWebWindows().get(0).getHistory().forward();
-    } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
+    call(new Foo() {
+      @Override
+      public void execute(HtmlUnitRobotWorker webDriver) throws Exception {
+        webDriver.getWebWindow().getHistory().forward();
+      }
+    });
+
     waitTillReady();
   }
 
@@ -130,8 +132,8 @@ public class HtmlUnitRobot implements Robot {
     if (x == null || x.length == 0) {
         throw new RuntimeException("At least one selector required");
     }
-    try {
-      Alert alert = webDriver.switchTo().alert();
+    HtmlUnitRobotWorker.Alert alert = webDriver.getAlert();
+    if (alert != null) {
 
       double scoreOk = isMatch(new String[]{alert.getText(), OK}, x);
       double scoreCancel = isMatch(new String[]{alert.getText(), CANCEL}, x);
@@ -146,13 +148,18 @@ public class HtmlUnitRobot implements Robot {
                   + alert.getText() + "'");
       }
 
-    } catch (NoAlertPresentException ex) {
+    } else {
       // fine, was no alert
-      WebElement elmt = locClickable(x);
+        HtmlElement elmt = locClickable(x);
       for (RobotListener l : listeners) {
         l.actionStart();
       }
-      elmt.click();
+      try {
+        elmt.click();
+    } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
       for (RobotListener l : listeners) {
         l.actionEnd();
       }
@@ -164,6 +171,16 @@ public class HtmlUnitRobot implements Robot {
    * Use the provided wait strategy and call listeners.
    */
   private void waitTillReady() {
+    while (!webDriver.isIdle() && webDriver.getAlert() == null) {
+
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
     for (RobotListener l : listeners) {
       l.waitTillReadyStart();
     }
@@ -173,19 +190,17 @@ public class HtmlUnitRobot implements Robot {
     }
   }
 
-    @Override
-    public int findText(String x) {
-        return webDriver.findElements(By.xpath("//node()[text()='" + x + "']"))
-                .size();
-    }
+  @Override
+  public int findText(String x) {
+    throw new RuntimeException("Not implemented");
+  }
 
   @Override
   public boolean textExists(String... x) {
-    try {
-      Alert alert = webDriver.switchTo().alert();
-
+    HtmlUnitRobotWorker.Alert alert = webDriver.getAlert();
+    if (alert != null) {
       return isMatch(new String[]{alert.getText(), OK, CANCEL}, x) > 0;
-    } catch (NoAlertPresentException ex) {
+    } else {
       String[] n = allButLast(x);
       String v = x[x.length - 1];
       try {
@@ -199,16 +214,11 @@ public class HtmlUnitRobot implements Robot {
 
   @Override
   public String get(String... x) {
-    WebElement e = locKey(x);
-
-    if ("select".equals(e.getTagName())) {
-        Select select = new Select(e);
-        return select.getFirstSelectedOption().getText();
-    }
-    WebElement elmt = locKey(x);
+    HtmlElement elmt = locKey(x);
     String r = elmt.getAttribute("value");
-    if (r == null) {
-        r = elmt.getText();
+
+    if (r == null || "".equals(r)) {
+        r = elmt.asText();
     }
     return r.replaceAll("\\r", "");
   }
@@ -220,9 +230,14 @@ public class HtmlUnitRobot implements Robot {
 
   @Override
   public boolean isSelected(String... x) {
-    WebElement e = locCheckable(x);
-
-    return e.isSelected();
+    HtmlElement e = locCheckable(x);
+    if (e instanceof HtmlCheckBoxInput) {
+        return ((HtmlCheckBoxInput) e).isChecked();
+    }
+    if (e instanceof HtmlRadioButtonInput) {
+        return ((HtmlRadioButtonInput) e).isChecked();
+    }
+    throw new RuntimeException("Don't know how to handle " + e);
   }
 
   @Override
@@ -230,69 +245,84 @@ public class HtmlUnitRobot implements Robot {
     return isSelected(x);
   }
 
-  private WebElement doLocate(String cmd, Object cmdArg, String[] args) {
-    JavascriptExecutor jse = (JavascriptExecutor) webDriver;
-        Object rawResult = jse.executeScript(SCRIPT
-                + ";return RedRobot.findBestMatches(document, " + cmd
-                + " , arguments[0], arguments[1])",
-                new Object[] {cmdArg, args });
+  private HtmlElement doLocate(final String cmd, final Object cmdArg, final String[] args) {
+// TODO __ need to check worker is idle?
+              Gson gson = new Gson();
+              ScriptResult rawResult2 = webDriver.getPage().executeJavaScript(SCRIPT
 
-    if (!(rawResult instanceof List)) {
-      throw new RuntimeException("Expected a list but got '" + rawResult + "'");
-    }
 
-    for (RobotListener l : listeners) {
-      l.locatorStart();
-    }
+                      + ";RedRobot.findBestMatches(document, " + cmd
+                      + " , " + gson.toJson(cmdArg) + ", " + gson.toJson(args) + ")\n;"
 
-    List<WebElement> y = (List) rawResult;
-    for (WebElement we : y) {
-      try {
-        if (we.isDisplayed()) {
-          for (RobotListener l : listeners) {
-            l.locatorEnd(new LocatorResultImpl(we));
+                    );
+                    Object rawResult = rawResult2.getJavaScriptResult();
+
+          if (!(rawResult instanceof List)) {
+            throw new RuntimeException("Expected a list but got '" + rawResult + "'");
           }
-          return we;
-        }
-      } catch (Throwable ex) {
-        LOGGER.log(Level.WARNING, "Locator failed", ex);
-      }
-    }
 
-    StringBuilder sb = new StringBuilder();
-    sb.append("Unable to find ");
-    sb.append(cmd);
-    for (String a : args) {
-      sb.append(", '");
-      sb.append(a);
-      sb.append("'");
-    }
-    for (RobotListener l : listeners) {
-        l.locatorEnd(null);
-    }
+          for (RobotListener l : listeners) {
+            l.locatorStart();
+          }
 
-    throw new NotFoundException(sb.toString());
+          List<HTMLElement> y = (List) rawResult;
+          for (HTMLElement we : y) {
+            try {
+              HtmlElement dom = we.getDomNodeOrDie();
+              if (dom.isDisplayed()) {
+                for (RobotListener l : listeners) {
+                  l.locatorEnd(new LocatorResultImpl(we));
+                }
+
+                return dom;
+              }
+            } catch (Throwable ex) {
+              LOGGER.log(Level.WARNING, "Locator failed", ex);
+            }
+          }
+
+          StringBuilder sb = new StringBuilder();
+          sb.append("Unable to find ");
+          sb.append(cmd);
+          for (String a : args) {
+            sb.append(", '");
+            sb.append(a);
+            sb.append("'");
+          }
+          for (RobotListener l : listeners) {
+              l.locatorEnd(null);
+          }
+
+          throw new NotFoundException(sb.toString());
+
+
   }
 
-  private WebElement locClickable(String... x) {
+  private HtmlElement locClickable(String... x) {
     return doLocate("RedRobot.isClickable", null, x);
   }
 
-  private WebElement locText(String[] x, String v) {
+  private HtmlElement locText(String[] x, String v) {
     return doLocate("RedRobot.isText", v, x);
   }
 
-  private WebElement locKey(String... x) {
+  private HtmlElement locKey(String... x) {
     return doLocate("RedRobot.isKey", null, x);
   }
 
-  private WebElement locCheckable(String... x) {
+  private HtmlElement locCheckable(String... x) {
     return doLocate("RedRobot.isCheckable", null, x);
   }
 
   @Override
-  public void open(URL url) {
-     webDriver.get(url.toString());
+  public void open(final URL url) {
+      call(new Foo() {
+          @Override
+        public void execute(HtmlUnitRobotWorker webDriver) throws Exception {
+              webDriver.getWebClient().getPage(url);
+          }
+      });
+
      waitTillReady();
   }
 
@@ -308,21 +338,25 @@ public class HtmlUnitRobot implements Robot {
   public void set(String... x) {
     String[] n = allButLast(x);
     String v = x[x.length - 1];
-    WebElement e = this.locKey(n);
-    try {
-      JavascriptExecutor js = (JavascriptExecutor) webDriver;
-      js.executeScript("arguments[0].value = ''", e);
-      e.sendKeys(v);
-    } catch (WebDriverException ex) {
-            throw new RuntimeException("Failed trying to click on name='"
-                    + e.getTagName() + "' text='" + e.getText() + "'", ex);
+    HtmlElement e = this.locKey(n);
+   // try {
+        if (e instanceof HtmlTextArea) {
+            ((HtmlTextArea) e).setText(v);
+        } else if (e instanceof HtmlTextInput) {
+            ((HtmlTextInput) e).setText(v);
         }
+        //e.setNodeValue("");
+        //e.type(v);
+    //} catch (IOException ex) {
+    //        throw new RuntimeException("Failed trying to click on name='"
+    //                + e.getTagName() + "' text='" + e + "'", ex);
+    //    }
     waitTillReady();
   }
 
   @Override
   public void close() {
-    webDriver.quit();
+    // TODO __ webDriver.quit();
   }
 
   @Override

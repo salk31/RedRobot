@@ -21,7 +21,7 @@ abstract public class AbstractCommonTest {
     assertEquals("textBoxByTitle", robot.get("First bit", "Field 1"));
     robot.set("First bit", "Field 1", "New value for textBoxByTitle");
     assertEquals("New value for textBoxByTitle",
-    robot.get("First bit", "Field 1"));
+            robot.get("First bit", "Field 1"));
     // TODO 01 how to send "!"?
 
     assertEquals(" Two", robot.get("Second bit", "Field 1"));
@@ -198,6 +198,7 @@ abstract public class AbstractCommonTest {
     robot.close();
   }
 
+  @Ignore // wrong place
   @Test
   public void testTextMatch() throws Exception {
     WebDriverRobot robot = (WebDriverRobot) getRobot();
