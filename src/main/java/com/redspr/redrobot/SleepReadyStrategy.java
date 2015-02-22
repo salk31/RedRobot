@@ -26,7 +26,7 @@ public class SleepReadyStrategy implements ReadyStrategy {
   @Override
   public void waitTillReady() {
     try {
-      Thread.sleep(30);
+      Thread.sleep(100);
     } catch (InterruptedException e) {
       // just fall through
     }

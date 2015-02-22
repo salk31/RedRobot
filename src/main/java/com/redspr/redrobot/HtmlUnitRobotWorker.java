@@ -29,7 +29,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebWindow;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-public class HtmlUnitRobotWorker  implements Runnable  {
+public class HtmlUnitRobotWorker implements Runnable  {
 
   public interface Command {
     void execute(HtmlUnitRobotWorker webClient) throws Exception;
@@ -60,7 +60,11 @@ public class HtmlUnitRobotWorker  implements Runnable  {
     }
 
     public boolean poll() {
-        return Boolean.TRUE.equals(answer.poll());
+        try {
+          return Boolean.TRUE.equals(answer.poll(100, TimeUnit.SECONDS));
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
     }
   }
 
@@ -105,7 +109,7 @@ public class HtmlUnitRobotWorker  implements Runnable  {
   public void queue(Command foo) {
     try {
       todo.put(foo);
-    } catch (InterruptedException e) {
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
@@ -122,14 +126,27 @@ public class HtmlUnitRobotWorker  implements Runnable  {
     return (HtmlPage) getWebWindow().getEnclosedPage();
   }
 
+  private final Command marrakech = new Command() {
+
+    @Override
+    public void execute(HtmlUnitRobotWorker webClient) throws Exception {
+
+    }
+
+  };
+
   @Override
   public void run() {
     try {
       while (todo != null) {
         Command foo = todo.poll(100, TimeUnit.SECONDS);
+        if (foo != marrakech) {
+          todo.add(marrakech);
+        }
         foo.execute(this);
       }
     } catch (Exception ex) {
+      // TODO __
       ex.printStackTrace();
     }
   }

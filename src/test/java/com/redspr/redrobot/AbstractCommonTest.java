@@ -231,14 +231,11 @@ abstract public class AbstractCommonTest {
     robot.close();
   }
 
-  @Ignore // not reliable - 200ms extra pause
   @Test
   public void testPerformance() throws Exception {
-    final WebDriverRobot robot = (WebDriverRobot) getRobot();
+    final Robot robot = getRobot();
     SimplePerformanceListener listener = new SimplePerformanceListener();
     robot.addListener(listener);
-
-
 
     robot.click("Test Performance");
 
@@ -256,10 +253,10 @@ abstract public class AbstractCommonTest {
     long t1 = listener.getTotal();
 
     long pct = 100 * (t1 - t0) / (N * 200);
-    assertTrue("Was " + pct, pct > 90);
+    assertTrue("Was " + pct, pct > 100);
 
     System.out.println("testPerformance " + pct + "%");
-    assertTrue("Was " + pct, pct < 150); // XXX terrible! calibrating thing?
+    assertTrue("Was " + pct, pct < 110);
 
     robot.close();
   }
@@ -270,6 +267,24 @@ abstract public class AbstractCommonTest {
     robot.click("Test Aria");
 
     assertEquals("Correct value", robot.get("Red"));
+
+    robot.close();
+  }
+
+  @Test
+  public void testConfirm() throws Exception {
+    Robot robot = getRobot();
+    robot.click("Test Confirm");
+
+    robot.click("confirm");
+    robot.click("hello", Robot.OK);
+    assertTrue(robot.textExists("result=true")); // TODO __ locate deadlocks because
+    robot.click("result=true", Robot.OK);
+
+    robot.click("confirm");
+    robot.click("hello", Robot.CANCEL);
+    assertTrue(robot.textExists("result=false"));
+    robot.click("result=false", Robot.OK);
 
     robot.close();
   }

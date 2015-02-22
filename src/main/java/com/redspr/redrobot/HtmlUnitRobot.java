@@ -149,18 +149,20 @@ public class HtmlUnitRobot implements Robot {
                   + x[0] + "' but was an Alert with text '"
                   + alert.getText() + "'");
       }
-
+      waitTillReady(); // XXX also want start/end listeners!
     } else {
       // fine, was no alert
-      HtmlElement elmt = locClickable(x);
+      final HtmlElement elmt = locClickable(x);
       for (RobotListener l : listeners) {
         l.actionStart();
       }
-      try {
-        elmt.click();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+      call(new Command() {
+        @Override
+        public void execute(HtmlUnitRobotWorker webDriver) throws Exception {
+          elmt.click();
+        }
+      });
+
       for (RobotListener l : listeners) {
         l.actionEnd();
       }
@@ -172,6 +174,10 @@ public class HtmlUnitRobot implements Robot {
    * Use the provided wait strategy and call listeners.
    */
   private void waitTillReady() {
+    for (RobotListener l : listeners) {
+      l.waitTillReadyStart();
+    }
+
     while (!worker.isIdle() && worker.getAlert() == null) {
       try {
         Thread.sleep(20);
@@ -180,9 +186,6 @@ public class HtmlUnitRobot implements Robot {
       }
     }
 
-    for (RobotListener l : listeners) {
-      l.waitTillReadyStart();
-    }
     readyStrategy.waitTillReady();
     for (RobotListener l : listeners) {
       l.waitTillReadyEnd();
