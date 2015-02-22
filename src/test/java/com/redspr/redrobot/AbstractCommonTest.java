@@ -200,22 +200,6 @@ abstract public class AbstractCommonTest {
 
   @Ignore // wrong place
   @Test
-  public void testTextMatch() throws Exception {
-    WebDriverRobot robot = (WebDriverRobot) getRobot();
-    {
-      double score = robot.isMatch(new String[]{"some 12356 guff"}, new String[]{"12356"});
-      assertTrue(score > 0);
-      assertTrue(score < 1);
-    }
-
-    {
-        double score = robot.isMatch(new String[]{"some 12356 guff"}, new String[]{"12356", "XXX"});
-        assertTrue(score == 0);
-      }
-    robot.close();
-  }
-
-  @Test
   @Ignore // does not work in FF or Chrome, blocked by modal
   // can use findElement in chrome
   public void testAlertThenWait() throws Exception {
