@@ -8,7 +8,7 @@ public class WebDriverRobotTest {
 
   @Test
   public void testTextMatch() throws Exception {
-    WebDriverRobot robot = (WebDriverRobot) getRobot();
+    WebDriverRobot robot = new WebDriverRobot();
     {
       double score = robot.isMatch(new String[]{"some 12356 guff"}, new String[]{"12356"});
       assertTrue(score > 0);
