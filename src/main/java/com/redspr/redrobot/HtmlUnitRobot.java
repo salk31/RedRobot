@@ -152,16 +152,15 @@ public class HtmlUnitRobot implements Robot {
 
     } else {
       // fine, was no alert
-        HtmlElement elmt = locClickable(x);
+      HtmlElement elmt = locClickable(x);
       for (RobotListener l : listeners) {
         l.actionStart();
       }
       try {
         elmt.click();
-    } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
       for (RobotListener l : listeners) {
         l.actionEnd();
       }
@@ -177,8 +176,7 @@ public class HtmlUnitRobot implements Robot {
       try {
         Thread.sleep(20);
       } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        throw new RuntimeException(e);
       }
     }
 

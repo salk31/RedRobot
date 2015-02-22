@@ -104,10 +104,9 @@ public class HtmlUnitRobotWorker  implements Runnable  {
 
   public void queue(Command foo) {
     try {
-        todo.put(foo);
+      todo.put(foo);
     } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
 
