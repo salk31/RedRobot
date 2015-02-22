@@ -13,4 +13,9 @@ public class ChromeCommonTest extends AbstractCommonTest {
 
     return robot;
   }
+
+  @Override
+  protected Class getImplClass() {
+    return ChromeDriver.class;
+  }
 }

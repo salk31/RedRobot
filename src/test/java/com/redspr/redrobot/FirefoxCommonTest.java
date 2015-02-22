@@ -11,4 +11,9 @@ public class FirefoxCommonTest extends AbstractCommonTest {
 
     return robot;
   }
+
+  @Override
+  protected Class getImplClass() {
+    return FirefoxDriver.class;
+  }
 }

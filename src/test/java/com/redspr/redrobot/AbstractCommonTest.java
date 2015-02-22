@@ -13,6 +13,18 @@ abstract public class AbstractCommonTest {
 
   abstract protected Robot getRobot() throws Exception;
 
+  abstract protected Class getImplClass();
+
+  @Test
+  public void testUnwrappedImpl() throws Exception {
+    Robot robot = getRobot();
+
+    Object impl = robot.unwrap(getImplClass());
+    assertEquals(getImplClass(), impl.getClass());
+
+    robot.close();
+  }
+
   @Test
   public void testAmbiguousForm() throws Exception {
     Robot robot = getRobot();
@@ -274,6 +286,23 @@ abstract public class AbstractCommonTest {
 
     String v2 = robot.get("Box one");
     assertEquals(v, v2);
+
+    robot.close();
+  }
+
+  @Test
+  public void testReload() throws Exception {
+    Robot robot = getRobot();
+    robot.click("Test Simple Form");
+    assertEquals("textBoxByTitle", robot.get("text 1"));
+    assertEquals("textareaByTitle", robot.get("text 2"));
+
+    robot.set("text 1", "Something new");
+    assertEquals("Something new", robot.get("text 1"));
+
+    robot.reload();
+
+    assertEquals("textBoxByTitle", robot.get("text 1"));
 
     robot.close();
   }
