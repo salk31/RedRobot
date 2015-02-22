@@ -27,10 +27,13 @@ import com.gargoylesoftware.htmlunit.ConfirmHandler;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebWindow;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class HtmlUnitRobotWorker  implements Runnable  {
+
+  public interface Command {
+    void execute(HtmlUnitRobotWorker webClient) throws Exception;
+  }
 
   public class Alert {
 
@@ -59,12 +62,9 @@ public class HtmlUnitRobotWorker  implements Runnable  {
     public boolean poll() {
         return Boolean.TRUE.equals(answer.poll());
     }
-
-    }
-
-public interface Foo {
-      public void execute(HtmlUnitRobotWorker webClient) throws Exception;
   }
+
+
 
   private static final Logger LOGGER =
             Logger.getLogger(HtmlUnitRobotWorker.class.getName());
@@ -74,7 +74,7 @@ public interface Foo {
    */
   private final WebClient webDriver;
 
-  private final LinkedBlockingQueue<Foo> todo = new LinkedBlockingQueue<Foo>();
+  private final LinkedBlockingQueue<Command> todo = new LinkedBlockingQueue<Command>();
 
   private Alert alert;
 
@@ -82,30 +82,27 @@ public interface Foo {
     this.webDriver = new WebClient();
 
     webDriver.setConfirmHandler(new ConfirmHandler() {
-
-        @Override
-        public boolean handleConfirm(Page page, String message) {
-            alert = new Alert(message);
-            return alert.poll();
-        }
-
+      @Override
+      public boolean handleConfirm(Page page, String message) {
+        alert = new Alert(message);
+        return alert.poll();
+      }
     });
 
     webDriver.setAlertHandler(new AlertHandler() {
-        @Override
-        public void handleAlert(Page page, String message) {
-            alert = new Alert(message);
-            alert.poll();
-        }
+      @Override
+      public void handleAlert(Page page, String message) {
+        alert = new Alert(message);
+        alert.poll();
+      }
     });
-
   }
 
   public HtmlUnitRobotWorker.Alert getAlert() {
     return alert;
   }
 
-  public void queue(Foo foo) {
+  public void queue(Command foo) {
     try {
         todo.put(foo);
     } catch (InterruptedException e) {
@@ -114,38 +111,31 @@ public interface Foo {
     }
   }
 
-public WebClient getWebClient() {
+  public WebClient getWebClient() {
     return webDriver;
-}
+  }
 
   public WebWindow getWebWindow() {
     return webDriver.getWebWindows().get(0);
   }
 
-    public HtmlPage getPage() {
-        return (HtmlPage) getWebWindow().getEnclosedPage();
-}
+  public HtmlPage getPage() {
+    return (HtmlPage) getWebWindow().getEnclosedPage();
+  }
 
-    public void stash(HtmlElement we) {
-        // TODO Auto-generated method stub
-
-        throw new RuntimeException("not HtmlUnitRobotWorker.stash implemented");
-
+  @Override
+  public void run() {
+    try {
+      while (true) {
+        Command foo = todo.poll(100, TimeUnit.SECONDS);
+        foo.execute(this);
+      }
+    } catch (Exception ex) {
+      ex.printStackTrace();
     }
+  }
 
-    @Override
-    public void run() {
-        try {
-        while (true) {
-            Foo foo = todo.poll(100, TimeUnit.SECONDS);
-            foo.execute(this);
-        }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public boolean isIdle() {
-        return todo.isEmpty();
-    }
+  public boolean isIdle() {
+    return todo.isEmpty();
+  }
 }

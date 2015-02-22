@@ -39,7 +39,7 @@ import com.gargoylesoftware.htmlunit.javascript.host.html.HTMLElement;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
-import com.redspr.redrobot.HtmlUnitRobotWorker.Foo;
+import com.redspr.redrobot.HtmlUnitRobotWorker.Command;
 
 public class HtmlUnitRobot implements Robot {
 
@@ -79,24 +79,24 @@ public class HtmlUnitRobot implements Robot {
     }
   }
 
-  private void call(Foo foo) {
+  private void call(Command foo) {
       webDriver.queue(foo);
   }
 
   @Override
   public void back() {
-      call(new Foo() {
-          @Override
-        public void execute(HtmlUnitRobotWorker webDriver) throws Exception {
-              webDriver.getWebWindow().getHistory().back();
-          }
-      });
+    call(new Command() {
+      @Override
+      public void execute(HtmlUnitRobotWorker webDriver) throws Exception {
+        webDriver.getWebWindow().getHistory().back();
+      }
+    });
     waitTillReady();
   }
 
   @Override
   public void forward() {
-    call(new Foo() {
+    call(new Command() {
       @Override
       public void execute(HtmlUnitRobotWorker webDriver) throws Exception {
         webDriver.getWebWindow().getHistory().forward();
@@ -172,13 +172,12 @@ public class HtmlUnitRobot implements Robot {
    */
   private void waitTillReady() {
     while (!webDriver.isIdle() && webDriver.getAlert() == null) {
-
-        try {
-            Thread.sleep(20);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+      try {
+        Thread.sleep(20);
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
 
     for (RobotListener l : listeners) {
@@ -245,57 +244,55 @@ public class HtmlUnitRobot implements Robot {
     return isSelected(x);
   }
 
-  private HtmlElement doLocate(final String cmd, final Object cmdArg, final String[] args) {
-// TODO __ need to check worker is idle?
-              Gson gson = new Gson();
-              ScriptResult rawResult2 = webDriver.getPage().executeJavaScript(SCRIPT
+  private HtmlElement doLocate(final String cmd, final Object cmdArg,
+      final String[] args) {
+    // TODO __ need to check worker is idle?
+    Gson gson = new Gson();
+    ScriptResult rawResult2 = webDriver.getPage().executeJavaScript(
+        SCRIPT
+        + ";RedRobot.findBestMatches(document, " + cmd + " , "
+            + gson.toJson(cmdArg) + ", " + gson.toJson(args) + ")\n;"
 
+    );
+    Object rawResult = rawResult2.getJavaScriptResult();
 
-                      + ";RedRobot.findBestMatches(document, " + cmd
-                      + " , " + gson.toJson(cmdArg) + ", " + gson.toJson(args) + ")\n;"
+    if (!(rawResult instanceof List)) {
+      throw new RuntimeException("Expected a list but got '" + rawResult + "'");
+    }
 
-                    );
-                    Object rawResult = rawResult2.getJavaScriptResult();
+    for (RobotListener l : listeners) {
+      l.locatorStart();
+    }
 
-          if (!(rawResult instanceof List)) {
-            throw new RuntimeException("Expected a list but got '" + rawResult + "'");
-          }
-
+    List<HTMLElement> y = (List) rawResult;
+    for (HTMLElement we : y) {
+      try {
+        HtmlElement dom = we.getDomNodeOrDie();
+        if (dom.isDisplayed()) {
           for (RobotListener l : listeners) {
-            l.locatorStart();
+            l.locatorEnd(new LocatorResultImpl(we));
           }
 
-          List<HTMLElement> y = (List) rawResult;
-          for (HTMLElement we : y) {
-            try {
-              HtmlElement dom = we.getDomNodeOrDie();
-              if (dom.isDisplayed()) {
-                for (RobotListener l : listeners) {
-                  l.locatorEnd(new LocatorResultImpl(we));
-                }
+          return dom;
+        }
+      } catch (Throwable ex) {
+        LOGGER.log(Level.WARNING, "Locator failed", ex);
+      }
+    }
 
-                return dom;
-              }
-            } catch (Throwable ex) {
-              LOGGER.log(Level.WARNING, "Locator failed", ex);
-            }
-          }
+    StringBuilder sb = new StringBuilder();
+    sb.append("Unable to find ");
+    sb.append(cmd);
+    for (String a : args) {
+      sb.append(", '");
+      sb.append(a);
+      sb.append("'");
+    }
+    for (RobotListener l : listeners) {
+      l.locatorEnd(null);
+    }
 
-          StringBuilder sb = new StringBuilder();
-          sb.append("Unable to find ");
-          sb.append(cmd);
-          for (String a : args) {
-            sb.append(", '");
-            sb.append(a);
-            sb.append("'");
-          }
-          for (RobotListener l : listeners) {
-              l.locatorEnd(null);
-          }
-
-          throw new NotFoundException(sb.toString());
-
-
+    throw new NotFoundException(sb.toString());
   }
 
   private HtmlElement locClickable(String... x) {
@@ -316,12 +313,12 @@ public class HtmlUnitRobot implements Robot {
 
   @Override
   public void open(final URL url) {
-      call(new Foo() {
-          @Override
-        public void execute(HtmlUnitRobotWorker webDriver) throws Exception {
-              webDriver.getWebClient().getPage(url);
-          }
-      });
+    call(new Command() {
+      @Override
+      public void execute(HtmlUnitRobotWorker webDriver) throws Exception {
+        webDriver.getWebClient().getPage(url);
+      }
+    });
 
      waitTillReady();
   }
@@ -371,6 +368,7 @@ public class HtmlUnitRobot implements Robot {
 
   @Override
   public <T> T unwrap(Class<T> implClass) {
-      return (T) webDriver;
+    // TODO __ test get into of WebClient
+    return (T) webDriver;
   }
 }
