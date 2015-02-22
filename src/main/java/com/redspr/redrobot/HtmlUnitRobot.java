@@ -108,7 +108,12 @@ public class HtmlUnitRobot implements Robot {
 
   @Override
   public void reload() {
-    // TODO __webDriver.getWebWindows().get(0)..refresh();
+    call(new Command() {
+      @Override
+      public void execute(HtmlUnitRobotWorker webDriver) throws Exception {
+        webDriver.getPage().refresh();
+      }
+    });
     waitTillReady();
   }
 
@@ -368,7 +373,6 @@ public class HtmlUnitRobot implements Robot {
 
   @Override
   public <T> T unwrap(Class<T> implClass) {
-    // TODO __ test get into of WebClient
-    return (T) webDriver;
+    return (T) webDriver.getWebClient();
   }
 }
