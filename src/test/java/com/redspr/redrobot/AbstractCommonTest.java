@@ -198,7 +198,6 @@ abstract public class AbstractCommonTest {
     robot.close();
   }
 
-  @Ignore // wrong place
   @Test
   @Ignore // does not work in FF or Chrome, blocked by modal
   // can use findElement in chrome
