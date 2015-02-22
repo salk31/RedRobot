@@ -77,7 +77,7 @@ public class HtmlUnitRobot implements Robot {
   }
 
   private void call(Command foo) {
-      worker.queue(foo);
+    worker.queue(foo);
   }
 
   @Override
@@ -355,7 +355,7 @@ public class HtmlUnitRobot implements Robot {
 
   @Override
   public void close() {
-    // TODO __ webDriver.quit();
+    worker.stop();
   }
 
   @Override

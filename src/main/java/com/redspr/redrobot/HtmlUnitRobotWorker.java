@@ -74,7 +74,7 @@ public class HtmlUnitRobotWorker  implements Runnable  {
    */
   private final WebClient webDriver;
 
-  private final LinkedBlockingQueue<Command> todo = new LinkedBlockingQueue<Command>();
+  private LinkedBlockingQueue<Command> todo = new LinkedBlockingQueue<Command>();
 
   private Alert alert;
 
@@ -126,7 +126,7 @@ public class HtmlUnitRobotWorker  implements Runnable  {
   @Override
   public void run() {
     try {
-      while (true) {
+      while (todo != null) {
         Command foo = todo.poll(100, TimeUnit.SECONDS);
         foo.execute(this);
       }
@@ -137,5 +137,9 @@ public class HtmlUnitRobotWorker  implements Runnable  {
 
   public boolean isIdle() {
     return todo.isEmpty();
+  }
+
+  public void stop() {
+    todo = null;
   }
 }
