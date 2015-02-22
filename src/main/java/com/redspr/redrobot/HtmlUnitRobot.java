@@ -46,10 +46,7 @@ public class HtmlUnitRobot implements Robot {
   private static final Logger LOGGER =
             Logger.getLogger(HtmlUnitRobot.class.getName());
 
-  /**
-   * Wrapped implementation.
-   */
-  private final HtmlUnitRobotWorker webDriver;
+  private final HtmlUnitRobotWorker worker;
 
   /**
    * JavaScript source.
@@ -67,8 +64,8 @@ public class HtmlUnitRobot implements Robot {
   private final List<RobotListener> listeners = new ArrayList<RobotListener>();
 
   public HtmlUnitRobot() {
-    this.webDriver = new HtmlUnitRobotWorker();
-    (new Thread(webDriver)).start();
+    this.worker = new HtmlUnitRobotWorker();
+    (new Thread(worker)).start();
 
     URL url = getClass().getResource("/redRobotCore.js");
 
@@ -80,7 +77,7 @@ public class HtmlUnitRobot implements Robot {
   }
 
   private void call(Command foo) {
-      webDriver.queue(foo);
+      worker.queue(foo);
   }
 
   @Override
@@ -137,7 +134,7 @@ public class HtmlUnitRobot implements Robot {
     if (x == null || x.length == 0) {
         throw new RuntimeException("At least one selector required");
     }
-    HtmlUnitRobotWorker.Alert alert = webDriver.getAlert();
+    HtmlUnitRobotWorker.Alert alert = worker.getAlert();
     if (alert != null) {
 
       double scoreOk = isMatch(new String[]{alert.getText(), OK}, x);
@@ -176,7 +173,7 @@ public class HtmlUnitRobot implements Robot {
    * Use the provided wait strategy and call listeners.
    */
   private void waitTillReady() {
-    while (!webDriver.isIdle() && webDriver.getAlert() == null) {
+    while (!worker.isIdle() && worker.getAlert() == null) {
       try {
         Thread.sleep(20);
       } catch (InterruptedException e) {
@@ -201,7 +198,7 @@ public class HtmlUnitRobot implements Robot {
 
   @Override
   public boolean textExists(String... x) {
-    HtmlUnitRobotWorker.Alert alert = webDriver.getAlert();
+    HtmlUnitRobotWorker.Alert alert = worker.getAlert();
     if (alert != null) {
       return isMatch(new String[]{alert.getText(), OK, CANCEL}, x) > 0;
     } else {
@@ -253,7 +250,7 @@ public class HtmlUnitRobot implements Robot {
       final String[] args) {
     // TODO __ need to check worker is idle?
     Gson gson = new Gson();
-    ScriptResult rawResult2 = webDriver.getPage().executeJavaScript(
+    ScriptResult rawResult2 = worker.getPage().executeJavaScript(
         SCRIPT
         + ";RedRobot.findBestMatches(document, " + cmd + " , "
             + gson.toJson(cmdArg) + ", " + gson.toJson(args) + ")\n;"
@@ -373,6 +370,6 @@ public class HtmlUnitRobot implements Robot {
 
   @Override
   public <T> T unwrap(Class<T> implClass) {
-    return (T) webDriver.getWebClient();
+    return (T) worker.getWebClient();
   }
 }
