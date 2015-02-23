@@ -23,10 +23,20 @@ package com.redspr.redrobot;
  */
 public class SleepReadyStrategy implements ReadyStrategy {
 
+  private final long delay;
+
+  public SleepReadyStrategy(long delay) {
+    this.delay = delay;
+  }
+
+  public SleepReadyStrategy() {
+    this(1000);
+  }
+
   @Override
   public void waitTillReady() {
     try {
-      Thread.sleep(1000);
+      Thread.sleep(delay);
     } catch (InterruptedException e) {
       // just fall through
     }
