@@ -1,0 +1,17 @@
+WebDriver/Firefox
++ Real browser -> very actively developed
++ Lots of support
+- Breaks on FF upgrade  (have known good binary?)
+- 2 second hard wired delay for swithTo().alert()
+
+WebDriver/HtmlUnit
+- Can't do interactive alerts
+
+HtmlUnit (direct)
+- Slow
+- No absolute positioning
++ Pure Java so only one runtime
+
+PhantomJs (direct)
+- Crashes?
+- Wait for async read - ticket open
