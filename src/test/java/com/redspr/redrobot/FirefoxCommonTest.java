@@ -8,7 +8,7 @@ public class FirefoxCommonTest extends AbstractCommonTest {
 
   @Override
   protected Robot getRobot() throws Exception {
-    Robot robot = new WebDriverRobot(new FirefoxDriver());
+    Robot robot = new WebDriverRobot();
     robot.open(getClass().getResource("/index.html"));
 
     return robot;

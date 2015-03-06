@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.UnhandledAlertException;
 
 abstract public class AbstractCommonTest {
 
@@ -33,7 +34,7 @@ abstract public class AbstractCommonTest {
     assertEquals("textBoxByTitle", robot.get("First bit", "Field 1"));
     robot.set("First bit", "Field 1", "New value for textBoxByTitle");
     assertEquals("New value for textBoxByTitle",
-    robot.get("First bit", "Field 1"));
+            robot.get("First bit", "Field 1"));
     // TODO 01 how to send "!"?
 
     assertEquals(" Two", robot.get("Second bit", "Field 1"));
@@ -211,16 +212,18 @@ abstract public class AbstractCommonTest {
   }
 
   @Test
-  @Ignore // does not work in FF or Chrome, blocked by modal
-  // can use findElement in chrome
   public void testAlertThenWait() throws Exception {
     final WebDriverRobot robot = (WebDriverRobot) getRobot();
 
     robot.setReadyStrategy(new ReadyStrategy() {
       @Override
       public void waitTillReady() {
+        try {
           JavascriptExecutor je = robot.unwrap(JavascriptExecutor.class);
           je.executeScript("var x = 1;");
+        } catch (UnhandledAlertException ex) {
+          // OK JS is done
+        }
       }
     });
 
@@ -236,8 +239,6 @@ abstract public class AbstractCommonTest {
     final Robot robot = getRobot();
     SimplePerformanceListener listener = new SimplePerformanceListener();
     robot.addListener(listener);
-
-
 
     robot.click("Test Performance");
 
@@ -255,10 +256,10 @@ abstract public class AbstractCommonTest {
     long t1 = listener.getTotal();
 
     long pct = 100 * (t1 - t0) / (N * 200);
-    assertTrue("Was " + pct, pct > 90);
+    assertTrue("Was " + pct, pct > 100);
 
     System.out.println("testPerformance " + pct + "%");
-    assertTrue("Was " + pct, pct < 150); // XXX terrible! calibrating thing?
+    assertTrue("Was " + pct, pct < 110);
 
     robot.close();
   }
@@ -280,7 +281,7 @@ abstract public class AbstractCommonTest {
 
     robot.click("confirm");
     robot.click("hello", Robot.OK);
-    assertTrue(robot.textExists("result=true")); // TODO __ locate deadlocks because
+    assertTrue(robot.textExists("result=true"));
     robot.click("result=true", Robot.OK);
 
     robot.click("confirm");
