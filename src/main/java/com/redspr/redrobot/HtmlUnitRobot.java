@@ -178,7 +178,7 @@ public class HtmlUnitRobot implements Robot {
       l.waitTillReadyStart();
     }
 
-    while (!worker.isIdle() && worker.getAlert() == null) {
+    while (!worker.isIdle()) { // XXX wait on something, not poll - on a lock?
       try {
         Thread.sleep(20);
       } catch (InterruptedException e) {

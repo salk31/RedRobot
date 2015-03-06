@@ -139,20 +139,21 @@ public class HtmlUnitRobotWorker implements Runnable  {
   public void run() {
     try {
       while (todo != null) {
-        Command foo = todo.poll(100, TimeUnit.SECONDS);
-        if (foo != marrakech) {
+        Command cmd = todo.poll(100, TimeUnit.SECONDS);
+
+        // TODO __ get rid of this
+        if (cmd != marrakech) {
           todo.add(marrakech);
         }
-        foo.execute(this);
+        cmd.execute(this);
       }
     } catch (Exception ex) {
-      // TODO __
-      ex.printStackTrace();
+      throw new RuntimeException(ex);
     }
   }
 
   public boolean isIdle() {
-    return todo.isEmpty();
+    return todo.isEmpty() && alert == null;
   }
 
   public void stop() {

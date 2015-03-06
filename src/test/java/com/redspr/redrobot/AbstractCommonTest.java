@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.UnhandledAlertException;
 
 abstract public class AbstractCommonTest {
 
@@ -211,16 +212,18 @@ abstract public class AbstractCommonTest {
   }
 
   @Test
-  @Ignore // does not work in FF or Chrome, blocked by modal
-  // can use findElement in chrome
   public void testAlertThenWait() throws Exception {
     final WebDriverRobot robot = (WebDriverRobot) getRobot();
 
     robot.setReadyStrategy(new ReadyStrategy() {
       @Override
       public void waitTillReady() {
+        try {
           JavascriptExecutor je = robot.unwrap(JavascriptExecutor.class);
           je.executeScript("var x = 1;");
+        } catch (UnhandledAlertException ex) {
+          // OK JS is done
+        }
       }
     });
 
@@ -278,7 +281,7 @@ abstract public class AbstractCommonTest {
 
     robot.click("confirm");
     robot.click("hello", Robot.OK);
-    assertTrue(robot.textExists("result=true")); // TODO __ locate deadlocks because
+    assertTrue(robot.textExists("result=true"));
     robot.click("result=true", Robot.OK);
 
     robot.click("confirm");

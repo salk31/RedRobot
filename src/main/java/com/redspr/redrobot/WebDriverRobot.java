@@ -32,11 +32,14 @@ import javax.script.ScriptException;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.UnexpectedAlertBehaviour;
+import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.Select;
 
 import com.google.common.base.Charsets;
@@ -50,7 +53,7 @@ public class WebDriverRobot implements Robot {
   /**
    * Wrapped implementation.
    */
-  private final WebDriver webDriver;
+  private  WebDriver webDriver;
 
   /**
    * JavaScript source.
@@ -68,10 +71,19 @@ public class WebDriverRobot implements Robot {
   private final List<RobotListener> listeners = new ArrayList<RobotListener>();
 
   public WebDriverRobot() {
-    this(new FirefoxDriver());
+
+    DesiredCapabilities dc = DesiredCapabilities.firefox();
+    dc.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
+    WebDriver ff = new FirefoxDriver(dc);
+
+    init(ff);
   }
 
-  public WebDriverRobot(WebDriver webDriver2) {
+ public WebDriverRobot(WebDriver webDriver2) {
+   init(webDriver2);
+ }
+
+  public void init(WebDriver webDriver2) {
     this.webDriver = webDriver2;
 
     URL url = getClass().getResource("/redRobotCore.js");
@@ -121,24 +133,8 @@ public class WebDriverRobot implements Robot {
     if (x == null || x.length == 0) {
         throw new RuntimeException("At least one selector required");
     }
+
     try {
-      Alert alert = webDriver.switchTo().alert();
-
-      double scoreOk = isMatch(new String[]{alert.getText(), OK}, x);
-      double scoreCancel = isMatch(new String[]{alert.getText(), CANCEL}, x);
-
-      if (scoreOk > scoreCancel) {
-          alert.accept();
-      } else if (scoreOk < scoreCancel) {
-          alert.dismiss();
-      } else {
-          throw new IllegalArgumentException("Asked to click on '"
-                  + x[0] + "' but was an Alert with text '"
-                  + alert.getText() + "'");
-      }
-
-    } catch (NoAlertPresentException ex) {
-      // fine, was no alert
       WebElement elmt = locClickable(x);
       for (RobotListener l : listeners) {
         l.actionStart();
@@ -147,8 +143,24 @@ public class WebDriverRobot implements Robot {
       for (RobotListener l : listeners) {
         l.actionEnd();
       }
-      waitTillReady();
+    } catch (UnhandledAlertException ex) {
+      Alert alert = webDriver.switchTo().alert();
+
+      double scoreOk = isMatch(new String[]{alert.getText(), OK}, x);
+      double scoreCancel = isMatch(new String[]{alert.getText(), CANCEL}, x);
+
+      if (scoreOk > scoreCancel) {
+        alert.accept();
+      } else if (scoreOk < scoreCancel) {
+        alert.dismiss();
+      } else {
+        throw new IllegalArgumentException("Asked to click on '"
+            + x[0] + "' but was an Alert with text '"
+            + alert.getText() + "'");
+      }
     }
+
+    waitTillReady();
   }
 
   /**
@@ -173,10 +185,6 @@ public class WebDriverRobot implements Robot {
   @Override
   public boolean textExists(String... x) {
     try {
-      Alert alert = webDriver.switchTo().alert();
-
-      return isMatch(new String[]{alert.getText(), OK, CANCEL}, x) > 0;
-    } catch (NoAlertPresentException ex) {
       String[] n = allButLast(x);
       String v = x[x.length - 1];
       try {
@@ -185,6 +193,10 @@ public class WebDriverRobot implements Robot {
         return false;
       }
       return true;
+    } catch (UnhandledAlertException ex) {
+      Alert alert = webDriver.switchTo().alert();
+
+      return isMatch(new String[]{alert.getText(), OK, CANCEL}, x) > 0;
     }
   }
 
