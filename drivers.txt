@@ -2,7 +2,7 @@ WebDriver/Firefox
 + Real browser -> very actively developed
 + Lots of support
 - Breaks on FF upgrade  (have known good binary?)
-- 2 second hard wired delay for swithTo().alert()
+- 2 second hard wired delay for swithTo().alert() https://code.google.com/p/selenium/issues/detail?id=2438
 
 WebDriver/HtmlUnit
 - Can't do interactive alerts
@@ -11,6 +11,8 @@ HtmlUnit (direct)
 - Slow
 - No absolute positioning
 + Pure Java so only one runtime
+- Doesn't do #urlFragment
+- Can't do screen shot so painful to debug?
 
 PhantomJs (direct)
 - Crashes?
