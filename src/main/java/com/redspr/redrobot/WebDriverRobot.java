@@ -201,13 +201,13 @@ public class WebDriverRobot implements Robot {
 
   @Override
   public String get(String... x) {
-    WebElement e = locKey(x);
+    WebElement elmt = locKey(x);
 
-    if ("select".equals(e.getTagName())) {
-        Select select = new Select(e);
+    if ("select".equals(elmt.getTagName())) {
+        Select select = new Select(elmt);
         return select.getFirstSelectedOption().getText();
     }
-    WebElement elmt = locKey(x);
+
     String r = elmt.getAttribute("value");
     if (r == null) {
         r = elmt.getText();
