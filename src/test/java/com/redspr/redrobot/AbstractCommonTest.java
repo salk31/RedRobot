@@ -116,7 +116,16 @@ abstract public class AbstractCommonTest {
     robot.click("Test ignore");
 
     assertFalse(robot.textExists("foo bar"));
-
+    
+    robot.click("beer");
+    robot.click("beer clicked", "ok");
+    
+    try {
+      robot.click("beer", "foo bar");
+      fail("Shouldn't have been able to find that");
+    } catch (NotFoundException ex) {
+      // good
+    }
     robot.close();
   }
 

@@ -262,11 +262,14 @@ RedRobot.visit = function(node, fn) {
     if (child.nodeType == 1) {
       fn(child);
       if (child.getAttribute && child.getAttribute('aria-hidden') == 'true') continue;
-      RedRobot.visit(child, fn);  
-        
+
       if (child.nodeName == 'IFRAME') {
         child.contentDocument.redrobotParentNode = child;
         RedRobot.visit(child.contentDocument, fn);
+      } else if (child.nodeName == 'SCRIPT') {
+        // skip
+      } else {
+        RedRobot.visit(child, fn);  
       }
     } else if (child.nodeType == 3) {
       fn(child);
