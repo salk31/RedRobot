@@ -25,12 +25,13 @@ Your tests should only depend on the very simple com.redspr.redrobot.Robot inter
 Markup | Example |	Top matches	| Notes
 ---------|-------|--------------|-------
 for="id" |		   |              |
-&lt;th>foo&lt;/th> |	robot.click("red", "two", "foo");	| (1)	 |Gives the related columns a boost.
-colspan="2" |	robot.click("bird", "three", "Foo"); |	 (1)	 |
+&lt;th>foo&lt;/th> |	robot.click("red", "two", "foo");	| ![](https://github.com/salk31/RedRobot/blob/master/images/tableRedTwoFoo.png) (1)	 |Gives the related columns a boost.
+colspan="2" |	robot.click("bird", "three", "Foo"); | ![](https://github.com/salk31/RedRobot/blob/master/images/tableColSpanBirdThree.png)	 (1)	 |
 role="button"	|		| |
 role="listitem" | | |
 <option selected>foo</option>	 | | 		Gives the selected option an extra boost.
 (1) Debug output uses the following scale (from hot to cold) 
+![](https://github.com/salk31/RedRobot/blob/master/images/scale.png)
 
 ##Implementation
 Behind the simple Robot interface an implementation using WebDriver? is provided. There is legacy support for direct HtmlUnit? and Selenium 1 but this is being phased out.
