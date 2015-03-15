@@ -25,7 +25,7 @@ Your tests should only depend on the very simple com.redspr.redrobot.Robot inter
 Markup | Example |	Top matches	| Notes
 ---------|-------|--------------|-------
 for="id" |		   |              |
-<th>foo</th> |	robot.click("red", "two", "foo");	| (1)	 |Gives the related columns a boost.
+&lt;th>foo&lt;/th> |	robot.click("red", "two", "foo");	| (1)	 |Gives the related columns a boost.
 colspan="2" |	robot.click("bird", "three", "Foo"); |	 (1)	 |
 role="button"	|		| |
 role="listitem" | | |
