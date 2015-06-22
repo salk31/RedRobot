@@ -29,9 +29,9 @@
     </properties>
 
     <scm>
-        <url>https://code.google.com/p/redrobot/</url>
-        <developerConnection>scm:git:https://code.google.com/p/redrobot/</developerConnection>
-        <connection>scm:git:https://code.google.com/p/redrobot/</connection>
+        <url>https://github.com/salk31/RedRobot</url>
+        <developerConnection>scm:git:ssh://git@github.com/salk31/RedRobot.git</developerConnection>
+        <connection>scm:git:ssh://git@github.com/salk31/RedRobot.git</connection>
       <tag>HEAD</tag>
   </scm>
 
