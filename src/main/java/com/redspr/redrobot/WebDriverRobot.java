@@ -120,7 +120,7 @@ public class WebDriverRobot implements Robot {
       engine.eval(SCRIPT);
       engine.put("source", source);
       engine.put("input", input);
-      Double rawResult = (Double) engine.eval("RedRobot.multiTextMatch(source, input)");
+      Number rawResult = (Number) engine.eval("RedRobot.multiTextMatch(source, input)");
       return rawResult.doubleValue();
     } catch (ScriptException ex) {
         throw new RuntimeException(ex);
