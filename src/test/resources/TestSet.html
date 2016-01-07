@@ -1,0 +1,40 @@
+<html>
+  <body>
+    <div>
+      <h2>TextBox</h2>
+
+      <input title="input" type="text" value="foo"
+          onchange="document.getElementById('textBoxOutput').value += 'X' + this.value" />
+
+      <input id="textBoxOutput" title="output" type="text" />
+    
+      <button>focus</button>
+    </div>
+    
+    <div>
+      <h2>TextArea</h2>
+
+      <textarea title="input"
+          onchange="document.getElementById('textAreaOutput').value += 'X' + this.value">foo</textarea>
+
+      <input id="textAreaOutput" title="output" type="text" />
+    
+      <button>focus</button>
+    </div>
+    
+    <div>
+      <h2>Select</h2>
+
+      <select title="input"
+          onchange="document.getElementById('selectOutput').value += 'X' + this.value">
+        <option selected>foo</option>
+        <option>a</option>
+        <option value="">empty</option>
+      </select>
+
+      <input id="selectOutput" title="output" type="text" />
+    
+      <button>focus</button>
+    </div>
+  </body>
+</html>
