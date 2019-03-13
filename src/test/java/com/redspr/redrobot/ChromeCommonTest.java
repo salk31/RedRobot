@@ -1,14 +1,17 @@
 package com.redspr.redrobot;
 
-import org.junit.Ignore;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-@Ignore
 public class ChromeCommonTest extends AbstractCommonTest {
 
   @Override
   protected Robot getRobot() throws Exception {
-    Robot robot = new WebDriverRobot(new ChromeDriver());
+    System.setProperty("webdriver.chrome.driver", BinaryUtil.getPathForDriver("chromedriver"));
+
+
+    ChromeDriver driver = new ChromeDriver();
+
+    Robot robot = new WebDriverRobot(driver);
     robot.open(getClass().getResource("/index.html"));
 
     return robot;

@@ -17,3 +17,4 @@ HtmlUnit (direct)
 PhantomJs (direct)
 - Crashes?
 - Wait for async read - ticket open
+- Dead project

@@ -268,7 +268,7 @@ abstract public class AbstractCommonTest {
     assertTrue("Was " + pct, pct > 100);
 
     System.out.println("testPerformance " + pct + "%");
-    assertTrue("Was " + pct, pct < 110);
+    assertTrue("Was " + pct, pct < 120);
 
     robot.close();
   }
