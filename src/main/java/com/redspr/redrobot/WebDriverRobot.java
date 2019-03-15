@@ -312,16 +312,13 @@ public class WebDriverRobot implements Robot {
     String v = x[x.length - 1];
     WebElement e = this.locKey(n);
     try {
-      if ("select".equals(e.getTagName())) {
-        e.sendKeys(v);
-      } else {
-        JavascriptExecutor js = (JavascriptExecutor) webDriver;
-        js.executeScript("if (arguments[0].value != arguments[1]) {arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('change'))}", e, v);
-      }
+      JavascriptExecutor js = (JavascriptExecutor) webDriver;
+      js.executeScript("arguments[0].value = ''", e);
+      e.sendKeys(v);
     } catch (WebDriverException ex) {
-      throw new RuntimeException("Failed trying to set name='"
-          + e.getTagName() + "' to text='" + e.getText() + "'", ex);
-    }
+            throw new RuntimeException("Failed trying to click on name='"
+                    + e.getTagName() + "' text='" + e.getText() + "'", ex);
+        }
     waitTillReady();
   }
 

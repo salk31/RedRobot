@@ -116,10 +116,10 @@ abstract public class AbstractCommonTest {
     robot.click("Test ignore");
 
     assertFalse(robot.textExists("foo bar"));
-
+    
     robot.click("beer");
     robot.click("beer clicked", "ok");
-
+    
     try {
       robot.click("beer", "foo bar");
       fail("Shouldn't have been able to find that");
@@ -331,40 +331,6 @@ abstract public class AbstractCommonTest {
 
     assertEquals("textBoxByTitle", robot.get("text 1"));
 
-    robot.close();
-  }
-
-  // https://github.com/salk31/RedRobot/issues/31
-  @Test
-  public void testSet() throws Exception {
-    Robot robot = getRobot();
-    robot.click("Test Set");
-
-    String[] script = {
-        "", "X",
-        "", "X",
-        "a", "XXa",
-        "a", "XXa"
-    };
-
-    String SELECT = "Select";
-
-    String[] pfxs = new String[]{"TextBox", "TextArea", SELECT};
-
-    for (String pfx : pfxs) {
-      assertEquals("", robot.get(pfx, "output"));
-
-      for (int i = 0; i < script.length; i += 2) {
-        String v = script[i];
-        if ("".equals(v) && SELECT.equals(pfx)) {
-          v = "empty";
-        }
-        robot.set(pfx, "input", v);
-        robot.click(pfx, "focus");
-        assertEquals(pfx + i, v, robot.get(pfx, "input"));
-        assertEquals(pfx + i, script[i + 1], robot.get(pfx, "output"));
-      }
-    }
     robot.close();
   }
 }
